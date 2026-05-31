@@ -1,4 +1,5 @@
 import { PILLAR_KEYS, calculateBalanceScore } from './engine.js';
+import { getWmsGradeLabel, isWasteFlowEnabled } from './wasteFlow.js';
 
 const CIRCULAR_TIERS = new Set(['reduce', 'reuse', 'recycle']);
 
@@ -106,7 +107,7 @@ export function generateYearSummary(city, round) {
     .filter(Boolean)
     .slice(0, 2);
 
-  return {
+  const summary = {
     round,
     cityName: city.studentName,
     population: city.population,
@@ -117,6 +118,41 @@ export function generateYearSummary(city, round) {
     balanceLesson: buildBalanceLesson(resolutions),
     consequenceWatch: watches.length ? watches.join(' ') : null,
   };
+
+  if (isWasteFlowEnabled() && city.lastWasteFlow) {
+    summary.wasteFlow = { ...city.lastWasteFlow };
+    summary.wms = city.wms;
+    summary.wmsGrade = getWmsGradeLabel(city.wms ?? 0);
+    summary.education = city.education;
+    summary.co2Cumulative = city.co2Cumulative;
+    summary.flowVerdict = buildFlowVerdict(city.lastWasteFlow);
+  }
+
+  return summary;
+}
+
+function buildFlowVerdict(flow) {
+  const dPct = Math.round((flow.D || 0) * 100);
+  const lines = [];
+  if (dPct < 40) {
+    lines.push(
+      `Only ${dPct}% of waste was prevented or recycled — most material still went to burn or bury.`
+    );
+  } else if (dPct >= 60) {
+    lines.push(`Strong diversion (${dPct}%) — reduce and recycle are carrying the system.`);
+  } else {
+    lines.push(`Moderate diversion (${dPct}%) — room to push education and recovery.`);
+  }
+  if ((flow.uFrac || 0) > 0.1) {
+    lines.push('Uncollected or open-dumped waste hurt health and emissions this year.');
+  }
+  if ((flow.runway || 0) < 2) {
+    lines.push('Landfill runway is short — capacity pressure will worsen without new options.');
+  }
+  if ((flow.cIntens || 0) > 0.5) {
+    lines.push('Emissions intensity is high — burning and dumping are driving CO₂.');
+  }
+  return lines.join(' ');
 }
 
 export function getDisplayLabel(action) {

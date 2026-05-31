@@ -30,7 +30,8 @@
         "liveability": 70,
         "capacity": 60,
         "circularity": 35
-      }
+      },
+      "startAffluence": 1.8
     },
     "lowIncome": {
       "populationGrowth": [1.12, 1.11, 1.10, 1.09, 1.08, 1.07],
@@ -43,12 +44,90 @@
         "liveability": 50,
         "capacity": 35,
         "circularity": 25
-      }
+      },
+      "startAffluence": 0.6
     }
   },
   "market": {
     "recyclablesPriceByRound": [1.0, 1.55, 0.28, 1.35, 0.42, 1.48],
     "energyPriceByRound": [0.65, 1.45, 0.38, 1.4, 0.52, 1.62]
+  },
+  "budgetEconomyLink": {
+    "enabled": true,
+    "economyDividendPerRound": 12,
+    "economyDeltaToBudget": 0.6,
+    "wasteIncomeToBudget": true,
+    "infraRunningCost": {
+      "INCINERATOR_BUILT": 4,
+      "LANDFILL_BUILT": 2,
+      "RECYCLING_SYSTEM": 2
+    },
+    "minEconomyForDividend": 1
+  },
+  "education": {
+    "decayPerRound": 2,
+    "trustLowGainMultiplier": 0.5,
+    "trustHighGainMultiplier": 1.25
+  },
+  "flowTierDefaults": {
+    "reduce": { "reduceBonus": 0.04, "education": 3 },
+    "reuse": { "reduceBonus": 0.02, "recycleCap": 8 },
+    "recycle": { "recycleCap": 18, "education": 2 },
+    "incinerate": { "incinCap": 120 },
+    "landfill": { "landfillCap": 400 },
+    "dump": { "education": -2, "forcesUncollected": true },
+    "defer": {},
+    "policy": {},
+    "social": {}
+  },
+  "wasteFlow": {
+    "enabled": true,
+    "unit": "kilotonnes",
+    "perCapita": { "highIncome": 0.6, "lowIncome": 0.35 },
+    "eduReduceMax": 0.3,
+    "reduceCap": 0.55,
+    "recycleQualityFloor": 0.5,
+    "ashFraction": 0.2,
+    "co2": {
+      "incinerate": 0.9,
+      "landfill": 0.4,
+      "landfillCaptured": 0.12,
+      "uncollected": 0.6,
+      "transport": 0.05,
+      "recycleCredit": 0.3,
+      "energyCredit": 0.2
+    },
+    "energyMWhPerTonne": 600,
+    "startLandfillCap": { "highIncome": 900, "lowIncome": 700 },
+    "startRecycleCap": { "highIncome": 60, "lowIncome": 30 },
+    "startEducation": { "highIncome": 35, "lowIncome": 25 },
+    "incinBuild": 120,
+    "eduDecayPerRound": 2,
+    "uncollectedCrisisFraction": 0.25,
+    "uncollectedCrisisMultiplier": 0.6,
+    "noRoomMultiplier": 0.7,
+    "wms": {
+      "wDiv": 0.35,
+      "wRunway": 0.25,
+      "wCO2": 0.25,
+      "wUncollected": 0.15,
+      "runwayTargetYrs": 4,
+      "co2IntensityCap": 0.8,
+      "grades": [
+        { "min": 0, "label": "Failing" },
+        { "min": 40, "label": "Struggling" },
+        { "min": 60, "label": "Improving" },
+        { "min": 80, "label": "Circular Leader" }
+      ]
+    },
+    "pillarMap": {
+      "capacityFromRunwayYrs": 4,
+      "environmentCO2Cap": 0.8,
+      "environmentUncollectedPenalty": 40,
+      "liveabilityCollectionBonus": 8,
+      "liveabilityUncollectedPenalty": 10,
+      "economyIncomeDivisor": 4
+    }
   },
   "worldEvents": [
     {

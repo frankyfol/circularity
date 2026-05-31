@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import {
   createCity,
   applyGrowth,
+  finalizeRoundWasteFlow,
   applyEventAction,
   applyWorldEventFlatAndConditionals,
   resolveEventJustify,
@@ -216,7 +217,7 @@ io.on('connection', (socket) => {
 
     const scoreBefore = calculateBalanceScore(city) + city.insightPoints;
 
-    const result = applyEventAction(city, action, round, room.marketModifiers);
+    const result = applyEventAction(city, action, round, room.marketModifiers, event);
     if (!result.success) return cb?.({ success: false, error: result.error });
 
     const justifyResult = resolveEventJustify(city, event, justifyAnswer, {
@@ -240,6 +241,7 @@ io.on('connection', (socket) => {
 
     if (city.roundComplete) {
       processDelayedEffects(city);
+      finalizeRoundWasteFlow(city, round, room.marketModifiers);
     }
 
     calculateFinalScore(city);

@@ -115,7 +115,7 @@ def generate_year_summary(city: dict, round_num: int) -> dict:
     new_flags = {f for r in resolutions for f in r.get("setsFlags", [])}
     watches = [FLAG_FORESHADOW[f] for f in new_flags if f in FLAG_FORESHADOW][:2]
 
-    return {
+    result = {
         "round": round_num,
         "cityName": city["studentName"],
         "population": city["population"],
@@ -126,6 +126,17 @@ def generate_year_summary(city: dict, round_num: int) -> dict:
         "balanceLesson": _build_balance_lesson(resolutions),
         "consequenceWatch": " ".join(watches) if watches else None,
     }
+    flow = city.get("lastWasteFlow")
+    if flow:
+        from circular_city.waste_flow import get_wms_grade_label
+
+        result["wasteFlow"] = dict(flow)
+        result["wms"] = city.get("wms")
+        result["wmsGrade"] = get_wms_grade_label(city.get("wms", 0))
+        result["education"] = city.get("education")
+        d_pct = round((flow.get("D") or 0) * 100)
+        result["flowVerdict"] = f"Waste diversion this year: {d_pct}% prevented or recycled (model)."
+    return result
 
 
 def display_label(action: dict) -> str:

@@ -11,12 +11,22 @@ import {
   foundingEvent,
 } from './eventEngine.js';
 import { shuffleJustifyOptions, shuffleSeedForEvent } from './shuffleActions.js';
+import {
+  initWasteFlowState,
+  isWasteFlowEnabled,
+  resolveFlowLevers,
+  applyFlowLevers,
+  applyBudgetEconomyFromAction,
+  finalizeRoundWasteFlow,
+} from './wasteFlow.js';
+
+export { finalizeRoundWasteFlow, isWasteFlowEnabled, getWmsGradeLabel } from './wasteFlow.js';
 
 const PILLAR_KEYS = ['environment', 'economy', 'liveability', 'capacity', 'circularity'];
 
 export function createCity(id, studentName, archetype) {
   const curve = gameConfig.growthCurves[archetype];
-  return {
+  const city = {
     id,
     studentName,
     archetype,
@@ -50,6 +60,8 @@ export function createCity(id, studentName, archetype) {
     growthAppliedThisRound: false,
     roundResolutions: [],
   };
+  if (isWasteFlowEnabled()) initWasteFlowState(city, archetype);
+  return city;
 }
 
 export function clamp(value, min = 0, max = 100) {
@@ -70,11 +82,12 @@ export function applyGrowth(city, round, archetype) {
   );
   city.footprint = Math.round(city.wasteLoad * 1.4 * city.affluence);
 
-  const capacityDrain = Math.round(city.wasteLoad / 120);
-  city.pillars.capacity = clamp(city.pillars.capacity - capacityDrain);
-
-  const envDrain = Math.round(city.wasteLoad / 200);
-  city.pillars.environment = clamp(city.pillars.environment - envDrain * 0.5);
+  if (!isWasteFlowEnabled()) {
+    const capacityDrain = Math.round(city.wasteLoad / 120);
+    city.pillars.capacity = clamp(city.pillars.capacity - capacityDrain);
+    const envDrain = Math.round(city.wasteLoad / 200);
+    city.pillars.environment = clamp(city.pillars.environment - envDrain * 0.5);
+  }
 
   city.budget += Math.round(gameConfig.budgetPerRound * curve.budgetMultiplier);
 
@@ -322,7 +335,7 @@ export function getEventActionCost(action, marketModifiers = {}) {
   return Math.max(0, cost);
 }
 
-export function applyEventAction(city, action, round, marketModifiers = {}) {
+export function applyEventAction(city, action, round, marketModifiers = {}, event = null) {
   const cost = getEventActionCost(action, marketModifiers);
   if (cost > city.budget) return { success: false, error: 'Insufficient budget' };
 
@@ -374,6 +387,11 @@ export function applyEventAction(city, action, round, marketModifiers = {}) {
   setCityFlags(city, action.setsFlags || []);
   clearCityFlags(city, action.clearsFlags || []);
   checkTransitionRules(city, action);
+
+  if (isWasteFlowEnabled()) {
+    applyFlowLevers(city, resolveFlowLevers(action, event));
+    applyBudgetEconomyFromAction(city, action, effects);
+  }
 
   return {
     success: true,

@@ -35,9 +35,11 @@ def clamp(value: float, min_val: float = 0, max_val: float = 100) -> float:
 
 
 def create_city(city_id: str, student_name: str, archetype: str) -> dict:
+    from circular_city.waste_flow import init_waste_flow_state, is_waste_flow_enabled
+
     cfg = game_config()
     curve = cfg["growthCurves"][archetype]
-    return {
+    city = {
         "id": city_id,
         "studentName": student_name,
         "archetype": archetype,
@@ -71,6 +73,9 @@ def create_city(city_id: str, student_name: str, archetype: str) -> dict:
         "growthAppliedThisRound": False,
         "roundResolutions": [],
     }
+    if is_waste_flow_enabled():
+        init_waste_flow_state(city, archetype)
+    return city
 
 
 def apply_growth(city: dict, round_num: int, archetype: str | None = None) -> dict:
@@ -89,11 +94,13 @@ def apply_growth(city: dict, round_num: int, archetype: str | None = None) -> di
     )
     city["footprint"] = round(city["wasteLoad"] * 1.4 * city["affluence"])
 
-    capacity_drain = round(city["wasteLoad"] / 120)
-    city["pillars"]["capacity"] = clamp(city["pillars"]["capacity"] - capacity_drain)
+    from circular_city.waste_flow import is_waste_flow_enabled
 
-    env_drain = round(city["wasteLoad"] / 200)
-    city["pillars"]["environment"] = clamp(city["pillars"]["environment"] - env_drain * 0.5)
+    if not is_waste_flow_enabled():
+        capacity_drain = round(city["wasteLoad"] / 120)
+        city["pillars"]["capacity"] = clamp(city["pillars"]["capacity"] - capacity_drain)
+        env_drain = round(city["wasteLoad"] / 200)
+        city["pillars"]["environment"] = clamp(city["pillars"]["environment"] - env_drain * 0.5)
 
     city["budget"] += round(cfg["budgetPerRound"] * curve["budgetMultiplier"])
 
@@ -226,7 +233,13 @@ def get_event_action_cost(action: dict, market_modifiers: dict | None = None) ->
     return max(0, cost)
 
 
-def apply_event_action(city: dict, action: dict, round_num: int, market_modifiers: dict | None = None) -> dict:
+def apply_event_action(
+    city: dict,
+    action: dict,
+    round_num: int,
+    market_modifiers: dict | None = None,
+    event: dict | None = None,
+) -> dict:
     market_modifiers = market_modifiers or {}
     cost = get_event_action_cost(action, market_modifiers)
     if cost > city["budget"]:
@@ -272,6 +285,17 @@ def apply_event_action(city: dict, action: dict, round_num: int, market_modifier
     ev.set_city_flags(city, action.get("setsFlags") or [])
     ev.clear_city_flags(city, action.get("clearsFlags") or [])
     ev.check_transition_rules(city, action)
+
+    from circular_city.waste_flow import (
+        apply_budget_economy_from_action,
+        apply_flow_levers,
+        is_waste_flow_enabled,
+        resolve_flow_levers,
+    )
+
+    if is_waste_flow_enabled():
+        apply_flow_levers(city, resolve_flow_levers(action, event))
+        apply_budget_economy_from_action(city, action, effects)
 
     return {
         "success": True,

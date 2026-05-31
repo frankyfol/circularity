@@ -45,6 +45,7 @@ from circular_city.multiplayer import (
 )
 from circular_city.room_store import get_room_store
 from circular_city.defer_action import actions_with_defer_option
+from circular_city.waste_flow import finalize_round_waste_flow
 from circular_city.shuffle_actions import (
     shuffle_actions,
     shuffle_justify_options,
@@ -133,6 +134,12 @@ def render_sidebar(city: dict | None, room: dict | None = None) -> None:
     st.sidebar.metric("Budget", f"💰 {city['budget']}")
     st.sidebar.metric("Insight", f"💡 {city['insightPoints']}")
     st.sidebar.metric("Balance", f"{city.get('balanceScore', 0):.1f}")
+    if city.get("wms") is not None:
+        from circular_city.waste_flow import get_wms_grade_label
+
+        st.sidebar.metric("WMS", f"{city['wms']:.0f}", get_wms_grade_label(city["wms"]))
+    if city.get("education") is not None:
+        st.sidebar.metric("Education", f"{city['education']:.0f}")
     if city.get("flags"):
         with st.sidebar.expander("Your flags"):
             for f in city["flags"]:
@@ -549,7 +556,7 @@ def _resolve_decision(city: dict, event: dict, action: dict, justify_index: int,
         apply_world_event(city, event, rnd)
 
     score_before = calculate_balance_score(city) + city.get("insightPoints", 0)
-    result = apply_event_action(city, action, rnd, st.session_state.market_modifiers)
+    result = apply_event_action(city, action, rnd, st.session_state.market_modifiers, event)
     if not result.get("success"):
         st.error(result.get("error", "Could not apply action"))
         return
@@ -568,6 +575,7 @@ def _resolve_decision(city: dict, event: dict, action: dict, justify_index: int,
 
     if city.get("roundComplete"):
         process_delayed_effects(city)
+        finalize_round_waste_flow(city, rnd, st.session_state.market_modifiers)
         calculate_final_score(city)
 
     st.session_state.last_result = result
@@ -615,6 +623,29 @@ def _page_year_summary(city: dict, rnd: int, multiplayer: bool) -> None:
     st.markdown(summary["verdict"])
     if summary.get("balanceLesson"):
         st.markdown(f"**Remember:** {summary['balanceLesson']}")
+    if summary.get("wasteFlow"):
+        wf = summary["wasteFlow"]
+        st.markdown("### Waste flow (kilotonnes)")
+        if summary.get("wms") is not None:
+            st.metric("Waste Management Score", f"{summary['wms']:.0f}", summary.get("wmsGrade", ""))
+        cols = st.columns(5)
+        for col, (label, key, color) in zip(
+            cols,
+            [
+                ("Prevented", "reduced", "#22c55e"),
+                ("Recycled", "recycled", "#3b82f6"),
+                ("Burned", "incinerated", "#f97316"),
+                ("Landfilled", "landfilled", "#6b7280"),
+                ("Uncollected", "uncollected", "#ef4444"),
+            ],
+        ):
+            col.metric(label, f"{wf.get(key, 0):.0f}")
+        st.caption(
+            f"Generated {wf.get('generated', 0):.0f} kt · Education {summary.get('education', 0):.0f} · "
+            f"Landfill left {wf.get('landfillCapRemaining', 0):.0f} kt · CO₂ this year {wf.get('co2', 0):.0f} kt"
+        )
+        if summary.get("flowVerdict"):
+            st.info(summary["flowVerdict"])
     if summary.get("consequenceWatch"):
         st.info(f"**Consequence watch:** {summary['consequenceWatch']}")
     if st.button("Continue", type="primary"):

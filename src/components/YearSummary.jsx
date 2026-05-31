@@ -1,3 +1,5 @@
+import WasteFlowViz from './WasteFlowViz.jsx';
+
 export default function YearSummary({ summary }) {
   if (!summary) return null;
 
@@ -15,6 +17,14 @@ export default function YearSummary({ summary }) {
         Here is what your choices meant — the good and the tricky parts. Circular options are not
         always the best fit; every path has trade-offs.
       </p>
+
+      {summary.wasteFlow && (
+        <WasteFlowViz flow={summary.wasteFlow} wmsGrade={summary.wmsGrade} />
+      )}
+
+      {summary.flowVerdict && (
+        <p className="font-body text-xs text-gray-300">{summary.flowVerdict}</p>
+      )}
 
       <div className="space-y-3">
         <p className="font-pixel text-[8px] text-gray-400">YOUR DECISIONS THIS YEAR</p>
