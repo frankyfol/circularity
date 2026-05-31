@@ -27,3 +27,23 @@ export function shuffleActions(actions, seed) {
 export function shuffleSeedForEvent(event, cityId, round) {
   return `${event?.id ?? 'ev'}:${cityId ?? 'city'}:${round ?? 0}`;
 }
+
+/** Shuffle insight (justify) options; returns new correctIndex for display order. */
+export function shuffleJustifyOptions(justify, seed) {
+  if (!justify?.options?.length) {
+    return { ...justify, options: [], correctIndex: 0 };
+  }
+  const indexed = justify.options.map((text, i) => ({ text, i }));
+  let s = hashSeed(`${seed}:justify`);
+  for (let i = indexed.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const j = s % (i + 1);
+    [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+  }
+  return {
+    question: justify.question,
+    conceptTag: justify.conceptTag,
+    options: indexed.map((x) => x.text),
+    correctIndex: indexed.findIndex((x) => x.i === justify.correctIndex),
+  };
+}

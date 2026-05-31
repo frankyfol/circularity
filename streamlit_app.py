@@ -44,7 +44,12 @@ from circular_city.multiplayer import (
     update_player_city,
 )
 from circular_city.room_store import get_room_store
-from circular_city.shuffle_actions import shuffle_actions, shuffle_seed_for_event
+from circular_city.defer_action import actions_with_defer_option
+from circular_city.shuffle_actions import (
+    shuffle_actions,
+    shuffle_justify_options,
+    shuffle_seed_for_event,
+)
 from circular_city.year_summary import (
     display_label,
     event_narration,
@@ -491,10 +496,10 @@ def _page_decide(city: dict, event: dict, rnd: int) -> None:
     mods = st.session_state.get("market_modifiers") or {}
     st.caption(
         f"City budget: **💰{city['budget']}** — you cannot afford every option. "
-        "Trade-offs appear in your year summary after this round."
+        "Choose **Defer** (💰0) if you are stuck. Trade-offs appear in your year summary after this round."
     )
     seed = shuffle_seed_for_event(event, city.get("id"), rnd)
-    for item in shuffle_actions(event.get("actions") or [], seed):
+    for item in shuffle_actions(actions_with_defer_option(event), seed):
         action = item["action"]
         letter = item["display_letter"]
         cost = get_event_action_cost(action, mods)
@@ -520,11 +525,18 @@ def _page_decide(city: dict, event: dict, rnd: int) -> None:
 
 
 def _page_quiz(city: dict, event: dict) -> None:
-    justify = event["justify"]
+    seed = shuffle_seed_for_event(event, city.get("id"), st.session_state.current_round)
+    justify = shuffle_justify_options(event["justify"], seed)
     st.markdown(f"#### 💡 {justify['question']}")
     for i, opt in enumerate(justify["options"]):
         if st.button(f"{chr(65 + i)}. {opt}", key=f"q_{event['id']}_{i}", use_container_width=True):
-            _resolve_decision(city, event, st.session_state.pending_action, i, st.session_state.current_round)
+            _resolve_decision(
+                city,
+                event,
+                st.session_state.pending_action,
+                i,
+                st.session_state.current_round,
+            )
             st.rerun()
 
 
@@ -542,7 +554,12 @@ def _resolve_decision(city: dict, event: dict, action: dict, justify_index: int,
         st.error(result.get("error", "Could not apply action"))
         return
 
-    justify_result = resolve_event_justify(city, event, justify_index)
+    justify_result = resolve_event_justify(
+        city,
+        event,
+        justify_index,
+        {"cityId": city.get("id"), "round": rnd},
+    )
     record_round_resolution(city, event, action, result.get("effects") or {}, score_before)
     result["justifyCorrect"] = justify_result.get("correct")
     city["decisionsCount"] = city.get("decisionsCount", 0) + 1

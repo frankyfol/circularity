@@ -294,11 +294,26 @@ def record_quiz_answer(city: dict, correct: bool) -> dict:
     return city
 
 
-def resolve_event_justify(city: dict, event: dict, answer_index: int) -> dict:
+def resolve_event_justify(
+    city: dict,
+    event: dict,
+    answer_index: int,
+    shuffle_context: dict | None = None,
+) -> dict:
+    from circular_city.shuffle_actions import shuffle_justify_options, shuffle_seed_for_event
+
     justify = event.get("justify")
     if not justify:
         return {"correct": False}
-    correct = answer_index == justify["correctIndex"]
+    correct_index = justify["correctIndex"]
+    if shuffle_context:
+        seed = shuffle_seed_for_event(
+            event,
+            shuffle_context.get("cityId"),
+            shuffle_context.get("round"),
+        )
+        correct_index = shuffle_justify_options(justify, seed)["correctIndex"]
+    correct = answer_index == correct_index
     record_quiz_answer(city, correct)
     return {"correct": correct, "conceptTag": justify.get("conceptTag")}
 

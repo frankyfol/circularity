@@ -219,7 +219,10 @@ io.on('connection', (socket) => {
     const result = applyEventAction(city, action, round, room.marketModifiers);
     if (!result.success) return cb?.({ success: false, error: result.error });
 
-    const justifyResult = resolveEventJustify(city, event, justifyAnswer);
+    const justifyResult = resolveEventJustify(city, event, justifyAnswer, {
+      cityId: socket.cityId,
+      round,
+    });
     recordRoundResolution(city, event, action, result.effects, scoreBefore);
 
     city.decisionsCount += 1;

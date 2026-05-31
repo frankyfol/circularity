@@ -5,7 +5,8 @@ import Leaderboard from './Leaderboard';
 import YearSummary from './YearSummary';
 import { gameConfig, getEventActionCost } from '../game/engine';
 import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
-import { shuffleActions, shuffleSeedForEvent } from '../game/shuffleActions';
+import { actionsWithDeferOption } from '../game/deferAction';
+import { shuffleActions, shuffleJustifyOptions, shuffleSeedForEvent } from '../game/shuffleActions';
 
 export default function RoundScreen({
   city,
@@ -34,11 +35,20 @@ export default function RoundScreen({
     return generateYearSummary(city, room.currentRound);
   }, [city, room?.currentRound, roundComplete, phase]);
 
+  const choiceSeed = useMemo(
+    () => shuffleSeedForEvent(currentEvent, city?.id ?? socketId, room?.currentRound),
+    [currentEvent, city?.id, socketId, room?.currentRound]
+  );
+
   const shuffledChoices = useMemo(() => {
     if (!currentEvent) return [];
-    const seed = shuffleSeedForEvent(currentEvent, city?.id ?? socketId, room?.currentRound);
-    return shuffleActions(currentEvent.actions ?? [], seed);
-  }, [currentEvent, currentEvent?.id, currentEvent?.actions, city?.id, socketId, room?.currentRound]);
+    return shuffleActions(actionsWithDeferOption(currentEvent), choiceSeed);
+  }, [currentEvent, choiceSeed]);
+
+  const shuffledJustify = useMemo(() => {
+    if (!currentEvent?.justify) return null;
+    return shuffleJustifyOptions(currentEvent.justify, choiceSeed);
+  }, [currentEvent?.justify, choiceSeed]);
 
   useEffect(() => {
     if (city?.roundComplete) {
@@ -248,7 +258,8 @@ export default function RoundScreen({
               <p className="font-pixel text-[8px] text-gray-400">CHOOSE YOUR RESPONSE</p>
               <p className="font-body text-[10px] text-gray-500">
                 City budget: <span className="text-pixel-yellow">💰{city.budget}</span> — you cannot
-                afford every option; trade-offs appear in your year summary after this round.
+                afford every option. Use <span className="text-pixel-yellow">Defer</span> (💰0) if you
+                are stuck; trade-offs appear in your year summary after this round.
               </p>
               <div className="grid gap-2 max-h-80 overflow-y-auto">
                 {shuffledChoices.map(({ action, displayLetter }) => {
@@ -256,6 +267,7 @@ export default function RoundScreen({
                   const affordable = actionCost <= city.budget;
                   const label = getDisplayLabel(action);
                   const meaning = action.plainMeaning || action.meaning;
+                  const isDefer = action.isDefer || action.id === 'defer';
                   return (
                     <button
                       key={action.id}
@@ -263,7 +275,7 @@ export default function RoundScreen({
                       disabled={!affordable && selectedAction !== action.id}
                       className={`choice-option ${
                         selectedAction === action.id ? 'selected' : ''
-                      } ${!affordable ? 'opacity-50' : ''}`}
+                      } ${!affordable ? 'opacity-50' : ''} ${isDefer ? 'border-dashed' : ''}`}
                       onClick={() => setSelectedAction(action.id)}
                       aria-label={`Option ${displayLetter}: ${label}`}
                     >
@@ -296,11 +308,11 @@ export default function RoundScreen({
             </div>
           )}
 
-          {phase === 'quiz' && currentEvent.justify && (
+          {phase === 'quiz' && shuffledJustify && (
             <div className="dialogue-box space-y-3">
               <p className="font-pixel text-[9px] text-pixel-yellow">💡 JUSTIFY YOUR CHOICE</p>
-              <p className="font-body text-sm">{currentEvent.justify.question}</p>
-              {currentEvent.justify.options.map((opt, i) => (
+              <p className="font-body text-sm">{shuffledJustify.question}</p>
+              {shuffledJustify.options.map((opt, i) => (
                 <button
                   key={i}
                   type="button"

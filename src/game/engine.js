@@ -10,6 +10,7 @@ import {
   pickWorldEvent,
   foundingEvent,
 } from './eventEngine.js';
+import { shuffleJustifyOptions, shuffleSeedForEvent } from './shuffleActions.js';
 
 const PILLAR_KEYS = ['environment', 'economy', 'liveability', 'capacity', 'circularity'];
 
@@ -384,10 +385,19 @@ export function applyEventAction(city, action, round, marketModifiers = {}) {
   };
 }
 
-export function resolveEventJustify(city, event, answerIndex) {
+export function resolveEventJustify(city, event, answerIndex, shuffleContext = null) {
   const justify = event?.justify;
   if (!justify) return { correct: false };
-  const correct = answerIndex === justify.correctIndex;
+  let correctIndex = justify.correctIndex;
+  if (shuffleContext) {
+    const seed = shuffleSeedForEvent(
+      event,
+      shuffleContext.cityId,
+      shuffleContext.round
+    );
+    correctIndex = shuffleJustifyOptions(justify, seed).correctIndex;
+  }
+  const correct = answerIndex === correctIndex;
   recordQuizAnswer(city, correct);
   return { correct, conceptTag: justify.conceptTag };
 }
