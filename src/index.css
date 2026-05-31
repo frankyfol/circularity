@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    image-rendering: pixelated;
+  }
+}
+
+@layer components {
+  .pixel-border {
+    box-shadow:
+      0 0 0 2px #5d275d,
+      0 0 0 4px #1a1c2c,
+      inset 0 0 0 2px #68386c;
+  }
+
+  .pixel-btn {
+    @apply font-pixel text-[10px] px-4 py-3 bg-pixel-purple hover:bg-pixel-border
+           active:translate-y-0.5 transition-transform pixel-border cursor-pointer
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:active:translate-y-0;
+  }
+
+  .pixel-panel {
+    @apply bg-pixel-panel pixel-border p-4;
+  }
+
+  .pixel-gauge {
+    @apply h-3 bg-pixel-bg border-2 border-pixel-border relative overflow-hidden;
+  }
+
+  .pixel-gauge-fill {
+    @apply h-full transition-all duration-700 ease-out;
+  }
+
+  .dialogue-box {
+    @apply pixel-panel font-body text-sm leading-relaxed;
+  }
+
+  .strategy-card {
+    @apply pixel-panel cursor-pointer hover:bg-pixel-border/30 transition-colors
+           border-2 border-transparent hover:border-pixel-accent;
+  }
+
+  .strategy-card.selected {
+    @apply border-pixel-green bg-pixel-green/10;
+  }
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-30px); }
+}
+
+.animate-float-up {
+  animation: float-up 1.5s ease-out forwards;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.4s ease-in-out 3;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

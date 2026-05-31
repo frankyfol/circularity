@@ -1,0 +1,481 @@
+{
+  "rounds": 6,
+  "decisionTimerSeconds": 90,
+  "insightBonusPerCorrect": 4,
+  "maxInsightBonus": 24,
+  "startingBudget": 100,
+  "budgetPerRound": 15,
+  "debtInterestRate": 0.08,
+  "escalatingCostParams": {
+    "circularityThreshold": 40,
+    "marginalMultiplier": 1.35,
+    "maxMultiplier": 3.5
+  },
+  "participation": {
+    "baseRate": 0.35,
+    "maxRate": 0.92,
+    "liveabilityFactor": 0.004,
+    "taxPenalty": 0.15
+  },
+  "growthCurves": {
+    "highIncome": {
+      "populationGrowth": [1.08, 1.07, 1.06, 1.05, 1.04, 1.03],
+      "affluenceGrowth": [1.06, 1.05, 1.05, 1.04, 1.04, 1.03],
+      "wastePerCapita": 2.2,
+      "budgetMultiplier": 1.4,
+      "startingPillars": {
+        "environment": 55,
+        "economy": 75,
+        "liveability": 70,
+        "capacity": 60,
+        "circularity": 35
+      }
+    },
+    "lowIncome": {
+      "populationGrowth": [1.12, 1.11, 1.10, 1.09, 1.08, 1.07],
+      "affluenceGrowth": [1.04, 1.04, 1.03, 1.03, 1.03, 1.02],
+      "wastePerCapita": 0.9,
+      "budgetMultiplier": 0.75,
+      "startingPillars": {
+        "environment": 40,
+        "economy": 45,
+        "liveability": 50,
+        "capacity": 35,
+        "circularity": 25
+      }
+    }
+  },
+  "market": {
+    "recyclablesPriceByRound": [1.0, 1.15, 0.65, 0.9, 1.3, 1.05],
+    "energyPriceByRound": [0.9, 1.0, 1.2, 0.85, 1.1, 1.25]
+  },
+  "worldEvents": [
+    {
+      "id": "market-crash",
+      "name": "Recyclables Market Crash",
+      "lectureHook": "Global recycling economics — when China stopped importing recyclables, many cities lost revenue overnight.",
+      "triggerRound": null,
+      "effects": {
+        "recyclablesPriceMultiplier": 0.4,
+        "economyDelta": -8,
+        "circularityIncomeMultiplier": 0.3
+      },
+      "animationId": "market-crash"
+    },
+    {
+      "id": "carbon-tax",
+      "name": "National Carbon / Landfill Tax",
+      "lectureHook": "Denmark's Polluter-Pays principle — landfill and incineration fees rise sharply.",
+      "triggerRound": null,
+      "effects": {
+        "landfillCostMultiplier": 2.0,
+        "incinerationCostMultiplier": 1.5,
+        "economyDelta": -5
+      },
+      "animationId": "carbon-tax"
+    },
+    {
+      "id": "consumption-surge",
+      "name": "Consumption Surge (COVID-style)",
+      "lectureHook": "Singapore saw +1,334 tonnes of plastic waste during lockdown — your city faces a sudden waste spike.",
+      "triggerRound": null,
+      "effects": {
+        "wasteMultiplier": 1.45,
+        "capacityDelta": -12
+      },
+      "animationId": "consumption-surge"
+    },
+    {
+      "id": "landfill-fire",
+      "name": "Landfill Fire",
+      "lectureHook": "Deonar, Jan 2016 — a 3-month fire blanketed Mumbai; nearby life expectancy is 39 vs the state's 73.5.",
+      "triggerRound": null,
+      "effects": {
+        "environmentDelta": -18,
+        "liveabilityDelta": -15,
+        "capacityDelta": -10
+      },
+      "animationId": "landfill-fire"
+    },
+    {
+      "id": "heatwave",
+      "name": "Heatwave & Drought",
+      "lectureHook": "Ecological deficit — high footprint cities face water stress and biocapacity collapse.",
+      "triggerRound": null,
+      "effects": {
+        "environmentDelta": -12,
+        "liveabilityDelta": -8,
+        "footprintPenalty": 1.3
+      },
+      "animationId": "heatwave"
+    }
+  ],
+  "strategyCards": [
+    {
+      "id": "source-separation",
+      "name": "Source Separation (Copenhagen)",
+      "hierarchyTier": "recycle",
+      "baseCost": 22,
+      "marginalCostCurve": "circularity",
+      "effects": {
+        "circularity": 14,
+        "environment": 6,
+        "economy": -4,
+        "capacity": 4
+      },
+      "participationFactor": 0.8,
+      "marketExposure": "recyclables",
+      "explainer": "Households sort waste at source — high circularity but expensive infrastructure and slow citizen buy-in.",
+      "animationId": "recycle",
+      "archetypeModifiers": { "highIncome": { "baseCost": -3 }, "lowIncome": { "baseCost": 5 } }
+    },
+    {
+      "id": "green-exchange",
+      "name": "Green Exchange (Curitiba)",
+      "hierarchyTier": "recycle",
+      "baseCost": 16,
+      "marginalCostCurve": "circularity",
+      "effects": {
+        "circularity": 10,
+        "liveability": 8,
+        "economy": -3,
+        "environment": 4
+      },
+      "participationFactor": 1.2,
+      "marketExposure": "recyclables",
+      "explainer": "Trade recyclables for bus tokens — boosts participation and liveability while cutting waste.",
+      "animationId": "recycle",
+      "archetypeModifiers": { "lowIncome": { "participationBonus": 0.1 } }
+    },
+    {
+      "id": "integrate-informal",
+      "name": "Integrate Informal Recyclers (Cairo)",
+      "hierarchyTier": "recycle",
+      "baseCost": 10,
+      "marginalCostCurve": "none",
+      "effects": {
+        "circularity": 12,
+        "liveability": 6,
+        "economy": 2,
+        "environment": 3
+      },
+      "participationFactor": 0.6,
+      "marketExposure": "recyclables",
+      "explainer": "Formalise zabbaleen scavengers into safe sorting — cheap circularity boost for low-income cities.",
+      "animationId": "integrate-informal",
+      "archetypeModifiers": { "lowIncome": { "baseCost": -4, "effects": { "circularity": 4 } }, "highIncome": { "baseCost": 8 } }
+    },
+    {
+      "id": "waste-to-energy",
+      "name": "Waste-to-Energy Plant",
+      "hierarchyTier": "recycle",
+      "baseCost": 28,
+      "marginalCostCurve": "none",
+      "effects": {
+        "capacity": 16,
+        "circularity": 8,
+        "environment": -6,
+        "liveability": -4,
+        "economy": 5
+      },
+      "participationFactor": 0,
+      "marketExposure": "energy",
+      "explainer": "Recover energy from waste — frees landfill space and earns revenue, but pollution and NIMBY risk remain.",
+      "animationId": "incinerate"
+    },
+    {
+      "id": "packaging-tax",
+      "name": "Packaging Tax",
+      "hierarchyTier": "reduce",
+      "baseCost": 18,
+      "marginalCostCurve": "none",
+      "effects": {
+        "circularity": 8,
+        "environment": 10,
+        "economy": -8,
+        "liveability": -6
+      },
+      "participationFactor": -0.2,
+      "marketExposure": "none",
+      "explainer": "Tax single-use packaging to cut waste at source — effective long-term but angers businesses and consumers now.",
+      "animationId": "reduce",
+      "delayedEffects": { "roundsDelay": 2, "circularity": 6, "environment": 4 }
+    },
+    {
+      "id": "awareness-campaign",
+      "name": "Awareness Campaign",
+      "hierarchyTier": "reduce",
+      "baseCost": 12,
+      "marginalCostCurve": "none",
+      "effects": {
+        "circularity": 5,
+        "liveability": 4,
+        "environment": 3,
+        "economy": -2
+      },
+      "participationFactor": 0.25,
+      "marketExposure": "none",
+      "explainer": "Educate citizens on reduce/reuse — slow payoff but raises participation for future recycling.",
+      "animationId": "reduce"
+    },
+    {
+      "id": "repair-hubs",
+      "name": "Repair-and-Reuse Hubs",
+      "hierarchyTier": "reuse",
+      "baseCost": 14,
+      "marginalCostCurve": "participation",
+      "effects": {
+        "circularity": 7,
+        "liveability": 5,
+        "environment": 4,
+        "economy": -3
+      },
+      "participationFactor": 0.5,
+      "marketExposure": "none",
+      "explainer": "Community repair centres extend product life — capped by how many citizens actually participate.",
+      "animationId": "recycle"
+    },
+    {
+      "id": "deposit-return",
+      "name": "Deposit-Return Scheme",
+      "hierarchyTier": "reuse",
+      "baseCost": 11,
+      "marginalCostCurve": "participation",
+      "effects": {
+        "circularity": 6,
+        "environment": 3,
+        "liveability": 3,
+        "economy": -2
+      },
+      "participationFactor": 0.7,
+      "marketExposure": "none",
+      "explainer": "Refundable deposits on bottles and containers — proven reuse boost where collection works.",
+      "animationId": "recycle"
+    },
+    {
+      "id": "build-incinerator",
+      "name": "Build Incinerator (Singapore/Edmonton)",
+      "hierarchyTier": "incinerate",
+      "baseCost": 35,
+      "marginalCostCurve": "none",
+      "effects": {
+        "capacity": 22,
+        "economy": 8,
+        "environment": -12,
+        "liveability": -10,
+        "circularity": 4
+      },
+      "participationFactor": 0,
+      "marketExposure": "energy",
+      "explainer": "Cuts landfill volume 80–90% and earns energy income — but dioxins, ash, and fierce NIMBY opposition.",
+      "animationId": "incinerate",
+      "financing": "debt",
+      "debtAmount": 25
+    },
+    {
+      "id": "engineered-landfill",
+      "name": "Engineered Landfill (Semakau)",
+      "hierarchyTier": "landfill",
+      "baseCost": 14,
+      "marginalCostCurve": "none",
+      "effects": {
+        "capacity": 18,
+        "environment": -4,
+        "liveability": -2,
+        "economy": -3
+      },
+      "participationFactor": 0,
+      "marketExposure": "none",
+      "explainer": "Singapore's offshore landfill — safer than open dumps but finite, with slow leachate and methane risks.",
+      "animationId": "landfill"
+    },
+    {
+      "id": "open-dump",
+      "name": "Open Dumping (Deonar)",
+      "hierarchyTier": "dump",
+      "baseCost": 5,
+      "marginalCostCurve": "none",
+      "effects": {
+        "capacity": 12,
+        "environment": -14,
+        "liveability": -12,
+        "economy": 2
+      },
+      "participationFactor": 0,
+      "marketExposure": "none",
+      "explainer": "Cheapest disposal — instant capacity relief but severe health, fire, and pollution consequences.",
+      "animationId": "landfill"
+    },
+    {
+      "id": "expand-collection",
+      "name": "Expand Waste Collection",
+      "hierarchyTier": "landfill",
+      "baseCost": 8,
+      "marginalCostCurve": "none",
+      "effects": {
+        "capacity": 8,
+        "liveability": 4,
+        "environment": -3,
+        "economy": -2
+      },
+      "participationFactor": 0.05,
+      "marketExposure": "none",
+      "explainer": "More trucks and bins — improves liveability but doesn't solve the disposal problem.",
+      "animationId": "landfill"
+    },
+    {
+      "id": "polluter-pays",
+      "name": "Polluter-Pays Tax (Denmark)",
+      "hierarchyTier": "reduce",
+      "baseCost": 20,
+      "marginalCostCurve": "none",
+      "effects": {
+        "circularity": 12,
+        "environment": 8,
+        "economy": -6,
+        "liveability": -4
+      },
+      "participationFactor": -0.1,
+      "marketExposure": "none",
+      "explainer": "Charge producers for waste they create — strong circular incentive but politically costly.",
+      "animationId": "reduce"
+    },
+    {
+      "id": "do-nothing",
+      "name": "Maintain Status Quo",
+      "hierarchyTier": "dump",
+      "baseCost": 0,
+      "marginalCostCurve": "none",
+      "effects": {
+        "economy": 3
+      },
+      "participationFactor": 0,
+      "marketExposure": "none",
+      "explainer": "Save budget this round — but waste keeps piling up and pillars slowly decay.",
+      "animationId": "none"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "round-1",
+      "round": 1,
+      "title": "The Growing City",
+      "brief": "Your city is booming. Population and affluence are rising fast — and so is the waste stream. How will you set your city's default metabolism?",
+      "caseFact": "Affluent cities generate 2–3× more waste per capita than low-income cities. Linear metabolism treats waste as rubbish; circular metabolism treats it as a resource.",
+      "decisionPrompt": "Invest early in source-separation (costly, slow) or expand collection & dump (cheap)?",
+      "options": ["source-separation", "expand-collection", "open-dump", "awareness-campaign"],
+      "quiz": {
+        "question": "Why is 'reduce' at the top of the waste hierarchy?",
+        "options": [
+          "It cuts waste before it is created, avoiding all downstream costs",
+          "It is the cheapest option for cities",
+          "It generates the most energy from waste",
+          "It requires no citizen participation"
+        ],
+        "correctIndex": 0,
+        "conceptTag": "waste-hierarchy"
+      }
+    },
+    {
+      "id": "round-2",
+      "round": 2,
+      "title": "Running Out of Room",
+      "brief": "Your landfill is filling up fast. Waste hinterlands are under pressure — Semakau is nearly full; Deonar shows what happens when dumps overflow.",
+      "caseFact": "Deonar takes 3,500 t/day; nearby life expectancy is 39 vs the state's 73.5. Semakau was engineered as Singapore's last landfill.",
+      "decisionPrompt": "Build an engineered landfill, keep open-dumping, or cut reliance via recycling?",
+      "options": ["engineered-landfill", "open-dump", "source-separation", "green-exchange"],
+      "quiz": {
+        "question": "What is the main risk of relying on open dumps like Deonar?",
+        "options": [
+          "They are too expensive to operate",
+          "Severe health hazards, fires, and environmental contamination",
+          "They require too much citizen participation",
+          "They produce too much recyclable material"
+        ],
+        "correctIndex": 1,
+        "conceptTag": "land-use"
+      }
+    },
+    {
+      "id": "round-3",
+      "round": 3,
+      "title": "Waste to Energy?",
+      "brief": "Residents resist a proposed incinerator near their homes. NIMBY protests are fierce — but landfill space is critical.",
+      "caseFact": "Singapore and Edmonton use incineration to cut landfill volume 80–90% and recover energy — but dioxins and ash remain concerns.",
+      "decisionPrompt": "Build the incinerator or find another way to manage growing waste?",
+      "options": ["build-incinerator", "waste-to-energy", "source-separation", "repair-hubs"],
+      "quiz": {
+        "question": "What is a key trade-off of incineration?",
+        "options": [
+          "It has no environmental impact",
+          "It frees landfill space and earns energy but harms air quality and liveability",
+          "It is always cheaper than recycling",
+          "It eliminates the need for any waste collection"
+        ],
+        "correctIndex": 1,
+        "conceptTag": "incineration"
+      }
+    },
+    {
+      "id": "round-4",
+      "round": 4,
+      "title": "The Footprint Bill",
+      "brief": "Your city's ecological footprint now exceeds local biocapacity — an ecological deficit. Resources are being absorbed from distant hinterlands.",
+      "caseFact": "High consumption cities import food, materials, and energy from global hinterlands, creating invisible environmental damage elsewhere.",
+      "decisionPrompt": "Cut consumption at source (tax/reduce) or keep importing and emitting?",
+      "options": ["packaging-tax", "polluter-pays", "awareness-campaign", "do-nothing"],
+      "quiz": {
+        "question": "What drives a city's ecological footprint?",
+        "options": [
+          "Only its landfill size",
+          "Population, affluence, and consumption patterns absorbing resources from hinterlands",
+          "The number of recycling bins",
+          "Citizen participation rates alone"
+        ],
+        "correctIndex": 1,
+        "conceptTag": "ecological-footprint"
+      }
+    },
+    {
+      "id": "round-5",
+      "round": 5,
+      "title": "People & Livelihoods",
+      "brief": "Informal scavengers recycle a large share of your waste — but unsafely, without protection or fair pay.",
+      "caseFact": "Cairo's zabbaleen recycle up to 80% of the city's waste informally. Integrating them formally boosted safety and circularity.",
+      "decisionPrompt": "Integrate informal recyclers formally, ignore them, or evict them?",
+      "options": ["integrate-informal", "green-exchange", "deposit-return", "open-dump"],
+      "quiz": {
+        "question": "Why integrate informal recyclers rather than evict them?",
+        "options": [
+          "They cost the city more money",
+          "They already provide cheap circularity — formalisation improves safety and liveability",
+          "They reduce recycling rates",
+          "They increase landfill capacity"
+        ],
+        "correctIndex": 1,
+        "conceptTag": "social-dimension"
+      }
+    },
+    {
+      "id": "round-6",
+      "round": 6,
+      "title": "Zero-Waste Vision",
+      "brief": "Final round — choose your flagship circular city policy. This locks in your city's long-term trajectory.",
+      "caseFact": "Copenhagen targets zero waste; Curitiba pioneered the Green Exchange; Denmark leads with Polluter-Pays legislation.",
+      "decisionPrompt": "Polluter-Pays tax, Green Exchange incentive, or full circular source-separation?",
+      "options": ["polluter-pays", "green-exchange", "source-separation", "integrate-informal"],
+      "quiz": {
+        "question": "Why can the 'most sustainable' strategy still lose in this game?",
+        "options": [
+          "Because sustainability doesn't matter",
+          "Escalating costs, participation limits, and market volatility can bankrupt a max-recycle city",
+          "Because recycling is always free",
+          "Because landfills never fill up"
+        ],
+        "correctIndex": 1,
+        "conceptTag": "trade-offs"
+      }
+    }
+  ],
+  "tieBreakOrder": ["insightPoints", "pillarSpread", "liveability", "decisionSpeed"]
+}
