@@ -433,17 +433,6 @@ def page_game(multiplayer: bool = False) -> None:
             st.rerun()
         return
 
-    event = get_current_event(city)
-    if not event:
-        if city.get("roundComplete") and step not in ("year_summary", "round_summary", "finished", "result"):
-            st.session_state.step = "year_summary"
-            st.rerun()
-            return
-        if step not in ("round_summary", "year_summary", "result", "finished"):
-            st.session_state.step = "round_summary"
-            st.rerun()
-            return
-
     if step == "year_summary":
         _page_year_summary(city, rnd, multiplayer)
         return
@@ -452,6 +441,24 @@ def page_game(multiplayer: bool = False) -> None:
         return
     if step == "finished":
         _page_finished(city, multiplayer)
+        return
+    if step == "result":
+        _page_result(city, rnd, multiplayer)
+        return
+
+    event = get_current_event(city)
+    if not event:
+        if city.get("roundComplete"):
+            st.session_state.step = "year_summary"
+            st.rerun()
+            return
+        if not (city.get("currentRoundEvents") or []):
+            _begin_round_local()
+            st.rerun()
+            return
+        st.warning("No active event — recovering your year.")
+        st.session_state.step = "round_summary"
+        st.rerun()
         return
 
     idx = city.get("currentEventIndex", 0) + 1
@@ -475,8 +482,9 @@ def page_game(multiplayer: bool = False) -> None:
         _page_decide(city, event, rnd)
     elif step == "quiz":
         _page_quiz(city, event)
-    elif step == "result":
-        _page_result(city, rnd, multiplayer)
+    else:
+        st.session_state.step = "decide"
+        st.rerun()
 
 
 def _page_decide(city: dict, event: dict, rnd: int) -> None:
