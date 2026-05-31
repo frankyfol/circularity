@@ -306,8 +306,23 @@ function applyPillarDeltas(city, fx, useLegacyKeys) {
   }
 }
 
+export function getEventActionCost(action, marketModifiers = {}) {
+  const base = action?.cost ?? 0;
+  if (base <= 0) return 0;
+  const scale = gameConfig.eventActionCostMultiplier ?? 1;
+  let cost = Math.round(base * scale);
+  const tier = action?.hierarchyTier;
+  if (LANDFILL_TIERS.has(tier)) {
+    cost = Math.round(cost * (marketModifiers.landfillCostMultiplier ?? 1));
+  }
+  if (INCINERATE_TIERS.has(tier)) {
+    cost = Math.round(cost * (marketModifiers.incinerationCostMultiplier ?? 1));
+  }
+  return Math.max(0, cost);
+}
+
 export function applyEventAction(city, action, round, marketModifiers = {}) {
-  const cost = action.cost ?? 0;
+  const cost = getEventActionCost(action, marketModifiers);
   if (cost > city.budget) return { success: false, error: 'Insufficient budget' };
 
   city.budget -= cost;

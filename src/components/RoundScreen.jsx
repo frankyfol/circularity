@@ -3,7 +3,7 @@ import CityCanvas from './CityCanvas';
 import PillarGauges from './PillarGauges';
 import Leaderboard from './Leaderboard';
 import YearSummary from './YearSummary';
-import { gameConfig } from '../game/engine';
+import { gameConfig, getEventActionCost } from '../game/engine';
 import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
 import { shuffleActions, shuffleSeedForEvent } from '../game/shuffleActions';
 
@@ -26,6 +26,8 @@ export default function RoundScreen({
   const [submitted, setSubmitted] = useState(false);
   const [roundComplete, setRoundComplete] = useState(false);
   const startTime = useRef(Date.now());
+  const prevRoundRef = useRef(room?.currentRound);
+  const prevEventIdRef = useRef(currentEvent?.id);
 
   const yearSummary = useMemo(() => {
     if (!city || !room?.currentRound) return null;
@@ -39,6 +41,22 @@ export default function RoundScreen({
   }, [currentEvent, currentEvent?.id, currentEvent?.actions, city?.id, socketId, room?.currentRound]);
 
   useEffect(() => {
+    if (city?.roundComplete) {
+      setRoundComplete(true);
+    }
+  }, [city?.roundComplete]);
+
+  useEffect(() => {
+    const roundChanged = room?.currentRound !== prevRoundRef.current;
+    const eventId = currentEvent?.id;
+    const eventChanged = Boolean(eventId && eventId !== prevEventIdRef.current);
+
+    prevRoundRef.current = room?.currentRound;
+    prevEventIdRef.current = eventId;
+
+    if (!roundChanged && !eventChanged) return;
+    if (!eventId && !roundChanged) return;
+
     setPhase('growth');
     setSelectedAction(null);
     setQuizAnswer(null);
@@ -53,7 +71,7 @@ export default function RoundScreen({
       clearTimeout(t1);
       clearTimeout(t2);
     };
-  }, [currentEvent?.id, room?.currentRound]);
+  }, [currentEvent?.id, room?.currentRound, city?.roundComplete]);
 
   const handleSubmit = useCallback(async () => {
     if (submitted || !selectedAction) return;
@@ -105,7 +123,13 @@ export default function RoundScreen({
     setTimeout(() => handleSubmit(), 400);
   };
 
-  if (!city || (!currentEvent && !roundComplete && phase !== 'year_summary' && phase !== 'leaderboard')) {
+  const awaitingYearEnd =
+    city?.roundComplete || roundComplete;
+
+  if (
+    !city ||
+    (!currentEvent && !awaitingYearEnd && phase !== 'year_summary' && phase !== 'leaderboard')
+  ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="font-pixel text-pixel-yellow animate-pulse">Waiting for round to start…</p>
@@ -113,7 +137,7 @@ export default function RoundScreen({
     );
   }
 
-  if (phase === 'year_summary' || (roundComplete && !currentEvent && phase !== 'decide')) {
+  if (phase === 'year_summary') {
     return (
       <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
         <header>
@@ -130,7 +154,7 @@ export default function RoundScreen({
     );
   }
 
-  if (phase === 'leaderboard' || (roundComplete && !currentEvent)) {
+  if (phase === 'leaderboard') {
     return (
       <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
         <header>
@@ -223,11 +247,13 @@ export default function RoundScreen({
             <div className="space-y-2">
               <p className="font-pixel text-[8px] text-gray-400">CHOOSE YOUR RESPONSE</p>
               <p className="font-body text-[10px] text-gray-500">
-                Pick one option. Trade-offs appear in your year summary after this round.
+                City budget: <span className="text-pixel-yellow">💰{city.budget}</span> — you cannot
+                afford every option; trade-offs appear in your year summary after this round.
               </p>
               <div className="grid gap-2 max-h-80 overflow-y-auto">
                 {shuffledChoices.map(({ action, displayLetter }) => {
-                  const affordable = (action.cost ?? 0) <= city.budget;
+                  const actionCost = getEventActionCost(action, room?.marketModifiers);
+                  const affordable = actionCost <= city.budget;
                   const label = getDisplayLabel(action);
                   const meaning = action.plainMeaning || action.meaning;
                   return (
@@ -248,7 +274,7 @@ export default function RoundScreen({
                         <span className="flex justify-between items-start gap-2 w-full">
                           <span className="choice-option-title">{label}</span>
                           <span className="font-pixel text-[8px] text-pixel-yellow shrink-0">
-                            💰{action.cost ?? 0}
+                            💰{actionCost}
                           </span>
                         </span>
                         {meaning && <span className="choice-option-meaning">{meaning}</span>}

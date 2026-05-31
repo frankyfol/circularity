@@ -23,6 +23,7 @@ from circular_city.engine import (
     game_config,
     generate_report_card,
     get_current_event,
+    get_event_action_cost,
     market_modifiers_from_event,
     prepare_round_for_city,
     process_delayed_effects,
@@ -433,10 +434,15 @@ def page_game(multiplayer: bool = False) -> None:
         return
 
     event = get_current_event(city)
-    if not event and step not in ("round_summary", "finished"):
-        st.session_state.step = "round_summary"
-        st.rerun()
-        return
+    if not event:
+        if city.get("roundComplete") and step not in ("year_summary", "round_summary", "finished", "result"):
+            st.session_state.step = "year_summary"
+            st.rerun()
+            return
+        if step not in ("round_summary", "year_summary", "result", "finished"):
+            st.session_state.step = "round_summary"
+            st.rerun()
+            return
 
     if step == "year_summary":
         _page_year_summary(city, rnd, multiplayer)
@@ -474,14 +480,16 @@ def page_game(multiplayer: bool = False) -> None:
 
 
 def _page_decide(city: dict, event: dict, rnd: int) -> None:
+    mods = st.session_state.get("market_modifiers") or {}
     st.caption(
-        "Pick one option below. What worked well and what was tricky shows up in your year summary after the round."
+        f"City budget: **💰{city['budget']}** — you cannot afford every option. "
+        "Trade-offs appear in your year summary after this round."
     )
     seed = shuffle_seed_for_event(event, city.get("id"), rnd)
     for item in shuffle_actions(event.get("actions") or [], seed):
         action = item["action"]
         letter = item["display_letter"]
-        cost = action.get("cost", 0)
+        cost = get_event_action_cost(action, mods)
         affordable = cost <= city["budget"]
         label = display_label(action)
         meaning = action.get("plainMeaning") or action.get("meaning") or ""
@@ -550,10 +558,12 @@ def _page_result(city: dict, rnd: int, multiplayer: bool) -> None:
     if result.get("resultExplain"):
         st.markdown(result["resultExplain"])
     if city.get("roundComplete"):
-        st.session_state.step = "year_summary"
-        _persist_city()
-    else:
-        st.session_state.step = "decide"
+        if st.button("View year in review →", type="primary"):
+            st.session_state.step = "year_summary"
+            _persist_city()
+            st.rerun()
+        return
+    st.session_state.step = "decide"
     if st.button("Continue", type="primary"):
         st.rerun()
 

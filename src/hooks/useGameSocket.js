@@ -36,6 +36,17 @@ export function useGameSocket() {
       setTotalEvents(data.totalEvents ?? data.events?.length ?? 0);
       if (data.worldEvent) setWorldEvent(data.worldEvent);
       setLastResult(null);
+      setCity((c) =>
+        c
+          ? {
+              ...c,
+              roundComplete: false,
+              currentEventIndex: data.currentEventIndex ?? 0,
+              growthAppliedThisRound: false,
+              roundResolutions: [],
+            }
+          : c
+      );
     });
 
     socket.on('worldEventScheduled', ({ event }) => {
@@ -86,6 +97,7 @@ export function useGameSocket() {
             setLastResult(res.result);
             if (res.roundComplete) {
               setCurrentEvent(null);
+              setCurrentEventIndex(res.currentEventIndex ?? 0);
             } else if (res.nextEvent) {
               setCurrentEvent(res.nextEvent);
               setCurrentEventIndex(res.currentEventIndex);

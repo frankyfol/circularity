@@ -11,6 +11,8 @@ from typing import Any
 from circular_city import events as ev
 
 PILLAR_KEYS = ["environment", "economy", "liveability", "capacity", "circularity"]
+LANDFILL_TIERS = frozenset({"landfill", "dump"})
+INCINERATE_TIERS = frozenset({"incinerate"})
 
 _CONFIG: dict[str, Any] | None = None
 
@@ -208,9 +210,25 @@ def apply_world_event(city: dict, event: dict, round_num: int) -> dict:
     return city
 
 
+def get_event_action_cost(action: dict, market_modifiers: dict | None = None) -> int:
+    market_modifiers = market_modifiers or {}
+    base = action.get("cost") or 0
+    if base <= 0:
+        return 0
+    cfg = game_config()
+    scale = cfg.get("eventActionCostMultiplier", 1)
+    cost = round(base * scale)
+    tier = action.get("hierarchyTier")
+    if tier in LANDFILL_TIERS:
+        cost = round(cost * market_modifiers.get("landfillCostMultiplier", 1))
+    if tier in INCINERATE_TIERS:
+        cost = round(cost * market_modifiers.get("incinerationCostMultiplier", 1))
+    return max(0, cost)
+
+
 def apply_event_action(city: dict, action: dict, round_num: int, market_modifiers: dict | None = None) -> dict:
     market_modifiers = market_modifiers or {}
-    cost = action.get("cost") or 0
+    cost = get_event_action_cost(action, market_modifiers)
     if cost > city["budget"]:
         return {"success": False, "error": "Insufficient budget"}
 
