@@ -12,7 +12,8 @@
     "start": "node server/index.js",
     "simulate": "node scripts/simulate.js",
     "simulate:events": "node scripts/simulate-events.js",
-    "build:events": "node scripts/build-events-from-spec.js"
+    "build:events": "node scripts/build-events-from-spec.js",
+    "streamlit": "streamlit run streamlit_app.py"
   },
   "dependencies": {
     "express": "^4.21.2",

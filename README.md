@@ -23,6 +23,26 @@ Each student is the **Chief Sustainability Officer** of their own growing pixel 
 
 ## Quick Start
 
+### Streamlit (single-player, easiest deploy)
+
+```bash
+pip install -r requirements.txt
+streamlit run streamlit_app.py
+```
+
+Open http://localhost:8501 — full branching event campaign in the browser.
+
+**Deploy to [Streamlit Community Cloud](https://streamlit.io/cloud):**
+
+1. Push this repo to GitHub
+2. New app → select the repo
+3. Main file path: `streamlit_app.py`
+4. Deploy (uses `requirements.txt` automatically)
+
+Each student opens the deployed URL in their own browser tab (separate game session). For live 19-player sync, use the React multiplayer stack below.
+
+### React multiplayer (classroom)
+
 ```bash
 npm install
 npm run dev
@@ -31,7 +51,7 @@ npm run dev
 - **Student app:** http://localhost:5173
 - **Game server:** http://localhost:3001
 
-### Production
+### Production (Node)
 
 ```bash
 npm run build
@@ -59,6 +79,10 @@ Serves the built client and WebSocket server on port 3001.
 ## Project Structure
 
 ```
+streamlit_app.py      # Streamlit UI (deploy target for Streamlit Cloud)
+circular_city/        # Python engine port (loads src/game/*.json)
+requirements.txt      # Streamlit dependencies
+
 src/
   game/
     engine.js       # Core mechanics, scoring, growth
