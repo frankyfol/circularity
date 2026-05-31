@@ -166,6 +166,7 @@ def _reset_city_for_round(city: dict, room: dict, round_num: int) -> None:
     prepare_round_for_city(city, round_num, world)
     city["growthAppliedThisRound"] = False
     city["roundComplete"] = False
+    city["roundResolutions"] = []
 
 
 def sync_player_round(

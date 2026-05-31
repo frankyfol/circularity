@@ -120,12 +120,14 @@ The game exercises trade-offs across:
 
 ## Regenerating event data
 
-Event content is generated from `EVENT_DATABASE_SPEC.md`:
+Mechanics + flags from `EVENT_DATABASE_SPEC.md`; plain-language scenes and choices from `content/CHOICE_LIBRARY.md`:
 
 ```bash
-npm run build:events
+npm run build:content
 npm run simulate:events
 ```
+
+This runs `build-events-from-spec.js` then `merge-choice-library.js` → updates `src/game/events.json`.
 
 ## License
 

@@ -67,6 +67,7 @@ def create_city(city_id: str, student_name: str, archetype: str) -> dict:
         "roundEventsResolved": 0,
         "roundComplete": False,
         "growthAppliedThisRound": False,
+        "roundResolutions": [],
     }
 
 

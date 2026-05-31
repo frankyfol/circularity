@@ -43,6 +43,13 @@ from circular_city.multiplayer import (
     update_player_city,
 )
 from circular_city.room_store import get_room_store
+from circular_city.year_summary import (
+    display_label,
+    event_narration,
+    generate_year_summary,
+    record_round_resolution,
+)
+from circular_city.engine import calculate_balance_score
 
 PILLAR_LABELS = {
     "environment": ("🌱", "Environment"),
@@ -135,6 +142,7 @@ def _begin_round_local() -> None:
     world = events_map.get(rnd) or events_map.get(str(rnd))
     prepare_round_for_city(city, rnd, world)
     city["growthAppliedThisRound"] = False
+    city["roundResolutions"] = []
     st.session_state.step = "growth"
 
 
@@ -423,6 +431,9 @@ def page_game(multiplayer: bool = False) -> None:
         st.rerun()
         return
 
+    if step == "year_summary":
+        _page_year_summary(city, rnd, multiplayer)
+        return
     if step == "round_summary":
         _page_round_summary(city, rnd, multiplayer)
         return
@@ -439,7 +450,9 @@ def page_game(multiplayer: bool = False) -> None:
         st.markdown(f"### {event['title']}")
     if event.get("theme"):
         st.caption(event["theme"])
-    st.markdown(event.get("brief", ""))
+    if event.get("conceptLink"):
+        st.caption(event["conceptLink"])
+    st.markdown(event_narration(event))
     if event.get("caseFact"):
         st.info(f"📚 {event['caseFact']}")
     if etype == "world" and event.get("lectureHook"):
@@ -457,8 +470,12 @@ def _page_decide(city: dict, event: dict, rnd: int) -> None:
     for action in event.get("actions") or []:
         cost = action.get("cost", 0)
         affordable = cost <= city["budget"]
+        if action.get("plainMeaning"):
+            st.caption(action["plainMeaning"])
+        if action.get("pros"):
+            st.caption(f"👍 {action['pros'][0]}")
         if st.button(
-            f"{action['label']} — 💰{cost}",
+            f"{display_label(action)} — 💰{cost}",
             key=f"act_{event['id']}_{action['id']}_{city.get('currentEventIndex')}",
             disabled=not affordable,
             use_container_width=True,
@@ -487,12 +504,14 @@ def _resolve_decision(city: dict, event: dict, action: dict, justify_index: int,
         }
         apply_world_event(city, event, rnd)
 
+    score_before = calculate_balance_score(city) + city.get("insightPoints", 0)
     result = apply_event_action(city, action, rnd, st.session_state.market_modifiers)
     if not result.get("success"):
         st.error(result.get("error", "Could not apply action"))
         return
 
     justify_result = resolve_event_justify(city, event, justify_index)
+    record_round_resolution(city, event, action, result.get("effects") or {}, score_before)
     result["justifyCorrect"] = justify_result.get("correct")
     city["decisionsCount"] = city.get("decisionsCount", 0) + 1
     advance_to_next_event(city)
@@ -515,11 +534,30 @@ def _page_result(city: dict, rnd: int, multiplayer: bool) -> None:
     if result.get("resultExplain"):
         st.markdown(result["resultExplain"])
     if city.get("roundComplete"):
-        st.session_state.step = "round_summary"
+        st.session_state.step = "year_summary"
         _persist_city()
     else:
         st.session_state.step = "decide"
     if st.button("Continue", type="primary"):
+        st.rerun()
+
+
+def _page_year_summary(city: dict, rnd: int, multiplayer: bool) -> None:
+    st.subheader(f"Year {rnd} in review")
+    summary = generate_year_summary(city, rnd)
+    st.markdown(f"**{summary['cityName']}** — population {summary['population']:,}, waste load {summary['wasteLoad']:,}")
+    for entry in summary["entries"]:
+        st.markdown(f"**{entry['title']}** — \"{entry['plainLabel']}\"")
+        st.markdown(f"👍 {entry['pro']}")
+        st.markdown(f"👎 {entry['con']}")
+        if entry.get("netEffect"):
+            st.caption(f"📊 {entry['netEffect']}")
+    st.markdown(f"**Score change:** {summary['scoreChange']:+}")
+    st.markdown(summary["verdict"])
+    if summary.get("consequenceWatch"):
+        st.info(f"**Consequence watch:** {summary['consequenceWatch']}")
+    if st.button("Continue", type="primary"):
+        st.session_state.step = "round_summary"
         st.rerun()
 
 
