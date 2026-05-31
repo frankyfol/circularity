@@ -65,7 +65,22 @@ export function applyGrowth(city, round, archetype) {
   return city;
 }
 
-export function getMarginalCostMultiplier(city, card) {
+function marketModifiersFromEvent(event) {
+  if (!event?.effects) return {};
+  const fx = event.effects;
+  return {
+    recyclablesPriceMultiplier: fx.recyclablesPriceMultiplier ?? 1,
+    energyPriceMultiplier: fx.energyPriceMultiplier ?? 1,
+    landfillCostMultiplier: fx.landfillCostMultiplier ?? 1,
+    incinerationCostMultiplier: fx.incinerationCostMultiplier ?? 1,
+    circularityIncomeMultiplier: fx.circularityIncomeMultiplier ?? 1,
+  };
+}
+
+const LANDFILL_TIERS = new Set(['landfill', 'dump']);
+const INCINERATE_TIERS = new Set(['incinerate']);
+
+export function getMarginalCostMultiplier(city, card, marketModifiers = {}) {
   if (card.marginalCostCurve === 'circularity') {
     const circ = city.pillars.circularity;
     const { circularityThreshold, marginalMultiplier, maxMultiplier } =
@@ -80,11 +95,19 @@ export function getMarginalCostMultiplier(city, card) {
   return 1;
 }
 
-export function getCardCost(city, card) {
+export function getCardCost(city, card, marketModifiers = {}) {
   let cost = card.baseCost;
   const archMod = card.archetypeModifiers?.[city.archetype];
   if (archMod?.baseCost) cost += archMod.baseCost;
-  cost = Math.round(cost * getMarginalCostMultiplier(city, card));
+  cost = Math.round(cost * getMarginalCostMultiplier(city, card, marketModifiers));
+
+  if (LANDFILL_TIERS.has(card.hierarchyTier)) {
+    cost = Math.round(cost * (marketModifiers.landfillCostMultiplier ?? 1));
+  }
+  if (INCINERATE_TIERS.has(card.hierarchyTier)) {
+    cost = Math.round(cost * (marketModifiers.incinerationCostMultiplier ?? 1));
+  }
+
   return Math.max(0, cost);
 }
 
@@ -134,9 +157,11 @@ export function applyMarketEffects(city, card, round, marketModifiers = {}) {
     (marketModifiers.energyPriceMultiplier ?? 1);
 
   if (card.marketExposure === 'recyclables') {
-    const income = Math.round((recPrice - 1) * 8 * city.participationRate);
+    const incomeMult = marketModifiers.circularityIncomeMultiplier ?? 1;
+    let income = Math.round((recPrice - 1) * 8 * city.participationRate * incomeMult);
     effects.economy = income;
-    if (recPrice < 0.7) effects.economy -= 6;
+    if (recPrice < 0.7) effects.economy -= Math.round(8 * (2 - incomeMult));
+    if (incomeMult < 1) effects.economy -= Math.round((1 - incomeMult) * 14);
   }
   if (card.marketExposure === 'energy') {
     const income = Math.round((energyPrice - 1) * 10);
@@ -150,7 +175,7 @@ export function applyStrategyCard(city, cardId, round, marketModifiers = {}) {
   const card = gameConfig.strategyCards.find((c) => c.id === cardId);
   if (!card) return { success: false, error: 'Unknown card' };
 
-  const cost = getCardCost(city, card);
+  const cost = getCardCost(city, card, marketModifiers);
   if (cost > city.budget) return { success: false, error: 'Insufficient budget' };
 
   city.budget -= cost;
@@ -192,6 +217,10 @@ export function applyStrategyCard(city, cardId, round, marketModifiers = {}) {
     if (!city.builtAssets.includes(card.id)) city.builtAssets.push(card.id);
   }
 
+  if (card.id === 'do-nothing') {
+    applyInactionPenalty(city);
+  }
+
   return { success: true, card, cost, effects, animationId: card.animationId };
 }
 
@@ -213,9 +242,14 @@ export function processDelayedEffects(city) {
 }
 
 export function applyStatusQuoDecay(city) {
-  city.pillars.capacity = clamp(city.pillars.capacity - 3);
-  city.pillars.environment = clamp(city.pillars.environment - 2);
-  city.pillars.liveability = clamp(city.pillars.liveability - 1);
+  city.pillars.capacity = clamp(city.pillars.capacity - 7);
+  city.pillars.environment = clamp(city.pillars.environment - 5);
+  city.pillars.liveability = clamp(city.pillars.liveability - 3);
+  city.pillars.economy = clamp(city.pillars.economy - 4);
+}
+
+export function applyInactionPenalty(city) {
+  applyStatusQuoDecay(city);
 }
 
 export function applyWorldEvent(city, event, round) {
@@ -349,8 +383,33 @@ export function generateReportCard(city) {
   };
 }
 
-export function getScenario(round) {
+export function getScenario(round, scenariosByRound) {
+  if (scenariosByRound?.[round]) return scenariosByRound[round];
   return gameConfig.scenarios.find((s) => s.round === round);
+}
+
+function seededShuffle(array, seed) {
+  const arr = [...array];
+  let s = seed;
+  for (let i = arr.length - 1; i > 0; i--) {
+    s = (s * 1103515245 + 12345) & 0x7fffffff;
+    const j = s % (i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+export function generateScenariosForGame(seed = Date.now()) {
+  const byRound = {};
+  for (const scenario of gameConfig.scenarios) {
+    const pool = scenario.optionPool ?? scenario.options;
+    const shuffled = seededShuffle(pool, seed + scenario.round * 997);
+    byRound[scenario.round] = {
+      ...scenario,
+      options: shuffled.slice(0, 4),
+    };
+  }
+  return byRound;
 }
 
 export function getStrategyCard(id) {
@@ -362,4 +421,8 @@ export function pickRandomWorldEvent(excludeIds = []) {
   return available[Math.floor(Math.random() * available.length)];
 }
 
-export { gameConfig, PILLAR_KEYS };
+export {
+  gameConfig,
+  PILLAR_KEYS,
+  marketModifiersFromEvent,
+};

@@ -46,8 +46,8 @@
     }
   },
   "market": {
-    "recyclablesPriceByRound": [1.0, 1.15, 0.65, 0.9, 1.3, 1.05],
-    "energyPriceByRound": [0.9, 1.0, 1.2, 0.85, 1.1, 1.25]
+    "recyclablesPriceByRound": [1.0, 1.55, 0.28, 1.35, 0.42, 1.48],
+    "energyPriceByRound": [0.65, 1.45, 0.38, 1.4, 0.52, 1.62]
   },
   "worldEvents": [
     {
@@ -56,9 +56,9 @@
       "lectureHook": "Global recycling economics — when China stopped importing recyclables, many cities lost revenue overnight.",
       "triggerRound": null,
       "effects": {
-        "recyclablesPriceMultiplier": 0.4,
-        "economyDelta": -8,
-        "circularityIncomeMultiplier": 0.3
+        "recyclablesPriceMultiplier": 0.25,
+        "economyDelta": -14,
+        "circularityIncomeMultiplier": 0.15
       },
       "animationId": "market-crash"
     },
@@ -68,9 +68,9 @@
       "lectureHook": "Denmark's Polluter-Pays principle — landfill and incineration fees rise sharply.",
       "triggerRound": null,
       "effects": {
-        "landfillCostMultiplier": 2.0,
-        "incinerationCostMultiplier": 1.5,
-        "economyDelta": -5
+        "landfillCostMultiplier": 2.8,
+        "incinerationCostMultiplier": 2.0,
+        "economyDelta": -10
       },
       "animationId": "carbon-tax"
     },
@@ -80,8 +80,9 @@
       "lectureHook": "Singapore saw +1,334 tonnes of plastic waste during lockdown — your city faces a sudden waste spike.",
       "triggerRound": null,
       "effects": {
-        "wasteMultiplier": 1.45,
-        "capacityDelta": -12
+        "wasteMultiplier": 1.65,
+        "capacityDelta": -18,
+        "economyDelta": -6
       },
       "animationId": "consumption-surge"
     },
@@ -91,9 +92,10 @@
       "lectureHook": "Deonar, Jan 2016 — a 3-month fire blanketed Mumbai; nearby life expectancy is 39 vs the state's 73.5.",
       "triggerRound": null,
       "effects": {
-        "environmentDelta": -18,
-        "liveabilityDelta": -15,
-        "capacityDelta": -10
+        "environmentDelta": -24,
+        "liveabilityDelta": -20,
+        "capacityDelta": -16,
+        "landfillCostMultiplier": 1.5
       },
       "animationId": "landfill-fire"
     },
@@ -103,9 +105,10 @@
       "lectureHook": "Ecological deficit — high footprint cities face water stress and biocapacity collapse.",
       "triggerRound": null,
       "effects": {
-        "environmentDelta": -12,
-        "liveabilityDelta": -8,
-        "footprintPenalty": 1.3
+        "environmentDelta": -16,
+        "liveabilityDelta": -12,
+        "footprintPenalty": 1.45,
+        "economyDelta": -8
       },
       "animationId": "heatwave"
     }
@@ -347,7 +350,10 @@
       "baseCost": 0,
       "marginalCostCurve": "none",
       "effects": {
-        "economy": 3
+        "economy": -3,
+        "capacity": -4,
+        "environment": -3,
+        "liveability": -2
       },
       "participationFactor": 0,
       "marketExposure": "none",
@@ -364,6 +370,7 @@
       "caseFact": "Affluent cities generate 2–3× more waste per capita than low-income cities. Linear metabolism treats waste as rubbish; circular metabolism treats it as a resource.",
       "decisionPrompt": "Invest early in source-separation (costly, slow) or expand collection & dump (cheap)?",
       "options": ["source-separation", "expand-collection", "open-dump", "awareness-campaign"],
+      "optionPool": ["source-separation", "expand-collection", "open-dump", "awareness-campaign", "packaging-tax", "do-nothing", "green-exchange"],
       "quiz": {
         "question": "Why is 'reduce' at the top of the waste hierarchy?",
         "options": [
@@ -384,6 +391,7 @@
       "caseFact": "Deonar takes 3,500 t/day; nearby life expectancy is 39 vs the state's 73.5. Semakau was engineered as Singapore's last landfill.",
       "decisionPrompt": "Build an engineered landfill, keep open-dumping, or cut reliance via recycling?",
       "options": ["engineered-landfill", "open-dump", "source-separation", "green-exchange"],
+      "optionPool": ["engineered-landfill", "open-dump", "source-separation", "green-exchange", "integrate-informal", "expand-collection", "do-nothing"],
       "quiz": {
         "question": "What is the main risk of relying on open dumps like Deonar?",
         "options": [
@@ -404,6 +412,7 @@
       "caseFact": "Singapore and Edmonton use incineration to cut landfill volume 80–90% and recover energy — but dioxins and ash remain concerns.",
       "decisionPrompt": "Build the incinerator or find another way to manage growing waste?",
       "options": ["build-incinerator", "waste-to-energy", "source-separation", "repair-hubs"],
+      "optionPool": ["build-incinerator", "waste-to-energy", "source-separation", "repair-hubs", "engineered-landfill", "green-exchange", "do-nothing"],
       "quiz": {
         "question": "What is a key trade-off of incineration?",
         "options": [
@@ -424,6 +433,7 @@
       "caseFact": "High consumption cities import food, materials, and energy from global hinterlands, creating invisible environmental damage elsewhere.",
       "decisionPrompt": "Cut consumption at source (tax/reduce) or keep importing and emitting?",
       "options": ["packaging-tax", "polluter-pays", "awareness-campaign", "do-nothing"],
+      "optionPool": ["packaging-tax", "polluter-pays", "awareness-campaign", "do-nothing", "source-separation", "repair-hubs", "open-dump"],
       "quiz": {
         "question": "What drives a city's ecological footprint?",
         "options": [
@@ -444,6 +454,7 @@
       "caseFact": "Cairo's zabbaleen recycle up to 80% of the city's waste informally. Integrating them formally boosted safety and circularity.",
       "decisionPrompt": "Integrate informal recyclers formally, ignore them, or evict them?",
       "options": ["integrate-informal", "green-exchange", "deposit-return", "open-dump"],
+      "optionPool": ["integrate-informal", "green-exchange", "deposit-return", "open-dump", "awareness-campaign", "source-separation", "do-nothing"],
       "quiz": {
         "question": "Why integrate informal recyclers rather than evict them?",
         "options": [
@@ -464,6 +475,7 @@
       "caseFact": "Copenhagen targets zero waste; Curitiba pioneered the Green Exchange; Denmark leads with Polluter-Pays legislation.",
       "decisionPrompt": "Polluter-Pays tax, Green Exchange incentive, or full circular source-separation?",
       "options": ["polluter-pays", "green-exchange", "source-separation", "integrate-informal"],
+      "optionPool": ["polluter-pays", "green-exchange", "source-separation", "integrate-informal", "packaging-tax", "waste-to-energy", "do-nothing"],
       "quiz": {
         "question": "Why can the 'most sustainable' strategy still lose in this game?",
         "options": [

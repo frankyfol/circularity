@@ -79,7 +79,7 @@ export default function RoundScreen({
 
   const totalCost = selectedCards.reduce((sum, id) => {
     const card = getStrategyCard(id);
-    return sum + (card ? getCardCost(city, card) : 0);
+    return sum + (card ? getCardCost(city, card, room?.marketModifiers ?? {}) : 0);
   }, 0);
 
   const handleQuizSelect = (index) => {
@@ -165,7 +165,7 @@ export default function RoundScreen({
                 {scenario.options.map((cardId) => {
                   const card = getStrategyCard(cardId);
                   if (!card) return null;
-                  const cost = getCardCost(city, card);
+                  const cost = getCardCost(city, card, room?.marketModifiers ?? {});
                   const affordable = cost <= city.budget;
                   return (
                     <button
