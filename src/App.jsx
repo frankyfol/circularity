@@ -11,7 +11,9 @@ export default function App() {
     connected,
     room,
     city,
-    scenario,
+    currentEvent,
+    currentEventIndex,
+    totalEvents,
     leaderboard,
     reportCards,
     worldEvent,
@@ -19,7 +21,7 @@ export default function App() {
     createRoom,
     joinRoom,
     startGame,
-    submitDecision,
+    submitEventDecision,
     advanceRound,
     triggerWorldEvent,
     socketId,
@@ -60,7 +62,7 @@ export default function App() {
         leaderboard={leaderboard}
         onStart={startGame}
         onAdvance={advanceRound}
-        onTriggerEvent={triggerWorldEvent}
+        onTriggerEvent={() => triggerWorldEvent(room?.currentRound)}
       />
     );
   }
@@ -88,11 +90,13 @@ export default function App() {
   return (
     <RoundScreen
       city={city}
-      scenario={scenario}
+      currentEvent={currentEvent}
+      currentEventIndex={currentEventIndex}
+      totalEvents={totalEvents}
       room={room}
       worldEvent={worldEvent}
       lastResult={lastResult}
-      onSubmit={submitDecision}
+      onSubmit={submitEventDecision}
       leaderboard={leaderboard}
       socketId={socketId}
     />

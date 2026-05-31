@@ -10,7 +10,9 @@
     "build": "vite build",
     "preview": "vite preview",
     "start": "node server/index.js",
-    "simulate": "node scripts/simulate.js"
+    "simulate": "node scripts/simulate.js",
+    "simulate:events": "node scripts/simulate-events.js",
+    "build:events": "node scripts/build-events-from-spec.js"
   },
   "dependencies": {
     "express": "^4.21.2",

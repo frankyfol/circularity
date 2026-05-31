@@ -6,22 +6,26 @@ import { fileURLToPath } from 'url';
 import {
   createCity,
   applyGrowth,
-  applyStrategyCard,
-  applyWorldEvent,
-  recordQuizAnswer,
+  applyEventAction,
+  applyWorldEventFlatAndConditionals,
+  resolveEventJustify,
+  advanceToNextEvent,
+  getCurrentEvent,
+  prepareRoundForCity,
   processDelayedEffects,
-  applyStatusQuoDecay,
   calculateFinalScore,
   rankCities,
   generateReportCard,
   pickRandomWorldEvent,
-  getScenario,
   marketModifiersFromEvent,
-  generateScenariosForGame,
+  worldEventMarketModifiers,
 } from '../src/game/engine.js';
 
 function applyEventMarketModifiers(room, event) {
-  room.marketModifiers = marketModifiersFromEvent(event);
+  room.marketModifiers = {
+    ...marketModifiersFromEvent(event),
+    ...worldEventMarketModifiers(event),
+  };
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -49,15 +53,46 @@ function createRoom(hostId) {
     hostId,
     phase: 'lobby',
     currentRound: 0,
-    worldEvent: null,
-    worldEventRound: null,
+    roundWorldEvents: {},
     marketModifiers: {},
-    scenariosByRound: {},
     cities: new Map(),
     createdAt: Date.now(),
   };
   rooms.set(code, room);
   return room;
+}
+
+function getWorldEventForRound(room, round) {
+  if (round < 2) return null;
+  if (!room.roundWorldEvents[round]) {
+    room.roundWorldEvents[round] = pickRandomWorldEvent(
+      Object.values(room.roundWorldEvents).map((e) => e.id)
+    );
+  }
+  return room.roundWorldEvents[round];
+}
+
+function startRoundForCity(city, room, round) {
+  city.growthAppliedThisRound = false;
+  city.roundComplete = false;
+  const worldEvent = getWorldEventForRound(room, round);
+  const queue = prepareRoundForCity(city, round, worldEvent);
+  return { queue, worldEvent };
+}
+
+function emitRoundStartToPlayer(socket, room, city) {
+  const round = room.currentRound;
+  const { queue, worldEvent } = startRoundForCity(city, room, round);
+  room.cities.set(city.id, city);
+
+  socket.emit('roundStart', {
+    round,
+    events: queue,
+    currentEventIndex: 0,
+    currentEvent: queue[0] ?? null,
+    worldEvent: round >= 2 ? worldEvent : null,
+    totalEvents: queue.length,
+  });
 }
 
 function getLeaderboard(room) {
@@ -72,6 +107,8 @@ function getLeaderboard(room) {
     insightPoints: c.insightPoints,
     pillars: { ...c.pillars },
     rank: c.rank,
+    roundComplete: c.roundComplete,
+    flags: [...(c.flags || [])],
   }));
 }
 
@@ -80,8 +117,7 @@ function broadcastRoom(room) {
     code: room.code,
     phase: room.phase,
     currentRound: room.currentRound,
-    worldEvent: room.worldEvent,
-    worldEventRound: room.worldEventRound,
+    roundWorldEvents: room.roundWorldEvents,
     marketModifiers: room.marketModifiers,
     playerCount: room.cities.size,
     leaderboard: getLeaderboard(room),
@@ -113,9 +149,11 @@ io.on('connection', (socket) => {
     socket.roomCode = room.code;
     socket.cityId = cityId;
 
+    const city = room.cities.get(cityId);
+
     cb({
       success: true,
-      city: room.cities.get(cityId),
+      city,
       room: {
         code: room.code,
         phase: room.phase,
@@ -123,6 +161,10 @@ io.on('connection', (socket) => {
       },
     });
     broadcastRoom(room);
+
+    if (room.phase === 'playing' && room.currentRound > 0) {
+      emitRoundStartToPlayer(socket, room, city);
+    }
   });
 
   socket.on('startGame', (cb) => {
@@ -130,67 +172,82 @@ io.on('connection', (socket) => {
     if (!room || room.hostId !== socket.id) return cb?.({ success: false });
     room.phase = 'playing';
     room.currentRound = 1;
-    room.worldEventRound = 2 + Math.floor(Math.random() * 4);
-    room.worldEvent = pickRandomWorldEvent();
+    room.roundWorldEvents = {};
     room.marketModifiers = {};
-    room.scenariosByRound = generateScenariosForGame(Date.now());
+
+    for (let r = 2; r <= 6; r++) {
+      getWorldEventForRound(room, r);
+    }
+
+    for (const [cityId, city] of room.cities) {
+      const playerSocket = io.sockets.sockets.get(cityId);
+      if (playerSocket) emitRoundStartToPlayer(playerSocket, room, city);
+    }
+
     broadcastRoom(room);
-    io.to(room.code).emit('roundStart', {
-      round: 1,
-      scenario: getScenario(1, room.scenariosByRound),
-    });
     cb?.({ success: true });
   });
 
-  socket.on('submitDecision', ({ cardIds, quizAnswer, decisionTime }, cb) => {
+  socket.on('submitEventDecision', ({ actionId, justifyAnswer, decisionTime }, cb) => {
     const room = rooms.get(socket.roomCode);
     if (!room) return cb?.({ success: false });
     const city = room.cities.get(socket.cityId);
     if (!city) return cb?.({ success: false });
 
     const round = room.currentRound;
-    applyGrowth(city, round, city.archetype);
+    const event = getCurrentEvent(city);
+    if (!event) return cb?.({ success: false, error: 'No active event' });
 
-    if (round === room.worldEventRound && room.worldEvent) {
-      applyEventMarketModifiers(room, room.worldEvent);
-      applyWorldEvent(city, room.worldEvent, round);
+    if (!city.growthAppliedThisRound) {
+      applyGrowth(city, round, city.archetype);
+      city.growthAppliedThisRound = true;
     }
 
-    const results = [];
-    for (const cardId of cardIds.slice(0, 3)) {
-      const result = applyStrategyCard(city, cardId, round, room.marketModifiers);
-      if (result.success) results.push(result);
+    const action = event.actions?.find((a) => a.id === actionId);
+    if (!action) return cb?.({ success: false, error: 'Invalid action' });
+
+    if (event.eventType === 'world') {
+      applyEventMarketModifiers(room, event);
+      applyWorldEventFlatAndConditionals(city, event, round);
     }
 
-    if (results.length === 0) {
-      applyStatusQuoDecay(city);
-    }
+    const result = applyEventAction(city, action, round, room.marketModifiers);
+    if (!result.success) return cb?.({ success: false, error: result.error });
 
-    processDelayedEffects(city);
-
-    const scenario = getScenario(round, room.scenariosByRound);
-    if (scenario?.quiz) {
-      const correct = quizAnswer === scenario.quiz.correctIndex;
-      recordQuizAnswer(city, correct);
-    }
+    const justifyResult = resolveEventJustify(city, event, justifyAnswer);
 
     city.decisionsCount += 1;
     city.totalDecisionTime += decisionTime || 0;
     city.decisionLog.push({
       round,
-      cardIds,
-      results: results.map((r) => r.card?.id),
+      eventId: event.id,
+      eventType: event.eventType,
+      actionId: action.id,
+      flags: [...city.flags],
       pillars: { ...city.pillars },
     });
+
+    advanceToNextEvent(city);
+
+    if (city.roundComplete) {
+      processDelayedEffects(city);
+    }
 
     calculateFinalScore(city);
     room.cities.set(socket.cityId, city);
 
+    const nextEvent = getCurrentEvent(city);
+
     cb?.({
       success: true,
       city,
-      results,
-      animations: results.map((r) => r.animationId).filter(Boolean),
+      result: {
+        ...result,
+        justifyCorrect: justifyResult.correct,
+      },
+      roundComplete: city.roundComplete,
+      nextEvent,
+      currentEventIndex: city.currentEventIndex,
     });
     broadcastRoom(room);
   });
@@ -212,25 +269,31 @@ io.on('connection', (socket) => {
     }
 
     room.currentRound += 1;
+    room.marketModifiers = {};
+
+    for (const [cityId, city] of room.cities) {
+      const playerSocket = io.sockets.sockets.get(cityId);
+      if (playerSocket) emitRoundStartToPlayer(playerSocket, room, city);
+    }
+
     broadcastRoom(room);
-    io.to(room.code).emit('roundStart', {
-      round: room.currentRound,
-      scenario: getScenario(room.currentRound, room.scenariosByRound),
-      worldEvent:
-        room.currentRound === room.worldEventRound ? room.worldEvent : null,
-    });
-    cb?.({ success: true });
+    cb?.({ success: true, round: room.currentRound });
   });
 
-  socket.on('triggerWorldEvent', (cb) => {
+  socket.on('triggerWorldEvent', ({ round }, cb) => {
     const room = rooms.get(socket.roomCode);
     if (!room || room.hostId !== socket.id) return cb?.({ success: false });
-    room.worldEvent = pickRandomWorldEvent();
-    room.worldEventRound = room.currentRound;
-    applyEventMarketModifiers(room, room.worldEvent);
-    io.to(room.code).emit('worldEventTriggered', room.worldEvent);
+    const targetRound = round ?? room.currentRound;
+    if (targetRound < 2) return cb?.({ success: false, error: 'World events start round 2' });
+
+    const event = pickRandomWorldEvent(
+      Object.values(room.roundWorldEvents).map((e) => e.id)
+    );
+    room.roundWorldEvents[targetRound] = event;
+    applyEventMarketModifiers(room, event);
+    io.to(room.code).emit('worldEventScheduled', { round: targetRound, event });
     broadcastRoom(room);
-    cb?.({ success: true, event: room.worldEvent });
+    cb?.({ success: true, event, round: targetRound });
   });
 
   socket.on('getCity', (cb) => {

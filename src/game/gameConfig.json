@@ -2,7 +2,7 @@
   "rounds": 6,
   "decisionTimerSeconds": 90,
   "insightBonusPerCorrect": 4,
-  "maxInsightBonus": 24,
+  "maxInsightBonus": 60,
   "startingBudget": 100,
   "budgetPerRound": 15,
   "debtInterestRate": 0.08,

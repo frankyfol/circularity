@@ -1,4 +1,15 @@
 import gameConfig from './gameConfig.json' with { type: 'json' };
+import {
+  setCityFlags,
+  clearCityFlags,
+  checkTransitionRules,
+  applyWorldEventConditionals,
+  worldEventMarketModifiers,
+  buildRoundEventQueue,
+  getCurrentEvent,
+  pickWorldEvent,
+  foundingEvent,
+} from './eventEngine.js';
 
 const PILLAR_KEYS = ['environment', 'economy', 'liveability', 'capacity', 'circularity'];
 
@@ -27,6 +38,14 @@ export function createCity(id, studentName, archetype) {
     totalDecisionTime: 0,
     decisionsCount: 0,
     crisisTriggered: false,
+    flags: [],
+    circularActionCount: 0,
+    dumpActionCount: 0,
+    lastRoundEventIds: [],
+    currentRoundEvents: [],
+    currentEventIndex: 0,
+    roundEventsResolved: 0,
+    roundComplete: false,
   };
 }
 
@@ -66,8 +85,8 @@ export function applyGrowth(city, round, archetype) {
 }
 
 function marketModifiersFromEvent(event) {
-  if (!event?.effects) return {};
-  const fx = event.effects;
+  const fx = event?.effects || event?.flatEffects;
+  if (!fx) return {};
   return {
     recyclablesPriceMultiplier: fx.recyclablesPriceMultiplier ?? 1,
     energyPriceMultiplier: fx.energyPriceMultiplier ?? 1,
@@ -253,18 +272,116 @@ export function applyInactionPenalty(city) {
 }
 
 export function applyWorldEvent(city, event, round) {
-  const fx = event.effects;
-  if (fx.environmentDelta) city.pillars.environment = clamp(city.pillars.environment + fx.environmentDelta);
-  if (fx.liveabilityDelta) city.pillars.liveability = clamp(city.pillars.liveability + fx.liveabilityDelta);
-  if (fx.capacityDelta) city.pillars.capacity = clamp(city.pillars.capacity + fx.capacityDelta);
-  if (fx.economyDelta) city.pillars.economy = clamp(city.pillars.economy + fx.economyDelta);
+  const fx = event.effects || event.flatEffects || {};
+  applyPillarDeltas(city, fx, true);
+  applyPillarDeltas(city, applyWorldEventConditionals(city, event), false);
+  return city;
+}
+
+function applyPillarDeltas(city, fx, useLegacyKeys) {
+  const map = useLegacyKeys
+    ? {
+        environmentDelta: 'environment',
+        liveabilityDelta: 'liveability',
+        capacityDelta: 'capacity',
+        economyDelta: 'economy',
+        circularityDelta: 'circularity',
+      }
+    : null;
+
+  for (const key of PILLAR_KEYS) {
+    let delta = fx[key];
+    if (map) {
+      const legacy = Object.entries(map).find(([, v]) => v === key)?.[0];
+      if (legacy && fx[legacy] != null) delta = (delta ?? 0) + fx[legacy];
+    }
+    if (delta) city.pillars[key] = clamp(city.pillars[key] + delta);
+  }
 
   if (fx.wasteMultiplier) {
     city.wasteLoad = Math.round(city.wasteLoad * fx.wasteMultiplier);
     city.pillars.capacity = clamp(city.pillars.capacity - Math.round(fx.wasteMultiplier * 5));
   }
+}
 
-  return city;
+export function applyEventAction(city, action, round, marketModifiers = {}) {
+  const cost = action.cost ?? 0;
+  if (cost > city.budget) return { success: false, error: 'Insufficient budget' };
+
+  city.budget -= cost;
+
+  const cardLike = {
+    hierarchyTier: action.hierarchyTier,
+    participationFactor: action.participationFactor ?? 0,
+    marketExposure: action.marketExposure ?? 'none',
+    financing: action.financing,
+    debtAmount: action.debtAmount,
+    delayedEffects: action.delayedEffects,
+    animationId: action.animationId,
+    id: action.id,
+    marginalCostCurve: 'none',
+  };
+
+  let effects = { ...action.effects };
+  effects = applyParticipation(city, cardLike, effects);
+  const marketFx = applyMarketEffects(city, cardLike, round, marketModifiers);
+  for (const [k, v] of Object.entries(marketFx)) {
+    effects[k] = (effects[k] ?? 0) + v;
+  }
+
+  for (const key of PILLAR_KEYS) {
+    if (effects[key]) {
+      city.pillars[key] = clamp(city.pillars[key] + effects[key]);
+    }
+  }
+
+  if (action.financing === 'debt' && action.debtAmount) {
+    city.debt += action.debtAmount;
+    city.budget += Math.round(action.debtAmount * 0.6);
+  }
+
+  if (action.delayedEffects) {
+    city.delayedEffects.push({
+      ...action.delayedEffects,
+      roundsRemaining: action.delayedEffects.roundsDelay,
+      source: action.id,
+    });
+  }
+
+  if (action.animationId && action.animationId !== 'none') {
+    const assetId = action.animationId;
+    if (!city.builtAssets.includes(assetId)) city.builtAssets.push(assetId);
+  }
+
+  setCityFlags(city, action.setsFlags || []);
+  clearCityFlags(city, action.clearsFlags || []);
+  checkTransitionRules(city, action);
+
+  return {
+    success: true,
+    action,
+    cost,
+    effects,
+    animationId: action.animationId,
+    resultExplain: action.resultExplain,
+  };
+}
+
+export function resolveEventJustify(city, event, answerIndex) {
+  const justify = event?.justify;
+  if (!justify) return { correct: false };
+  const correct = answerIndex === justify.correctIndex;
+  recordQuizAnswer(city, correct);
+  return { correct, conceptTag: justify.conceptTag };
+}
+
+export function advanceToNextEvent(city) {
+  city.roundEventsResolved = (city.roundEventsResolved || 0) + 1;
+  city.currentEventIndex = (city.currentEventIndex || 0) + 1;
+  if (city.currentEventIndex >= (city.currentRoundEvents?.length || 0)) {
+    city.roundComplete = true;
+  }
+  return getCurrentEvent(city);
 }
 
 export function recordQuizAnswer(city, correct) {
@@ -417,12 +534,23 @@ export function getStrategyCard(id) {
 }
 
 export function pickRandomWorldEvent(excludeIds = []) {
-  const available = gameConfig.worldEvents.filter((e) => !excludeIds.includes(e.id));
-  return available[Math.floor(Math.random() * available.length)];
+  return pickWorldEvent(excludeIds);
+}
+
+export function prepareRoundForCity(city, round, teacherWorldEvent) {
+  return buildRoundEventQueue(city, round, teacherWorldEvent);
+}
+
+export function applyWorldEventFlatAndConditionals(city, worldEvent, round) {
+  applyWorldEvent(city, worldEvent, round);
 }
 
 export {
   gameConfig,
   PILLAR_KEYS,
   marketModifiersFromEvent,
+  foundingEvent,
+  worldEventMarketModifiers,
+  getCurrentEvent,
+  buildRoundEventQueue,
 };

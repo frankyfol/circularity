@@ -12,9 +12,10 @@ Each student is the **Chief Sustainability Officer** of their own growing pixel 
 
 - 6-round teacher-paced classroom session (~45–60 min)
 - 19-player multiplayer with room codes (Socket.io)
-- Teacher host screen for round advancement and world events
-- 14 waste-hierarchy strategy cards with escalating costs
-- 5 world events (market crash, carbon tax, consumption surge, landfill fire, heatwave)
+- **Event campaign (v3):** founding charter + 60 branching round-events + 20 teacher world events
+- **Consequence flags** weight and gate later events (linear vs circular storylines)
+- Each round: growth tick → 4 sequential decisions (action → justify quiz → impact explanation)
+- Teacher host screen with flag insight panel and per-round world events
 - Two city archetypes (high-income vs low/middle-income)
 - 16-bit pixel-art city canvas with animated actions
 - Live leaderboard and final podium reveal
@@ -44,8 +45,8 @@ Serves the built client and WebSocket server on port 3001.
 1. **Teacher** opens the app → "Teacher Host" → share the 5-letter room code on the projector
 2. **Students** join with name + city archetype on laptop or phone
 3. Teacher clicks **Start Game** when all 19 have joined
-4. Each round: growth tick → scenario → strategy choices → justify quiz → animated resolution → leaderboard flash
-5. Teacher advances rounds; one random **World Event** hits mid-game
+4. Each round: growth tick → **founding event** (Round 1 only) → 3 flag-weighted random events → justify quizzes → resolution
+5. Rounds 2–6 add a **World Event** as the 4th decision; teacher can re-roll it from the host screen
 6. After Round 6: **Final Reveal** with rankings and printable Report Cards
 
 ## Tech Stack
@@ -61,7 +62,9 @@ Serves the built client and WebSocket server on port 3001.
 src/
   game/
     engine.js       # Core mechanics, scoring, growth
-    gameConfig.json # Scenarios, cards, events, markets
+    eventEngine.js  # Flag system, event selection, branching
+    events.json     # 60 round-events + founding + 20 world events
+    gameConfig.json # Growth curves, markets, legacy strategy cards
   components/       # UI screens and pixel canvas
   hooks/            # Socket.io client hook
 server/
@@ -76,6 +79,15 @@ The game exercises trade-offs across:
 - Waste hierarchy (reduce > reuse > recycle > incinerate > landfill)
 - Environmental, economic, and social dimensions of sustainable urban development
 - Real-world case studies: Semakau, Deonar, Copenhagen, Curitiba, Cairo zabbaleen, Denmark Polluter-Pays
+
+## Regenerating event data
+
+Event content is generated from `EVENT_DATABASE_SPEC.md`:
+
+```bash
+npm run build:events
+npm run simulate:events
+```
 
 ## License
 

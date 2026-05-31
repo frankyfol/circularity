@@ -1,6 +1,9 @@
 import Leaderboard from './Leaderboard';
 
 export default function HostScreen({ room, leaderboard, onStart, onAdvance, onTriggerEvent }) {
+  const round = room?.currentRound ?? 0;
+  const scheduledWorld = room?.roundWorldEvents?.[round];
+
   return (
     <div className="min-h-screen p-6 max-w-4xl mx-auto space-y-6">
       <header className="text-center space-y-2">
@@ -20,7 +23,7 @@ export default function HostScreen({ room, leaderboard, onStart, onAdvance, onTr
         </div>
         <div className="pixel-panel">
           <p className="font-pixel text-[8px] text-gray-400">ROUND</p>
-          <p className="font-pixel text-xl">{room?.currentRound ?? 0} / 6</p>
+          <p className="font-pixel text-xl">{round} / 6</p>
         </div>
       </div>
 
@@ -35,24 +38,52 @@ export default function HostScreen({ room, leaderboard, onStart, onAdvance, onTr
             <button className="pixel-btn" onClick={onAdvance}>
               Advance Round →
             </button>
-            <button className="pixel-btn bg-pixel-red/30" onClick={onTriggerEvent}>
-              Trigger World Event
-            </button>
+            {round >= 2 && (
+              <button className="pixel-btn bg-pixel-red/30" onClick={onTriggerEvent}>
+                Re-roll World Event (this round)
+              </button>
+            )}
           </>
         )}
       </div>
 
-      {room?.worldEvent && (
+      {scheduledWorld && round >= 2 && (
         <div className="pixel-panel text-center">
-          <p className="font-pixel text-[8px] text-pixel-red">SCHEDULED EVENT (Round {room.worldEventRound})</p>
-          <p className="font-body">{room.worldEvent.name}</p>
+          <p className="font-pixel text-[8px] text-pixel-red">WORLD EVENT · ROUND {round}</p>
+          <p className="font-body">{scheduledWorld.name}</p>
+          <p className="font-body text-xs text-gray-400 mt-1">{scheduledWorld.lectureHook}</p>
+        </div>
+      )}
+
+      {room?.phase === 'playing' && (
+        <div className="pixel-panel">
+          <p className="font-pixel text-[8px] text-pixel-yellow mb-2">FLAG INSIGHT (teacher only)</p>
+          <p className="font-body text-xs text-gray-400 mb-2">
+            Each student&apos;s hidden consequence flags — emergent paths from founding + choices.
+          </p>
+          <div className="space-y-2 max-h-48 overflow-y-auto">
+            {leaderboard?.map((entry) => (
+              <div key={entry.id} className="text-xs border-b border-gray-700 pb-1">
+                <span className="text-pixel-yellow">{entry.studentName}</span>
+                {entry.roundComplete ? (
+                  <span className="text-pixel-green ml-2">✓ round done</span>
+                ) : (
+                  <span className="text-gray-500 ml-2">in progress</span>
+                )}
+                <p className="text-gray-500 font-mono text-[10px] mt-0.5">
+                  {(entry.flags || []).join(', ') || 'no flags yet'}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 
       <Leaderboard entries={leaderboard} />
 
       <p className="font-body text-xs text-gray-500 text-center">
-        Project this screen for the class. Students play on their devices; advance rounds when most have submitted.
+        Round 1: founding charter + 3 events. Rounds 2–6: 3 branched events + 1 world event each.
+        Advance when most students finish all events in the round.
       </p>
     </div>
   );
