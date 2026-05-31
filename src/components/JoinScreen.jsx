@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import IntroAnimation from './IntroAnimation';
+import { getArchetypeProfile } from '../game/engine';
 
 export default function JoinScreen({ onJoin, onHost, connected }) {
   const [mode, setMode] = useState(null);
@@ -114,7 +115,7 @@ export default function JoinScreen({ onJoin, onHost, connected }) {
             >
               <p className="font-pixel text-[9px] text-pixel-yellow">🏙️ High-Income City</p>
               <p className="font-body text-xs text-gray-400 mt-1">
-                Copenhagen/Singapore-like · Large budget, high waste per capita
+                {getArchetypeProfile('highIncome').tagline}
               </p>
             </button>
             <button
@@ -124,7 +125,7 @@ export default function JoinScreen({ onJoin, onHost, connected }) {
             >
               <p className="font-pixel text-[9px] text-pixel-yellow">🏘️ Low/Middle-Income City</p>
               <p className="font-body text-xs text-gray-400 mt-1">
-                Mumbai/Cairo-like · Tight budget, informal recyclers available
+                {getArchetypeProfile('lowIncome').tagline}
               </p>
             </button>
           </div>

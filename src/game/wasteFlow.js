@@ -1,4 +1,5 @@
 import gameConfig from './gameConfig.json' with { type: 'json' };
+import { getArchetypeProfile } from './archetype.js';
 import { cityHasFlag } from './eventEngine.js';
 
 function clamp(value, min = 0, max = 100) {
@@ -84,37 +85,55 @@ export function resolveFlowLevers(action, event = null) {
 function applyEducationDelta(city, delta) {
   if (!delta) return;
   const eduCfg = gameConfig.education || {};
-  let mult = 1;
+  let mult = getArchetypeProfile(city.archetype).educationGainMultiplier ?? 1;
   if (cityHasFlag(city, 'PUBLIC_TRUST_LOW')) {
-    mult = eduCfg.trustLowGainMultiplier ?? 0.5;
+    mult *= eduCfg.trustLowGainMultiplier ?? 0.5;
   } else if (cityHasFlag(city, 'PUBLIC_TRUST_HIGH')) {
-    mult = eduCfg.trustHighGainMultiplier ?? 1.25;
+    mult *= eduCfg.trustHighGainMultiplier ?? 1.25;
   }
   city.education = clamp(city.education + delta * mult);
 }
 
-export function applyFlowLevers(city, levers) {
+export function applyFlowLevers(city, levers, hierarchyTier = null) {
   if (!isWasteFlowEnabled() || !levers) return;
   ensureWasteFlowState(city);
   const wf = wfConfig();
+  const profile = getArchetypeProfile(city.archetype);
+  const scaled = scaleFlowLeversInternal(
+    { ...levers, _tier: hierarchyTier || levers._tier },
+    city.archetype
+  );
 
-  if (levers.education) applyEducationDelta(city, levers.education);
-  if (levers.reduceBonus) {
+  if (scaled.education) applyEducationDelta(city, scaled.education);
+  if (scaled.reduceBonus) {
     city.reduceBonus = Math.min(
       wf.reduceCap ?? 0.55,
-      (city.reduceBonus || 0) + levers.reduceBonus
+      (city.reduceBonus || 0) + scaled.reduceBonus
     );
   }
-  if (levers.recycleCap) city.recycleCap = Math.max(0, (city.recycleCap || 0) + levers.recycleCap);
-  if (levers.incinCap) city.incinCap = Math.max(0, (city.incinCap || 0) + levers.incinCap);
-  if (levers.landfillCap) city.landfillCap = Math.max(0, (city.landfillCap || 0) + levers.landfillCap);
-  if (levers.gasCapture) {
+  if (scaled.recycleCap) city.recycleCap = Math.max(0, (city.recycleCap || 0) + scaled.recycleCap);
+  if (scaled.incinCap) city.incinCap = Math.max(0, (city.incinCap || 0) + scaled.incinCap);
+  if (scaled.landfillCap) city.landfillCap = Math.max(0, (city.landfillCap || 0) + scaled.landfillCap);
+  if (scaled.gasCapture) {
     city.gasCapture = true;
     if (!cityHasFlag(city, 'GAS_CAPTURE')) {
       city.flags = [...(city.flags || []), 'GAS_CAPTURE'];
     }
   }
-  if (levers.forcesUncollected) city.forceUncollectedRound = true;
+  if (scaled.forcesUncollected) city.forceUncollectedRound = true;
+}
+
+function scaleFlowLeversInternal(levers, archetype) {
+  const profile = getArchetypeProfile(archetype);
+  const mult = profile.flowLeverMultiplier || {};
+  const tier = levers._tier;
+  const tierMult = tier ? (mult[tier] ?? 1) : 1;
+  const scaled = { ...levers };
+  delete scaled._tier;
+  for (const key of ['education', 'reduceBonus', 'recycleCap', 'incinCap', 'landfillCap']) {
+    if (typeof scaled[key] === 'number') scaled[key] *= tierMult;
+  }
+  return scaled;
 }
 
 export function applyBudgetEconomyFromAction(city, action, effects) {
@@ -131,16 +150,30 @@ function affluenceFactor(city) {
   return (city.affluence || base) / base;
 }
 
-function recyclablesPrice(round, marketModifiers = {}) {
+function recyclablesPrice(round, marketModifiers = {}, archetype = 'highIncome') {
   const prices = gameConfig.market?.recyclablesPriceByRound || [];
   const base = prices[round - 1] ?? prices[prices.length - 1] ?? 1;
-  return base * (marketModifiers.recyclablesPriceMultiplier ?? 1);
+  const profile = getArchetypeProfile(archetype);
+  return base * (marketModifiers.recyclablesPriceMultiplier ?? 1) * (profile.marketRecyclablesMultiplier ?? 1);
 }
 
-function energyPrice(round, marketModifiers = {}) {
+function energyPrice(round, marketModifiers = {}, archetype = 'highIncome') {
   const prices = gameConfig.market?.energyPriceByRound || [];
   const base = prices[round - 1] ?? prices[prices.length - 1] ?? 1;
-  return base * (marketModifiers.energyPriceMultiplier ?? 1);
+  const profile = getArchetypeProfile(archetype);
+  return base * (marketModifiers.energyPriceMultiplier ?? 1) * (profile.marketEnergyMultiplier ?? 1);
+}
+
+function archetypeWfScalars(archetype) {
+  const wf = wfConfig();
+  const arch = archKey(archetype);
+  const eduMax = wf.eduReduceMax;
+  const qFloor = wf.recycleQualityFloor;
+  return {
+    eduReduceMax: typeof eduMax === 'object' ? (eduMax[arch] ?? 0.28) : (eduMax ?? 0.3),
+    recycleQualityFloor:
+      typeof qFloor === 'object' ? (qFloor[arch] ?? 0.35) : (qFloor ?? 0.5),
+  };
 }
 
 function sumRunningCosts(city) {
@@ -159,18 +192,24 @@ export function runWasteFlow(city, round, marketModifiers = {}) {
 
   if (cityHasFlag(city, 'GAS_CAPTURE')) city.gasCapture = true;
 
+  const profile = getArchetypeProfile(city.archetype);
+  const wfScalars = archetypeWfScalars(city.archetype);
   const afflu = affluenceFactor(city);
-  const eduReduceMax = wf.eduReduceMax ?? 0.3;
-  const reduceFromEdu = eduReduceMax * ((city.education || 0) / 100);
+  const reduceFromEdu = wfScalars.eduReduceMax * ((city.education || 0) / 100);
   const reduceTotal = Math.min(wf.reduceCap ?? 0.55, reduceFromEdu + (city.reduceBonus || 0));
 
-  const generated = (city.population / 1000) * (city.perCapita || 0.5) * afflu;
+  let generated =
+    (city.population / 1000) * (city.perCapita || 0.5) * afflu * (profile.populationGrowthStress ?? 1);
   const reduced = generated * reduceTotal;
   let stream = generated - reduced;
 
-  const qualityFloor = wf.recycleQualityFloor ?? 0.5;
+  const qualityFloor = wfScalars.recycleQualityFloor;
   const recycleQuality = qualityFloor + (1 - qualityFloor) * ((city.education || 0) / 100);
-  const recycled = Math.min(city.recycleCap || 0, stream) * recycleQuality;
+  let effectiveRecycleCap = city.recycleCap || 0;
+  if (cityHasFlag(city, 'INFORMAL_INTEGRATED')) {
+    effectiveRecycleCap *= 1 + (profile.informalRecoveryBonus ?? 0) * 3;
+  }
+  const recycled = Math.min(effectiveRecycleCap, stream) * recycleQuality;
   stream -= recycled;
 
   const incinerated = Math.min(city.incinCap || 0, stream);
@@ -186,7 +225,12 @@ export function runWasteFlow(city, round, marketModifiers = {}) {
 
   const landfilled = Math.min(city.landfillCap || 0, wantLandfill);
   city.landfillCap = Math.max(0, (city.landfillCap || 0) - landfilled);
-  const uncollected = Math.max(0, wantLandfill - landfilled);
+  let uncollected = Math.max(0, wantLandfill - landfilled);
+  const serviceGap = generated * Math.max(0, 1 - (profile.collectionServiceRate ?? 0.95));
+  let leak = serviceGap;
+  if (cityHasFlag(city, 'INFORMAL_INTEGRATED')) leak *= 0.35;
+  if (cityHasFlag(city, 'RECYCLING_SYSTEM')) leak *= 0.7;
+  uncollected += leak;
   city.uncollectedCum = (city.uncollectedCum || 0) + uncollected;
 
   const co2cfg = wf.co2 || {};
@@ -205,8 +249,8 @@ export function runWasteFlow(city, round, marketModifiers = {}) {
   co2 = Math.max(0, co2);
   city.co2Cumulative = (city.co2Cumulative || 0) + co2;
 
-  const rPrice = recyclablesPrice(round, marketModifiers);
-  const ePrice = energyPrice(round, marketModifiers);
+  const rPrice = recyclablesPrice(round, marketModifiers, city.archetype);
+  const ePrice = energyPrice(round, marketModifiers, city.archetype);
   const energyMWh = incinerated * (wf.energyMWhPerTonne ?? 600);
   const recycleIncome = recycled * rPrice;
   const energyIncome = (energyMWh / 1000) * ePrice * 10;
@@ -281,9 +325,12 @@ export function applyFlowToPillars(city, flow, round, marketModifiers = {}) {
   const running = sumRunningCosts(city);
   const link = gameConfig.budgetEconomyLink;
   const curve = gameConfig.growthCurves?.[city.archetype];
+  const profile = getArchetypeProfile(city.archetype);
   const dividend =
-    (link?.enabled && city.pillars.economy >= (link.minEconomyForDividend ?? 1))
-      ? (link.economyDividendPerRound ?? 0) * (city.pillars.economy / 100)
+    link?.enabled && city.pillars.economy >= (link.minEconomyForDividend ?? 1)
+      ? (link.economyDividendPerRound ?? 0) *
+        (city.pillars.economy / 100) *
+        (profile.economyDividendMultiplier ?? 1)
       : 0;
 
   let budgetDelta = 0;
@@ -307,7 +354,11 @@ export function applyFlowToPillars(city, flow, round, marketModifiers = {}) {
 }
 
 export function decayEducation(city) {
-  const decay = wfConfig().eduDecayPerRound ?? gameConfig.education?.decayPerRound ?? 2;
+  const wf = wfConfig();
+  const profile = getArchetypeProfile(city.archetype);
+  const decay =
+    (wf.eduDecayPerRound ?? gameConfig.education?.decayPerRound ?? 2) +
+    (profile.educationDecayExtra ?? 0);
   city.education = clamp((city.education || 0) - decay);
 }
 

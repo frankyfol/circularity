@@ -1,4 +1,5 @@
 import eventsData from './events.json' with { type: 'json' };
+import { eventThemeWeightBonus } from './archetype.js';
 
 export const { foundingEvent, roundEvents, worldEvents, eventsByRound } = eventsData;
 
@@ -89,6 +90,7 @@ export function computeEventWeight(event, city) {
   let w = (entry.baseWeight ?? 1) * stack;
 
   if (city.lastRoundEventIds?.includes(event.id)) w *= REPEAT_PENALTY;
+  w *= eventThemeWeightBonus(event, city.archetype);
   return Math.max(w, MIN_WEIGHT);
 }
 

@@ -242,6 +242,9 @@ def _page_solo_setup() -> None:
         format_func=lambda x: "High-income" if x == "highIncome" else "Low / middle-income",
         key="solo_arch",
     )
+    from circular_city.archetype import get_archetype_profile
+
+    st.caption(get_archetype_profile(archetype).get("tagline", ""))
     if st.button("Start solo game", type="primary", key="solo_start"):
         st.session_state.mode = "solo"
         st.session_state.city = create_city("local", name, archetype)
@@ -509,7 +512,7 @@ def _page_decide(city: dict, event: dict, rnd: int) -> None:
     for item in shuffle_actions(actions_with_defer_option(event), seed):
         action = item["action"]
         letter = item["display_letter"]
-        cost = get_event_action_cost(action, mods)
+        cost = get_event_action_cost(action, mods, city["archetype"])
         affordable = cost <= city["budget"]
         label = display_label(action)
         meaning = action.get("plainMeaning") or action.get("meaning") or ""

@@ -3,7 +3,7 @@ import CityCanvas from './CityCanvas';
 import PillarGauges from './PillarGauges';
 import Leaderboard from './Leaderboard';
 import YearSummary from './YearSummary';
-import { gameConfig, getEventActionCost } from '../game/engine';
+import { gameConfig, getEventActionCost, getArchetypeProfile } from '../game/engine';
 import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
 import { actionsWithDeferOption } from '../game/deferAction';
 import { shuffleActions, shuffleJustifyOptions, shuffleSeedForEvent } from '../game/shuffleActions';
@@ -194,7 +194,9 @@ export default function RoundScreen({
           <p className="font-pixel text-[10px] text-pixel-yellow">
             YEAR {room?.currentRound ?? 1} / 6 · EVENT {eventNum}/{totalEvents || 4}
           </p>
-          <p className="font-body text-xs text-gray-400">{city.studentName}'s City</p>
+          <p className="font-body text-xs text-gray-400">
+            {city.studentName} · {getArchetypeProfile(city.archetype).label}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <span className="font-pixel text-[9px] text-pixel-yellow">💰 {city.budget}</span>
@@ -263,7 +265,7 @@ export default function RoundScreen({
               </p>
               <div className="grid gap-2 max-h-80 overflow-y-auto">
                 {shuffledChoices.map(({ action, displayLetter }) => {
-                  const actionCost = getEventActionCost(action, room?.marketModifiers);
+                  const actionCost = getEventActionCost(action, room?.marketModifiers, city.archetype);
                   const affordable = actionCost <= city.budget;
                   const label = getDisplayLabel(action);
                   const meaning = action.plainMeaning || action.meaning;

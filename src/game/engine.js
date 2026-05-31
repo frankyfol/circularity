@@ -11,6 +11,7 @@ import {
   foundingEvent,
 } from './eventEngine.js';
 import { shuffleJustifyOptions, shuffleSeedForEvent } from './shuffleActions.js';
+import { getArchetypeProfile, getTierCostModifier } from './archetype.js';
 import {
   initWasteFlowState,
   isWasteFlowEnabled,
@@ -19,6 +20,8 @@ import {
   applyBudgetEconomyFromAction,
   finalizeRoundWasteFlow,
 } from './wasteFlow.js';
+
+export { getArchetypeProfile } from './archetype.js';
 
 export { finalizeRoundWasteFlow, isWasteFlowEnabled, getWmsGradeLabel } from './wasteFlow.js';
 
@@ -36,7 +39,7 @@ export function createCity(id, studentName, archetype) {
     debt: 0,
     participationRate: gameConfig.participation.baseRate,
     insightPoints: 0,
-    budget: gameConfig.startingBudget,
+    budget: getArchetypeProfile(archetype).startingBudget ?? gameConfig.startingBudget,
     wasteLoad: 0,
     footprint: 0,
     decisionLog: [],
@@ -60,6 +63,9 @@ export function createCity(id, studentName, archetype) {
     growthAppliedThisRound: false,
     roundResolutions: [],
   };
+  const profile = getArchetypeProfile(archetype);
+  city.participationRate = profile.participationBase ?? gameConfig.participation.baseRate;
+  city.budget = profile.startingBudget ?? gameConfig.startingBudget;
   if (isWasteFlowEnabled()) initWasteFlowState(city, archetype);
   return city;
 }
@@ -76,7 +82,9 @@ export function applyGrowth(city, round, archetype) {
   city.population = Math.round(city.population * popGrowth);
   city.affluence = city.affluence * affGrowth;
 
-  const wasteFactor = Math.pow(city.population / 500000, 1.15);
+  const profile = getArchetypeProfile(archetype);
+  const popBaseline = profile.populationBaseline ?? 500000;
+  const wasteFactor = Math.pow(city.population / popBaseline, 1.15);
   city.wasteLoad = Math.round(
     curve.wastePerCapita * city.affluence * wasteFactor * (round * 0.8 + 0.4)
   );
@@ -89,7 +97,9 @@ export function applyGrowth(city, round, archetype) {
     city.pillars.environment = clamp(city.pillars.environment - envDrain * 0.5);
   }
 
-  city.budget += Math.round(gameConfig.budgetPerRound * curve.budgetMultiplier);
+  city.budget += Math.round(
+    gameConfig.budgetPerRound * curve.budgetMultiplier * (profile.budgetPerRoundMultiplier ?? 1)
+  );
 
   if (city.debt > 0) {
     const interest = Math.round(city.debt * gameConfig.debtInterestRate);
@@ -164,8 +174,9 @@ export function applyParticipation(city, card, effects) {
       gameConfig.participation.maxRate
     );
   } else if (partFactor > 0) {
+    const partMult = getArchetypeProfile(city.archetype).participationGainMultiplier ?? 1;
     city.participationRate = clamp(
-      city.participationRate + partFactor * 0.05,
+      city.participationRate + partFactor * 0.05 * partMult,
       gameConfig.participation.baseRate,
       gameConfig.participation.maxRate
     );
@@ -320,12 +331,14 @@ function applyPillarDeltas(city, fx, useLegacyKeys) {
   }
 }
 
-export function getEventActionCost(action, marketModifiers = {}) {
+export function getEventActionCost(action, marketModifiers = {}, archetype = 'highIncome') {
   const base = action?.cost ?? 0;
   if (base <= 0) return 0;
+  const profile = getArchetypeProfile(archetype);
   const scale = gameConfig.eventActionCostMultiplier ?? 1;
-  let cost = Math.round(base * scale);
   const tier = action?.hierarchyTier;
+  let cost = Math.round(base * scale * (profile.eventCostMultiplier ?? 1));
+  cost = Math.round(cost * getTierCostModifier(archetype, tier));
   if (LANDFILL_TIERS.has(tier)) {
     cost = Math.round(cost * (marketModifiers.landfillCostMultiplier ?? 1));
   }
@@ -336,7 +349,7 @@ export function getEventActionCost(action, marketModifiers = {}) {
 }
 
 export function applyEventAction(city, action, round, marketModifiers = {}, event = null) {
-  const cost = getEventActionCost(action, marketModifiers);
+  const cost = getEventActionCost(action, marketModifiers, city.archetype);
   if (cost > city.budget) return { success: false, error: 'Insufficient budget' };
 
   city.budget -= cost;
@@ -389,7 +402,7 @@ export function applyEventAction(city, action, round, marketModifiers = {}, even
   checkTransitionRules(city, action);
 
   if (isWasteFlowEnabled()) {
-    applyFlowLevers(city, resolveFlowLevers(action, event));
+    applyFlowLevers(city, resolveFlowLevers(action, event), action.hierarchyTier);
     applyBudgetEconomyFromAction(city, action, effects);
   }
 

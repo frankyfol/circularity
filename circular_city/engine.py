@@ -39,6 +39,9 @@ def create_city(city_id: str, student_name: str, archetype: str) -> dict:
 
     cfg = game_config()
     curve = cfg["growthCurves"][archetype]
+    from circular_city.archetype import get_archetype_profile
+
+    profile = get_archetype_profile(archetype)
     city = {
         "id": city_id,
         "studentName": student_name,
@@ -47,9 +50,9 @@ def create_city(city_id: str, student_name: str, archetype: str) -> dict:
         "population": 500000 if archetype == "highIncome" else 800000,
         "affluence": 1.8 if archetype == "highIncome" else 0.6,
         "debt": 0,
-        "participationRate": cfg["participation"]["baseRate"],
+        "participationRate": profile.get("participationBase", cfg["participation"]["baseRate"]),
         "insightPoints": 0,
-        "budget": cfg["startingBudget"],
+        "budget": profile.get("startingBudget", cfg["startingBudget"]),
         "wasteLoad": 0,
         "footprint": 0,
         "decisionLog": [],
@@ -88,7 +91,11 @@ def apply_growth(city: dict, round_num: int, archetype: str | None = None) -> di
     city["population"] = round(city["population"] * pop_growth)
     city["affluence"] = city["affluence"] * aff_growth
 
-    waste_factor = (city["population"] / 500000) ** 1.15
+    from circular_city.archetype import get_archetype_profile
+
+    profile = get_archetype_profile(archetype)
+    pop_baseline = profile.get("populationBaseline", 500000)
+    waste_factor = (city["population"] / pop_baseline) ** 1.15
     city["wasteLoad"] = round(
         curve["wastePerCapita"] * city["affluence"] * waste_factor * (round_num * 0.8 + 0.4)
     )
@@ -102,7 +109,9 @@ def apply_growth(city: dict, round_num: int, archetype: str | None = None) -> di
         env_drain = round(city["wasteLoad"] / 200)
         city["pillars"]["environment"] = clamp(city["pillars"]["environment"] - env_drain * 0.5)
 
-    city["budget"] += round(cfg["budgetPerRound"] * curve["budgetMultiplier"])
+    city["budget"] += round(
+        cfg["budgetPerRound"] * curve["budgetMultiplier"] * profile.get("budgetPerRoundMultiplier", 1)
+    )
 
     if city["debt"] > 0:
         interest = round(city["debt"] * cfg["debtInterestRate"])
@@ -217,15 +226,23 @@ def apply_world_event(city: dict, event: dict, round_num: int) -> dict:
     return city
 
 
-def get_event_action_cost(action: dict, market_modifiers: dict | None = None) -> int:
+def get_event_action_cost(
+    action: dict,
+    market_modifiers: dict | None = None,
+    archetype: str = "highIncome",
+) -> int:
+    from circular_city.archetype import get_archetype_profile, get_tier_cost_modifier
+
     market_modifiers = market_modifiers or {}
     base = action.get("cost") or 0
     if base <= 0:
         return 0
     cfg = game_config()
+    profile = get_archetype_profile(archetype)
     scale = cfg.get("eventActionCostMultiplier", 1)
-    cost = round(base * scale)
     tier = action.get("hierarchyTier")
+    cost = round(base * scale * profile.get("eventCostMultiplier", 1))
+    cost = round(cost * get_tier_cost_modifier(archetype, tier))
     if tier in LANDFILL_TIERS:
         cost = round(cost * market_modifiers.get("landfillCostMultiplier", 1))
     if tier in INCINERATE_TIERS:
@@ -241,7 +258,7 @@ def apply_event_action(
     event: dict | None = None,
 ) -> dict:
     market_modifiers = market_modifiers or {}
-    cost = get_event_action_cost(action, market_modifiers)
+    cost = get_event_action_cost(action, market_modifiers, city["archetype"])
     if cost > city["budget"]:
         return {"success": False, "error": "Insufficient budget"}
 
@@ -294,7 +311,7 @@ def apply_event_action(
     )
 
     if is_waste_flow_enabled():
-        apply_flow_levers(city, resolve_flow_levers(action, event))
+        apply_flow_levers(city, resolve_flow_levers(action, event), action.get("hierarchyTier"))
         apply_budget_economy_from_action(city, action, effects)
 
     return {

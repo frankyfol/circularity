@@ -5,6 +5,90 @@
   "maxInsightBonus": 60,
   "startingBudget": 48,
   "budgetPerRound": 6,
+  "archetypeProfiles": {
+    "highIncome": {
+      "label": "High-income city",
+      "tagline": "Affluent residents generate heavy waste, but your treasury and markets can fund high-tech recovery — if you can keep public buy-in.",
+      "startingBudget": 62,
+      "eventCostMultiplier": 1.12,
+      "tierCostModifiers": {
+        "incinerate": 1.05,
+        "recycle": 1.08,
+        "reduce": 1.05,
+        "landfill": 1.0,
+        "dump": 1.1
+      },
+      "participationBase": 0.5,
+      "participationGainMultiplier": 1.2,
+      "budgetPerRoundMultiplier": 1.2,
+      "economyDividendMultiplier": 1.25,
+      "marketRecyclablesMultiplier": 1.35,
+      "marketEnergyMultiplier": 1.15,
+      "flowLeverMultiplier": {
+        "incinerate": 1.25,
+        "landfill": 1.2,
+        "recycle": 1.05,
+        "reduce": 1.15,
+        "reuse": 1.1,
+        "dump": 0.9
+      },
+      "educationGainMultiplier": 1.2,
+      "educationDecayExtra": 1,
+      "collectionServiceRate": 0.99,
+      "informalRecoveryBonus": 0,
+      "populationBaseline": 500000,
+      "populationGrowthStress": 1.0,
+      "preferredEventThemes": ["market", "policy", "carbon", "technology", "energy"],
+      "eventThemeWeightBoost": 1.35
+    },
+    "lowIncome": {
+      "label": "Low / middle-income city",
+      "tagline": "Fast-growing population, thin budgets, and informal pickers — cheap dumps are tempting, but uncollected waste and disease hit harder here.",
+      "startingBudget": 30,
+      "eventCostMultiplier": 0.85,
+      "tierCostModifiers": {
+        "incinerate": 1.55,
+        "recycle": 0.82,
+        "reduce": 1.15,
+        "landfill": 0.8,
+        "dump": 0.7,
+        "social": 0.85,
+        "policy": 0.9
+      },
+      "participationBase": 0.24,
+      "participationGainMultiplier": 0.7,
+      "budgetPerRoundMultiplier": 0.5,
+      "economyDividendMultiplier": 0.65,
+      "marketRecyclablesMultiplier": 0.7,
+      "marketEnergyMultiplier": 0.8,
+      "flowLeverMultiplier": {
+        "incinerate": 0.5,
+        "landfill": 0.65,
+        "recycle": 1.4,
+        "reduce": 0.8,
+        "reuse": 1.25,
+        "dump": 1.0,
+        "social": 1.3
+      },
+      "educationGainMultiplier": 0.75,
+      "educationDecayExtra": 0,
+      "collectionServiceRate": 0.86,
+      "informalRecoveryBonus": 0.12,
+      "populationBaseline": 800000,
+      "populationGrowthStress": 1.18,
+      "preferredEventThemes": [
+        "informal",
+        "dump",
+        "health",
+        "social",
+        "poverty",
+        "picker",
+        "slum",
+        "illegal"
+      ],
+      "eventThemeWeightBoost": 1.75
+    }
+  },
   "eventActionCostMultiplier": 1.45,
   "debtInterestRate": 0.08,
   "escalatingCostParams": {
@@ -83,10 +167,8 @@
   "wasteFlow": {
     "enabled": true,
     "unit": "kilotonnes",
-    "perCapita": { "highIncome": 0.6, "lowIncome": 0.35 },
-    "eduReduceMax": 0.3,
+    "perCapita": { "highIncome": 0.72, "lowIncome": 0.28 },
     "reduceCap": 0.55,
-    "recycleQualityFloor": 0.5,
     "ashFraction": 0.2,
     "co2": {
       "incinerate": 0.9,
@@ -98,9 +180,11 @@
       "energyCredit": 0.2
     },
     "energyMWhPerTonne": 600,
-    "startLandfillCap": { "highIncome": 900, "lowIncome": 700 },
-    "startRecycleCap": { "highIncome": 60, "lowIncome": 30 },
-    "startEducation": { "highIncome": 35, "lowIncome": 25 },
+    "startLandfillCap": { "highIncome": 1000, "lowIncome": 420 },
+    "startRecycleCap": { "highIncome": 70, "lowIncome": 18 },
+    "startEducation": { "highIncome": 40, "lowIncome": 16 },
+    "recycleQualityFloor": { "highIncome": 0.52, "lowIncome": 0.3 },
+    "eduReduceMax": { "highIncome": 0.32, "lowIncome": 0.2 },
     "incinBuild": 120,
     "eduDecayPerRound": 2,
     "uncollectedCrisisFraction": 0.25,

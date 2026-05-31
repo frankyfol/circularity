@@ -114,6 +114,9 @@ def compute_event_weight(event: dict, city: dict) -> float:
     w = (entry.get("baseWeight") or 1) * stack
     if event["id"] in (city.get("lastRoundEventIds") or []):
         w *= REPEAT_PENALTY
+    from circular_city.archetype import event_theme_weight_bonus
+
+    w *= event_theme_weight_bonus(event, city.get("archetype", "highIncome"))
     return max(w, MIN_WEIGHT)
 
 

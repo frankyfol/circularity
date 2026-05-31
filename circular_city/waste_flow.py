@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from circular_city.archetype import get_archetype_profile
 from circular_city.engine import clamp, game_config
 from circular_city.events import city_has_flag
 
@@ -69,37 +70,60 @@ def resolve_flow_levers(action: dict, event: dict | None = None) -> dict:
     return merged
 
 
+def _wf_archetype_scalars(archetype: str) -> dict:
+    wf = _wf()
+    arch = "highIncome" if archetype == "highIncome" else "lowIncome"
+    edu = wf.get("eduReduceMax", 0.3)
+    qf = wf.get("recycleQualityFloor", 0.5)
+    return {
+        "eduReduceMax": edu[arch] if isinstance(edu, dict) else edu,
+        "recycleQualityFloor": qf[arch] if isinstance(qf, dict) else qf,
+    }
+
+
 def _edu_delta(city: dict, delta: float) -> None:
     if not delta:
         return
     edu_cfg = game_config().get("education", {})
-    mult = 1.0
+    mult = get_archetype_profile(city["archetype"]).get("educationGainMultiplier", 1)
     if city_has_flag(city, "PUBLIC_TRUST_LOW"):
-        mult = edu_cfg.get("trustLowGainMultiplier", 0.5)
+        mult *= edu_cfg.get("trustLowGainMultiplier", 0.5)
     elif city_has_flag(city, "PUBLIC_TRUST_HIGH"):
-        mult = edu_cfg.get("trustHighGainMultiplier", 1.25)
+        mult *= edu_cfg.get("trustHighGainMultiplier", 1.25)
     city["education"] = clamp(city.get("education", 0) + delta * mult)
 
 
-def apply_flow_levers(city: dict, levers: dict) -> None:
+def _scale_levers(levers: dict, archetype: str, hierarchy_tier: str | None) -> dict:
+    profile = get_archetype_profile(archetype)
+    mult_map = profile.get("flowLeverMultiplier") or {}
+    tier_mult = mult_map.get(hierarchy_tier or "", 1)
+    scaled = dict(levers)
+    for key in ("education", "reduceBonus", "recycleCap", "incinCap", "landfillCap"):
+        if isinstance(scaled.get(key), (int, float)):
+            scaled[key] = scaled[key] * tier_mult
+    return scaled
+
+
+def apply_flow_levers(city: dict, levers: dict, hierarchy_tier: str | None = None) -> None:
     if not is_waste_flow_enabled() or not levers:
         return
     ensure_waste_flow_state(city)
     wf = _wf()
-    if levers.get("education"):
-        _edu_delta(city, levers["education"])
-    if levers.get("reduceBonus"):
+    scaled = _scale_levers(levers, city["archetype"], hierarchy_tier)
+    if scaled.get("education"):
+        _edu_delta(city, scaled["education"])
+    if scaled.get("reduceBonus"):
         city["reduceBonus"] = min(
             wf.get("reduceCap", 0.55),
-            city.get("reduceBonus", 0) + levers["reduceBonus"],
+            city.get("reduceBonus", 0) + scaled["reduceBonus"],
         )
-    if levers.get("recycleCap"):
-        city["recycleCap"] = max(0, city.get("recycleCap", 0) + levers["recycleCap"])
-    if levers.get("incinCap"):
-        city["incinCap"] = max(0, city.get("incinCap", 0) + levers["incinCap"])
-    if levers.get("landfillCap"):
-        city["landfillCap"] = max(0, city.get("landfillCap", 0) + levers["landfillCap"])
-    if levers.get("gasCapture"):
+    if scaled.get("recycleCap"):
+        city["recycleCap"] = max(0, city.get("recycleCap", 0) + scaled["recycleCap"])
+    if scaled.get("incinCap"):
+        city["incinCap"] = max(0, city.get("incinCap", 0) + scaled["incinCap"])
+    if scaled.get("landfillCap"):
+        city["landfillCap"] = max(0, city.get("landfillCap", 0) + scaled["landfillCap"])
+    if scaled.get("gasCapture"):
         city["gasCapture"] = True
         if not city_has_flag(city, "GAS_CAPTURE"):
             city.setdefault("flags", []).append("GAS_CAPTURE")
@@ -126,17 +150,26 @@ def run_waste_flow(city: dict, round_num: int, market_modifiers: dict | None = N
     base_aff = curve.get("startAffluence", 1.8 if city["archetype"] == "highIncome" else 0.6)
     afflu = (city.get("affluence") or base_aff) / base_aff
 
-    edu_reduce_max = wf.get("eduReduceMax", 0.3)
-    reduce_from_edu = edu_reduce_max * (city.get("education", 0) / 100)
+    profile = get_archetype_profile(city["archetype"])
+    scalars = _wf_archetype_scalars(city["archetype"])
+    reduce_from_edu = scalars["eduReduceMax"] * (city.get("education", 0) / 100)
     reduce_total = min(wf.get("reduceCap", 0.55), reduce_from_edu + city.get("reduceBonus", 0))
 
-    generated = (city["population"] / 1000) * city.get("perCapita", 0.5) * afflu
+    generated = (
+        (city["population"] / 1000)
+        * city.get("perCapita", 0.5)
+        * afflu
+        * profile.get("populationGrowthStress", 1)
+    )
     reduced = generated * reduce_total
     stream = generated - reduced
 
-    q_floor = wf.get("recycleQualityFloor", 0.5)
+    q_floor = scalars["recycleQualityFloor"]
     recycle_quality = q_floor + (1 - q_floor) * (city.get("education", 0) / 100)
-    recycled = min(city.get("recycleCap", 0), stream) * recycle_quality
+    effective_recycle = city.get("recycleCap", 0)
+    if city_has_flag(city, "INFORMAL_INTEGRATED"):
+        effective_recycle *= 1 + profile.get("informalRecoveryBonus", 0) * 3
+    recycled = min(effective_recycle, stream) * recycle_quality
     stream -= recycled
 
     incinerated = min(city.get("incinCap", 0), stream)
@@ -151,6 +184,12 @@ def run_waste_flow(city: dict, round_num: int, market_modifiers: dict | None = N
     landfilled = min(city.get("landfillCap", 0), want_landfill)
     city["landfillCap"] = max(0, city.get("landfillCap", 0) - landfilled)
     uncollected = max(0, want_landfill - landfilled)
+    leak = generated * max(0, 1 - profile.get("collectionServiceRate", 0.95))
+    if city_has_flag(city, "INFORMAL_INTEGRATED"):
+        leak *= 0.35
+    if city_has_flag(city, "RECYCLING_SYSTEM"):
+        leak *= 0.7
+    uncollected += leak
     city["uncollectedCum"] = city.get("uncollectedCum", 0) + uncollected
 
     co2cfg = wf.get("co2", {})
