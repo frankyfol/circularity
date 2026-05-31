@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import CityCanvas from './CityCanvas';
 import PillarGauges from './PillarGauges';
 import Leaderboard from './Leaderboard';
+import YearSummary from './YearSummary';
 import { gameConfig } from '../game/engine';
-
-const PHASES = ['growth', 'event', 'decide', 'quiz', 'resolution', 'leaderboard'];
+import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
 
 export default function RoundScreen({
   city,
@@ -25,6 +25,11 @@ export default function RoundScreen({
   const [submitted, setSubmitted] = useState(false);
   const [roundComplete, setRoundComplete] = useState(false);
   const startTime = useRef(Date.now());
+
+  const yearSummary = useMemo(() => {
+    if (!city || !room?.currentRound) return null;
+    return generateYearSummary(city, room.currentRound);
+  }, [city, room?.currentRound, roundComplete, phase]);
 
   useEffect(() => {
     setPhase('growth');
@@ -51,15 +56,11 @@ export default function RoundScreen({
     }
     setSubmitted(true);
     const decisionTime = Date.now() - startTime.current;
-    const res = await onSubmit(
-      selectedAction,
-      quizAnswer ?? 0,
-      decisionTime
-    );
+    const res = await onSubmit(selectedAction, quizAnswer ?? 0, decisionTime);
     setPhase('resolution');
     if (res?.roundComplete) {
       setRoundComplete(true);
-      setTimeout(() => setPhase('leaderboard'), 2800);
+      setTimeout(() => setPhase('year_summary'), 2400);
     } else {
       setTimeout(() => {
         setSubmitted(false);
@@ -97,23 +98,7 @@ export default function RoundScreen({
     setTimeout(() => handleSubmit(), 400);
   };
 
-  if (!city || !currentEvent) {
-    if (roundComplete || phase === 'leaderboard') {
-      return (
-        <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
-          <header>
-            <p className="font-pixel text-[10px] text-pixel-yellow">
-              YEAR {room?.currentRound ?? 0} / 6 — ROUND COMPLETE
-            </p>
-          </header>
-          <PillarGauges pillars={city?.pillars} />
-          <Leaderboard entries={leaderboard} highlightId={socketId} />
-          <p className="font-body text-sm text-gray-400 text-center">
-            Waiting for teacher to advance to the next year…
-          </p>
-        </div>
-      );
-    }
+  if (!city || (!currentEvent && !roundComplete && phase !== 'year_summary' && phase !== 'leaderboard')) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="font-pixel text-pixel-yellow animate-pulse">Waiting for round to start…</p>
@@ -121,9 +106,45 @@ export default function RoundScreen({
     );
   }
 
+  if (phase === 'year_summary' || (roundComplete && !currentEvent && phase !== 'decide')) {
+    return (
+      <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
+        <header>
+          <p className="font-pixel text-[10px] text-pixel-yellow">
+            YEAR {room?.currentRound ?? 0} / 6 — YEAR IN REVIEW
+          </p>
+        </header>
+        <PillarGauges pillars={city.pillars} />
+        <YearSummary summary={yearSummary} />
+        <button className="pixel-btn w-full" type="button" onClick={() => setPhase('leaderboard')}>
+          Continue to class standings
+        </button>
+      </div>
+    );
+  }
+
+  if (phase === 'leaderboard' || (roundComplete && !currentEvent)) {
+    return (
+      <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
+        <header>
+          <p className="font-pixel text-[10px] text-pixel-yellow">
+            YEAR {room?.currentRound ?? 0} / 6 — ROUND COMPLETE
+          </p>
+        </header>
+        <PillarGauges pillars={city.pillars} />
+        {yearSummary && phase === 'leaderboard' && <YearSummary summary={yearSummary} />}
+        <Leaderboard entries={leaderboard} highlightId={socketId} />
+        <p className="font-body text-sm text-gray-400 text-center">
+          Waiting for teacher to advance to the next year…
+        </p>
+      </div>
+    );
+  }
+
   const isWorld = currentEvent.eventType === 'world';
   const eventNum = currentEventIndex + 1;
   const animation = lastResult?.animationId || (isWorld ? worldEvent?.animationId : null);
+  const narration = getEventNarration(currentEvent);
 
   return (
     <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
@@ -168,14 +189,22 @@ export default function RoundScreen({
           {(phase === 'event' || phase === 'decide' || phase === 'quiz') && (
             <div className="dialogue-box">
               <p className="font-pixel text-[9px] text-pixel-yellow mb-2">
-                {isWorld ? '⚡ WORLD EVENT' : currentEvent.eventType === 'founding' ? '🏛️ FOUNDING CHARTER' : currentEvent.title.toUpperCase()}
+                {isWorld
+                  ? '⚡ WORLD EVENT'
+                  : currentEvent.eventType === 'founding'
+                    ? '🏛️ FOUNDING CHARTER'
+                    : currentEvent.title.toUpperCase()}
               </p>
-              {currentEvent.theme && (
-                <p className="text-[10px] text-pixel-accent mb-1">{currentEvent.theme}</p>
+              {currentEvent.conceptLink && (
+                <p className="text-[10px] text-pixel-accent/80 mb-2 italic">
+                  {currentEvent.conceptLink}
+                </p>
               )}
-              <p className="mb-2">{currentEvent.brief}</p>
+              <p className="mb-2 font-body text-sm leading-relaxed">{narration}</p>
               {currentEvent.caseFact && (
-                <p className="text-xs text-pixel-accent italic mb-2">📚 {currentEvent.caseFact}</p>
+                <p className="text-xs text-pixel-accent italic mb-2 border-t border-gray-700 pt-2">
+                  📚 {currentEvent.caseFact}
+                </p>
               )}
               {isWorld && currentEvent.lectureHook && (
                 <p className="text-xs text-gray-400">{currentEvent.lectureHook}</p>
@@ -186,9 +215,10 @@ export default function RoundScreen({
           {phase === 'decide' && (
             <div className="space-y-2">
               <p className="font-pixel text-[8px] text-gray-400">CHOOSE YOUR RESPONSE</p>
-              <div className="grid gap-2 max-h-72 overflow-y-auto">
+              <div className="grid gap-2 max-h-80 overflow-y-auto">
                 {currentEvent.actions?.map((action) => {
                   const affordable = (action.cost ?? 0) <= city.budget;
+                  const label = getDisplayLabel(action);
                   return (
                     <button
                       key={action.id}
@@ -200,26 +230,35 @@ export default function RoundScreen({
                       onClick={() => setSelectedAction(action.id)}
                     >
                       <div className="flex justify-between items-start gap-2">
-                        <p className="font-pixel text-[8px] text-pixel-yellow">
-                          {action.label}
-                        </p>
+                        <p className="font-pixel text-[8px] text-pixel-yellow">{label}</p>
                         <span className="font-pixel text-[8px] text-pixel-yellow shrink-0">
                           💰{action.cost ?? 0}
                         </span>
                       </div>
-                      <p className="font-body text-[10px] text-gray-500 mt-1 capitalize">
-                        {action.hierarchyTier}
-                      </p>
+                      {action.plainMeaning && (
+                        <p className="font-body text-xs text-gray-400 mt-1 italic">
+                          {action.plainMeaning}
+                        </p>
+                      )}
+                      {action.pros?.[0] && (
+                        <p className="font-body text-[10px] text-green-400/80 mt-1">
+                          👍 {action.pros[0]}
+                        </p>
+                      )}
+                      {action.cons?.[0] && (
+                        <p className="font-body text-[10px] text-red-300/80">
+                          👎 {action.cons[0]}
+                        </p>
+                      )}
                     </button>
                   );
                 })}
               </div>
               <button
                 className="pixel-btn w-full"
+                type="button"
                 onClick={() =>
-                  currentEvent.justify && quizAnswer === null
-                    ? setPhase('quiz')
-                    : handleSubmit()
+                  currentEvent.justify && quizAnswer === null ? setPhase('quiz') : handleSubmit()
                 }
                 disabled={submitted || !selectedAction}
               >
@@ -235,6 +274,7 @@ export default function RoundScreen({
               {currentEvent.justify.options.map((opt, i) => (
                 <button
                   key={i}
+                  type="button"
                   className="strategy-card w-full text-left p-2 font-body text-sm"
                   onClick={() => handleQuizSelect(i)}
                 >
@@ -266,10 +306,6 @@ export default function RoundScreen({
                 Balance: {city.balanceScore?.toFixed?.(1) ?? '—'} · Insight: {city.insightPoints}
               </p>
             </div>
-          )}
-
-          {phase === 'leaderboard' && (
-            <Leaderboard entries={leaderboard} highlightId={socketId} compact />
           )}
         </div>
       </div>

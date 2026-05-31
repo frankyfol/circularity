@@ -19,7 +19,9 @@ import {
   pickRandomWorldEvent,
   marketModifiersFromEvent,
   worldEventMarketModifiers,
+  calculateBalanceScore,
 } from '../src/game/engine.js';
+import { recordRoundResolution } from '../src/game/yearSummary.js';
 
 function applyEventMarketModifiers(room, event) {
   room.marketModifiers = {
@@ -75,6 +77,7 @@ function getWorldEventForRound(room, round) {
 function startRoundForCity(city, room, round) {
   city.growthAppliedThisRound = false;
   city.roundComplete = false;
+  city.roundResolutions = [];
   const worldEvent = getWorldEventForRound(room, round);
   const queue = prepareRoundForCity(city, round, worldEvent);
   return { queue, worldEvent };
@@ -211,10 +214,13 @@ io.on('connection', (socket) => {
       applyWorldEventFlatAndConditionals(city, event, round);
     }
 
+    const scoreBefore = calculateBalanceScore(city) + city.insightPoints;
+
     const result = applyEventAction(city, action, round, room.marketModifiers);
     if (!result.success) return cb?.({ success: false, error: result.error });
 
     const justifyResult = resolveEventJustify(city, event, justifyAnswer);
+    recordRoundResolution(city, event, action, result.effects, scoreBefore);
 
     city.decisionsCount += 1;
     city.totalDecisionTime += decisionTime || 0;

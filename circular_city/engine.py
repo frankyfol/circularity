@@ -67,6 +67,7 @@ def create_city(city_id: str, student_name: str, archetype: str) -> dict:
         "roundEventsResolved": 0,
         "roundComplete": False,
         "growthAppliedThisRound": False,
+        "roundResolutions": [],
     }
 
 
@@ -378,6 +379,32 @@ def get_current_event(city: dict) -> dict | None:
 
 def advance_to_next_event(city: dict) -> dict | None:
     return ev.advance_to_next_event(city)
+
+
+def get_pillar_spread(city: dict) -> float:
+    vals = [city["pillars"][k] for k in PILLAR_KEYS]
+    return max(vals) - min(vals)
+
+
+def rank_cities(cities: list[dict]) -> list[dict]:
+    ranked = [copy.deepcopy(c) for c in cities]
+    for c in ranked:
+        calculate_final_score(c)
+
+    def sort_key(c: dict) -> tuple:
+        speed = c["totalDecisionTime"] / c["decisionsCount"] if c.get("decisionsCount") else float("inf")
+        return (
+            -c["score"],
+            -c["insightPoints"],
+            get_pillar_spread(c),
+            -c["pillars"]["liveability"],
+            speed,
+        )
+
+    ranked.sort(key=sort_key)
+    for i, c in enumerate(ranked):
+        c["rank"] = i + 1
+    return ranked
 
 
 def schedule_world_events() -> dict[int, dict]:

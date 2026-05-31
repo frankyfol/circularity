@@ -46,6 +46,8 @@ export function createCity(id, studentName, archetype) {
     currentEventIndex: 0,
     roundEventsResolved: 0,
     roundComplete: false,
+    growthAppliedThisRound: false,
+    roundResolutions: [],
   };
 }
 
