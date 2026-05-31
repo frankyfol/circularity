@@ -23,23 +23,37 @@ Each student is the **Chief Sustainability Officer** of their own growing pixel 
 
 ## Quick Start
 
-### Streamlit (single-player, easiest deploy)
+### Streamlit (solo + teacher room, deployable)
 
 ```bash
 pip install -r requirements.txt
 streamlit run streamlit_app.py
 ```
 
-Open http://localhost:8501 — full branching event campaign in the browser.
+Open http://localhost:8501:
 
-**Deploy to [Streamlit Community Cloud](https://streamlit.io/cloud):**
+| Tab | Who | What |
+|-----|-----|------|
+| **Teacher host** | Projector / teacher laptop | Create room → share 5-letter code → Start game → Advance years |
+| **Student join** | Each student device | Enter code + name → play (auto-syncs every ~2s) |
+| **Solo practice** | Anyone | Full campaign offline |
 
-1. Push this repo to GitHub
-2. New app → select the repo
-3. Main file path: `streamlit_app.py`
-4. Deploy (uses `requirements.txt` automatically)
+**Local classroom (no setup):** Teacher + students use the same `streamlit run` URL in different browser tabs. Rooms use an in-memory store (works because one Python process serves all tabs).
 
-Each student opens the deployed URL in their own browser tab (separate game session). For live 19-player sync, use the React multiplayer stack below.
+**Streamlit Cloud (production classroom):** You need a shared store so every student hits the same room data:
+
+1. Create a free [Upstash Redis](https://upstash.com) database
+2. Copy **REST URL** and **REST TOKEN**
+3. In Streamlit Cloud → your app → **Secrets**, add:
+   ```toml
+   UPSTASH_REDIS_REST_URL = "https://....upstash.io"
+   UPSTASH_REDIS_REST_TOKEN = "AX..."
+   ```
+4. Deploy — main file: `streamlit_app.py`
+
+**Deploy steps:** GitHub → [share.streamlit.io](https://share.streamlit.io) → New app → pick repo → `streamlit_app.py` → Deploy.
+
+Round flow matches the Socket.io app: founding + 3 branched events per year; years 2–6 add a scheduled world event; teacher sees flags and “finished this year” counts before advancing.
 
 ### React multiplayer (classroom)
 
