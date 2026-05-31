@@ -7,7 +7,10 @@ export function useGameSocket() {
   const [connected, setConnected] = useState(false);
   const [room, setRoom] = useState(null);
   const [city, setCity] = useState(null);
-  const [scenario, setScenario] = useState(null);
+  const [roundEvents, setRoundEvents] = useState([]);
+  const [currentEvent, setCurrentEvent] = useState(null);
+  const [currentEventIndex, setCurrentEventIndex] = useState(0);
+  const [totalEvents, setTotalEvents] = useState(0);
   const [leaderboard, setLeaderboard] = useState([]);
   const [reportCards, setReportCards] = useState([]);
   const [worldEvent, setWorldEvent] = useState(null);
@@ -27,11 +30,17 @@ export function useGameSocket() {
     });
 
     socket.on('roundStart', (data) => {
-      setScenario(data.scenario);
+      setRoundEvents(data.events || []);
+      setCurrentEvent(data.currentEvent ?? data.events?.[0] ?? null);
+      setCurrentEventIndex(data.currentEventIndex ?? 0);
+      setTotalEvents(data.totalEvents ?? data.events?.length ?? 0);
       if (data.worldEvent) setWorldEvent(data.worldEvent);
+      setLastResult(null);
     });
 
-    socket.on('worldEventTriggered', (event) => setWorldEvent(event));
+    socket.on('worldEventScheduled', ({ event }) => {
+      if (event) setWorldEvent(event);
+    });
 
     socket.on('gameEnd', (data) => {
       setLeaderboard(data.leaderboard);
@@ -66,15 +75,21 @@ export function useGameSocket() {
     });
   }, []);
 
-  const submitDecision = useCallback((cardIds, quizAnswer, decisionTime) => {
+  const submitEventDecision = useCallback((actionId, justifyAnswer, decisionTime) => {
     return new Promise((resolve) => {
       socketRef.current.emit(
-        'submitDecision',
-        { cardIds, quizAnswer, decisionTime },
+        'submitEventDecision',
+        { actionId, justifyAnswer, decisionTime },
         (res) => {
           if (res.success) {
             setCity(res.city);
-            setLastResult(res);
+            setLastResult(res.result);
+            if (res.roundComplete) {
+              setCurrentEvent(null);
+            } else if (res.nextEvent) {
+              setCurrentEvent(res.nextEvent);
+              setCurrentEventIndex(res.currentEventIndex);
+            }
           }
           resolve(res);
         }
@@ -88,9 +103,9 @@ export function useGameSocket() {
     });
   }, []);
 
-  const triggerWorldEvent = useCallback(() => {
+  const triggerWorldEvent = useCallback((round) => {
     return new Promise((resolve) => {
-      socketRef.current.emit('triggerWorldEvent', resolve);
+      socketRef.current.emit('triggerWorldEvent', { round }, resolve);
     });
   }, []);
 
@@ -98,7 +113,10 @@ export function useGameSocket() {
     connected,
     room,
     city,
-    scenario,
+    roundEvents,
+    currentEvent,
+    currentEventIndex,
+    totalEvents,
     leaderboard,
     reportCards,
     worldEvent,
@@ -106,7 +124,7 @@ export function useGameSocket() {
     createRoom,
     joinRoom,
     startGame,
-    submitDecision,
+    submitEventDecision,
     advanceRound,
     triggerWorldEvent,
     socketId: socketRef.current?.id,

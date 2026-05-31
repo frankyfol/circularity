@@ -2,13 +2,15 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import CityCanvas from './CityCanvas';
 import PillarGauges from './PillarGauges';
 import Leaderboard from './Leaderboard';
-import { getStrategyCard, getCardCost, gameConfig } from '../game/engine';
+import { gameConfig } from '../game/engine';
 
-const PHASES = ['growth', 'scenario', 'decide', 'quiz', 'resolution', 'leaderboard'];
+const PHASES = ['growth', 'event', 'decide', 'quiz', 'resolution', 'leaderboard'];
 
 export default function RoundScreen({
   city,
-  scenario,
+  currentEvent,
+  currentEventIndex,
+  totalEvents,
   room,
   worldEvent,
   lastResult,
@@ -17,37 +19,58 @@ export default function RoundScreen({
   socketId,
 }) {
   const [phase, setPhase] = useState('growth');
-  const [selectedCards, setSelectedCards] = useState([]);
+  const [selectedAction, setSelectedAction] = useState(null);
   const [quizAnswer, setQuizAnswer] = useState(null);
   const [timer, setTimer] = useState(gameConfig.decisionTimerSeconds);
   const [submitted, setSubmitted] = useState(false);
+  const [roundComplete, setRoundComplete] = useState(false);
   const startTime = useRef(Date.now());
 
   useEffect(() => {
     setPhase('growth');
-    setSelectedCards([]);
+    setSelectedAction(null);
     setQuizAnswer(null);
     setSubmitted(false);
+    setRoundComplete(false);
     setTimer(gameConfig.decisionTimerSeconds);
     startTime.current = Date.now();
 
-    const t1 = setTimeout(() => setPhase('scenario'), 1500);
-    const t2 = setTimeout(() => setPhase('decide'), 4000);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [scenario?.round]);
+    const t1 = setTimeout(() => setPhase('event'), 1200);
+    const t2 = setTimeout(() => setPhase('decide'), 2800);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [currentEvent?.id, room?.currentRound]);
 
   const handleSubmit = useCallback(async () => {
-    if (submitted) return;
-    if (phase === 'decide' && quizAnswer === null) {
+    if (submitted || !selectedAction) return;
+    if (phase === 'decide' && quizAnswer === null && currentEvent?.justify) {
       setPhase('quiz');
       return;
     }
     setSubmitted(true);
     const decisionTime = Date.now() - startTime.current;
-    await onSubmit(selectedCards.length ? selectedCards : ['do-nothing'], quizAnswer ?? 0, decisionTime);
+    const res = await onSubmit(
+      selectedAction,
+      quizAnswer ?? 0,
+      decisionTime
+    );
     setPhase('resolution');
-    setTimeout(() => setPhase('leaderboard'), 2500);
-  }, [submitted, phase, quizAnswer, selectedCards, onSubmit]);
+    if (res?.roundComplete) {
+      setRoundComplete(true);
+      setTimeout(() => setPhase('leaderboard'), 2800);
+    } else {
+      setTimeout(() => {
+        setSubmitted(false);
+        setSelectedAction(null);
+        setQuizAnswer(null);
+        setPhase('growth');
+        setTimeout(() => setPhase('event'), 1200);
+        setTimeout(() => setPhase('decide'), 2800);
+      }, 2200);
+    }
+  }, [submitted, phase, quizAnswer, selectedAction, onSubmit, currentEvent]);
 
   useEffect(() => {
     if (phase !== 'decide' || submitted) return;
@@ -61,33 +84,36 @@ export default function RoundScreen({
       });
     }, 1000);
     return () => clearInterval(interval);
-  }, [phase, submitted]);
+  }, [phase, submitted, currentEvent?.id]);
 
   useEffect(() => {
-    if (timer === 0 && phase === 'decide' && !submitted) {
+    if (timer === 0 && phase === 'decide' && !submitted && selectedAction) {
       handleSubmit();
     }
-  }, [timer, phase, submitted, handleSubmit]);
-
-  const toggleCard = (cardId) => {
-    setSelectedCards((prev) => {
-      if (prev.includes(cardId)) return prev.filter((c) => c !== cardId);
-      if (prev.length >= 3) return prev;
-      return [...prev, cardId];
-    });
-  };
-
-  const totalCost = selectedCards.reduce((sum, id) => {
-    const card = getStrategyCard(id);
-    return sum + (card ? getCardCost(city, card, room?.marketModifiers ?? {}) : 0);
-  }, 0);
+  }, [timer, phase, submitted, selectedAction, handleSubmit]);
 
   const handleQuizSelect = (index) => {
     setQuizAnswer(index);
-    setTimeout(() => handleSubmit(), 500);
+    setTimeout(() => handleSubmit(), 400);
   };
 
-  if (!city || !scenario) {
+  if (!city || !currentEvent) {
+    if (roundComplete || phase === 'leaderboard') {
+      return (
+        <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
+          <header>
+            <p className="font-pixel text-[10px] text-pixel-yellow">
+              YEAR {room?.currentRound ?? 0} / 6 — ROUND COMPLETE
+            </p>
+          </header>
+          <PillarGauges pillars={city?.pillars} />
+          <Leaderboard entries={leaderboard} highlightId={socketId} />
+          <p className="font-body text-sm text-gray-400 text-center">
+            Waiting for teacher to advance to the next year…
+          </p>
+        </div>
+      );
+    }
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="font-pixel text-pixel-yellow animate-pulse">Waiting for round to start…</p>
@@ -95,14 +121,16 @@ export default function RoundScreen({
     );
   }
 
-  const animation = lastResult?.animations?.[0] || (worldEvent?.animationId ?? null);
+  const isWorld = currentEvent.eventType === 'world';
+  const eventNum = currentEventIndex + 1;
+  const animation = lastResult?.animationId || (isWorld ? worldEvent?.animationId : null);
 
   return (
     <div className="min-h-screen p-3 md:p-6 max-w-6xl mx-auto space-y-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="font-pixel text-[10px] text-pixel-yellow">
-            YEAR {room?.currentRound ?? scenario.round} / 6
+            YEAR {room?.currentRound ?? 1} / 6 · EVENT {eventNum}/{totalEvents || 4}
           </p>
           <p className="font-body text-xs text-gray-400">{city.studentName}'s City</p>
         </div>
@@ -126,64 +154,61 @@ export default function RoundScreen({
           pillars={city.pillars}
           builtAssets={city.builtAssets || []}
           animation={phase === 'resolution' ? animation : null}
-          className={worldEvent?.animationId === 'landfill-fire' ? 'animate-shake' : ''}
+          className={animation === 'landfill-fire' ? 'animate-shake' : ''}
         />
 
         <div className="space-y-4">
           {phase === 'growth' && (
             <div className="dialogue-box animate-pulse">
               <p className="font-pixel text-[9px] text-pixel-yellow mb-2">📈 GROWTH TICK</p>
-              <p>Population and affluence rise — waste and footprint grow automatically…</p>
+              <p>Population and affluence rise — waste pressure builds…</p>
             </div>
           )}
 
-          {(phase === 'scenario' || phase === 'decide' || phase === 'quiz') && (
+          {(phase === 'event' || phase === 'decide' || phase === 'quiz') && (
             <div className="dialogue-box">
               <p className="font-pixel text-[9px] text-pixel-yellow mb-2">
-                {scenario.title.toUpperCase()}
+                {isWorld ? '⚡ WORLD EVENT' : currentEvent.eventType === 'founding' ? '🏛️ FOUNDING CHARTER' : currentEvent.title.toUpperCase()}
               </p>
-              <p className="mb-2">{scenario.brief}</p>
-              <p className="text-xs text-pixel-accent italic mb-2">📚 {scenario.caseFact}</p>
-              <p className="text-xs text-gray-400">{scenario.decisionPrompt}</p>
-            </div>
-          )}
-
-          {worldEvent && room?.currentRound === room?.worldEventRound && phase !== 'leaderboard' && (
-            <div className="pixel-panel border-2 border-pixel-red bg-pixel-red/10">
-              <p className="font-pixel text-[9px] text-pixel-red">⚡ WORLD EVENT</p>
-              <p className="font-body text-sm mt-1">{worldEvent.name}</p>
-              <p className="font-body text-xs text-gray-400 mt-1">{worldEvent.lectureHook}</p>
+              {currentEvent.theme && (
+                <p className="text-[10px] text-pixel-accent mb-1">{currentEvent.theme}</p>
+              )}
+              <p className="mb-2">{currentEvent.brief}</p>
+              {currentEvent.caseFact && (
+                <p className="text-xs text-pixel-accent italic mb-2">📚 {currentEvent.caseFact}</p>
+              )}
+              {isWorld && currentEvent.lectureHook && (
+                <p className="text-xs text-gray-400">{currentEvent.lectureHook}</p>
+              )}
             </div>
           )}
 
           {phase === 'decide' && (
             <div className="space-y-2">
-              <p className="font-pixel text-[8px] text-gray-400">
-                SELECT 1–3 STRATEGIES · COST: {totalCost}/{city.budget}
-              </p>
-              <div className="grid gap-2 max-h-64 overflow-y-auto">
-                {scenario.options.map((cardId) => {
-                  const card = getStrategyCard(cardId);
-                  if (!card) return null;
-                  const cost = getCardCost(city, card, room?.marketModifiers ?? {});
-                  const affordable = cost <= city.budget;
+              <p className="font-pixel text-[8px] text-gray-400">CHOOSE YOUR RESPONSE</p>
+              <div className="grid gap-2 max-h-72 overflow-y-auto">
+                {currentEvent.actions?.map((action) => {
+                  const affordable = (action.cost ?? 0) <= city.budget;
                   return (
                     <button
-                      key={cardId}
+                      key={action.id}
                       type="button"
-                      disabled={!affordable && !selectedCards.includes(cardId)}
+                      disabled={!affordable && selectedAction !== action.id}
                       className={`strategy-card text-left p-3 ${
-                        selectedCards.includes(cardId) ? 'selected' : ''
+                        selectedAction === action.id ? 'selected' : ''
                       } ${!affordable ? 'opacity-50' : ''}`}
-                      onClick={() => toggleCard(cardId)}
+                      onClick={() => setSelectedAction(action.id)}
                     >
-                      <div className="flex justify-between items-start">
-                        <p className="font-pixel text-[8px] text-pixel-yellow">{card.name}</p>
-                        <span className="font-pixel text-[8px] text-pixel-yellow">💰{cost}</span>
+                      <div className="flex justify-between items-start gap-2">
+                        <p className="font-pixel text-[8px] text-pixel-yellow">
+                          {action.label}
+                        </p>
+                        <span className="font-pixel text-[8px] text-pixel-yellow shrink-0">
+                          💰{action.cost ?? 0}
+                        </span>
                       </div>
-                      <p className="font-body text-xs text-gray-400 mt-1">{card.explainer}</p>
                       <p className="font-body text-[10px] text-gray-500 mt-1 capitalize">
-                        Tier: {card.hierarchyTier}
+                        {action.hierarchyTier}
                       </p>
                     </button>
                   );
@@ -191,19 +216,23 @@ export default function RoundScreen({
               </div>
               <button
                 className="pixel-btn w-full"
-                onClick={() => (quizAnswer !== null ? handleSubmit() : setPhase('quiz'))}
-                disabled={submitted}
+                onClick={() =>
+                  currentEvent.justify && quizAnswer === null
+                    ? setPhase('quiz')
+                    : handleSubmit()
+                }
+                disabled={submitted || !selectedAction}
               >
-                Confirm Choices
+                Confirm Choice
               </button>
             </div>
           )}
 
-          {phase === 'quiz' && scenario.quiz && (
+          {phase === 'quiz' && currentEvent.justify && (
             <div className="dialogue-box space-y-3">
               <p className="font-pixel text-[9px] text-pixel-yellow">💡 JUSTIFY YOUR CHOICE</p>
-              <p className="font-body text-sm">{scenario.quiz.question}</p>
-              {scenario.quiz.options.map((opt, i) => (
+              <p className="font-body text-sm">{currentEvent.justify.question}</p>
+              {currentEvent.justify.options.map((opt, i) => (
                 <button
                   key={i}
                   className="strategy-card w-full text-left p-2 font-body text-sm"
@@ -217,18 +246,24 @@ export default function RoundScreen({
 
           {phase === 'resolution' && lastResult && (
             <div className="dialogue-box">
-              <p className="font-pixel text-[9px] text-pixel-green mb-2">✓ RESOLUTION</p>
-              {lastResult.results?.map((r, i) => (
-                <p key={i} className="font-body text-sm mb-1">
-                  {r.card?.name}: applied
-                  {Object.entries(r.effects || {})
-                    .filter(([k]) => ['environment', 'economy', 'liveability', 'capacity', 'circularity'].includes(k))
-                    .map(([k, v]) => ` · ${v > 0 ? '+' : ''}${v} ${k}`)
-                    .join('')}
-                </p>
-              ))}
-              <p className="font-body text-xs text-gray-400 mt-2">
-                Balance score: {city.balanceScore?.toFixed?.(1) ?? city.balanceScore}
+              <p className="font-pixel text-[9px] text-pixel-green mb-2">
+                ✓ {lastResult.justifyCorrect ? 'INSIGHT +4' : 'RESOLVED'}
+              </p>
+              {lastResult.resultExplain && (
+                <p className="font-body text-sm mb-2">{lastResult.resultExplain}</p>
+              )}
+              {Object.entries(lastResult.effects || {})
+                .filter(([k]) =>
+                  ['environment', 'economy', 'liveability', 'capacity', 'circularity'].includes(k)
+                )
+                .map(([k, v]) => (
+                  <p key={k} className="font-body text-xs text-gray-400">
+                    {v > 0 ? '+' : ''}
+                    {v} {k}
+                  </p>
+                ))}
+              <p className="font-body text-xs text-gray-500 mt-2">
+                Balance: {city.balanceScore?.toFixed?.(1) ?? '—'} · Insight: {city.insightPoints}
               </p>
             </div>
           )}
