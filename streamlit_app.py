@@ -43,6 +43,7 @@ from circular_city.multiplayer import (
     update_player_city,
 )
 from circular_city.room_store import get_room_store
+from circular_city.shuffle_actions import shuffle_actions, shuffle_seed_for_event
 from circular_city.year_summary import (
     display_label,
     event_narration,
@@ -473,24 +474,33 @@ def page_game(multiplayer: bool = False) -> None:
 
 
 def _page_decide(city: dict, event: dict, rnd: int) -> None:
-    for action in event.get("actions") or []:
+    st.caption(
+        "Pick one option below. What worked well and what was tricky shows up in your year summary after the round."
+    )
+    seed = shuffle_seed_for_event(event, city.get("id"), rnd)
+    for item in shuffle_actions(event.get("actions") or [], seed):
+        action = item["action"]
+        letter = item["display_letter"]
         cost = action.get("cost", 0)
         affordable = cost <= city["budget"]
-        if action.get("plainMeaning"):
-            st.caption(action["plainMeaning"])
-        if action.get("pros"):
-            st.caption(f"👍 {action['pros'][0]}")
-        if st.button(
-            f"{display_label(action)} — 💰{cost}",
-            key=f"act_{event['id']}_{action['id']}_{city.get('currentEventIndex')}",
-            disabled=not affordable,
-            use_container_width=True,
-        ):
-            st.session_state.pending_action = copy.deepcopy(action)
-            st.session_state.step = "quiz" if event.get("justify") else "result"
-            if not event.get("justify"):
-                _resolve_decision(city, event, action, 0, rnd)
-            st.rerun()
+        label = display_label(action)
+        meaning = action.get("plainMeaning") or action.get("meaning") or ""
+        lines = [f"**{letter}. {label}** — 💰{cost}"]
+        if meaning:
+            lines.append(f"_{meaning}_")
+        button_label = "\n\n".join(lines)
+        with st.container(border=True):
+            if st.button(
+                button_label,
+                key=f"act_{event['id']}_{action['id']}_{city.get('currentEventIndex')}",
+                disabled=not affordable,
+                use_container_width=True,
+            ):
+                st.session_state.pending_action = copy.deepcopy(action)
+                st.session_state.step = "quiz" if event.get("justify") else "result"
+                if not event.get("justify"):
+                    _resolve_decision(city, event, action, 0, rnd)
+                st.rerun()
 
 
 def _page_quiz(city: dict, event: dict) -> None:
@@ -552,14 +562,24 @@ def _page_year_summary(city: dict, rnd: int, multiplayer: bool) -> None:
     st.subheader(f"Year {rnd} in review")
     summary = generate_year_summary(city, rnd)
     st.markdown(f"**{summary['cityName']}** — population {summary['population']:,}, waste load {summary['wasteLoad']:,}")
+    st.caption(
+        "Here is what your choices meant — the good and the tricky parts. "
+        "Circular options are not always the best fit; every path has trade-offs."
+    )
     for entry in summary["entries"]:
         st.markdown(f"**{entry['title']}** — \"{entry['plainLabel']}\"")
-        st.markdown(f"👍 {entry['pro']}")
-        st.markdown(f"👎 {entry['con']}")
+        if entry.get("plainMeaning"):
+            st.caption(entry["plainMeaning"])
+        for pro in entry.get("pros") or []:
+            st.markdown(f"✓ {pro}")
+        for con in entry.get("cons") or []:
+            st.markdown(f"△ {con}")
         if entry.get("netEffect"):
             st.caption(f"📊 {entry['netEffect']}")
     st.markdown(f"**Score change:** {summary['scoreChange']:+}")
     st.markdown(summary["verdict"])
+    if summary.get("balanceLesson"):
+        st.markdown(f"**Remember:** {summary['balanceLesson']}")
     if summary.get("consequenceWatch"):
         st.info(f"**Consequence watch:** {summary['consequenceWatch']}")
     if st.button("Continue", type="primary"):

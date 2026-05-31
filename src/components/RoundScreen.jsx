@@ -5,6 +5,7 @@ import Leaderboard from './Leaderboard';
 import YearSummary from './YearSummary';
 import { gameConfig } from '../game/engine';
 import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
+import { shuffleActions, shuffleSeedForEvent } from '../game/shuffleActions';
 
 export default function RoundScreen({
   city,
@@ -30,6 +31,12 @@ export default function RoundScreen({
     if (!city || !room?.currentRound) return null;
     return generateYearSummary(city, room.currentRound);
   }, [city, room?.currentRound, roundComplete, phase]);
+
+  const shuffledChoices = useMemo(() => {
+    if (!currentEvent) return [];
+    const seed = shuffleSeedForEvent(currentEvent, city?.id ?? socketId, room?.currentRound);
+    return shuffleActions(currentEvent.actions ?? [], seed);
+  }, [currentEvent, currentEvent?.id, currentEvent?.actions, city?.id, socketId, room?.currentRound]);
 
   useEffect(() => {
     setPhase('growth');
@@ -215,41 +222,37 @@ export default function RoundScreen({
           {phase === 'decide' && (
             <div className="space-y-2">
               <p className="font-pixel text-[8px] text-gray-400">CHOOSE YOUR RESPONSE</p>
+              <p className="font-body text-[10px] text-gray-500">
+                Pick one option. Trade-offs appear in your year summary after this round.
+              </p>
               <div className="grid gap-2 max-h-80 overflow-y-auto">
-                {currentEvent.actions?.map((action) => {
+                {shuffledChoices.map(({ action, displayLetter }) => {
                   const affordable = (action.cost ?? 0) <= city.budget;
                   const label = getDisplayLabel(action);
+                  const meaning = action.plainMeaning || action.meaning;
                   return (
                     <button
                       key={action.id}
                       type="button"
                       disabled={!affordable && selectedAction !== action.id}
-                      className={`strategy-card text-left p-3 ${
+                      className={`choice-option ${
                         selectedAction === action.id ? 'selected' : ''
                       } ${!affordable ? 'opacity-50' : ''}`}
                       onClick={() => setSelectedAction(action.id)}
+                      aria-label={`Option ${displayLetter}: ${label}`}
                     >
-                      <div className="flex justify-between items-start gap-2">
-                        <p className="font-pixel text-[8px] text-pixel-yellow">{label}</p>
-                        <span className="font-pixel text-[8px] text-pixel-yellow shrink-0">
-                          💰{action.cost ?? 0}
+                      <span className="choice-option-letter" aria-hidden="true">
+                        {displayLetter}
+                      </span>
+                      <span className="choice-option-body">
+                        <span className="flex justify-between items-start gap-2 w-full">
+                          <span className="choice-option-title">{label}</span>
+                          <span className="font-pixel text-[8px] text-pixel-yellow shrink-0">
+                            💰{action.cost ?? 0}
+                          </span>
                         </span>
-                      </div>
-                      {action.plainMeaning && (
-                        <p className="font-body text-xs text-gray-400 mt-1 italic">
-                          {action.plainMeaning}
-                        </p>
-                      )}
-                      {action.pros?.[0] && (
-                        <p className="font-body text-[10px] text-green-400/80 mt-1">
-                          👍 {action.pros[0]}
-                        </p>
-                      )}
-                      {action.cons?.[0] && (
-                        <p className="font-body text-[10px] text-red-300/80">
-                          👎 {action.cons[0]}
-                        </p>
-                      )}
+                        {meaning && <span className="choice-option-meaning">{meaning}</span>}
+                      </span>
                     </button>
                   );
                 })}

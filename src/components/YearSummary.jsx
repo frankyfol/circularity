@@ -11,14 +11,38 @@ export default function YearSummary({ summary }) {
         {summary.wasteLoad?.toLocaleString?.() ?? summary.wasteLoad}
       </p>
 
+      <p className="font-body text-xs text-gray-400 border-b border-gray-700 pb-3">
+        Here is what your choices meant — the good and the tricky parts. Circular options are not
+        always the best fit; every path has trade-offs.
+      </p>
+
       <div className="space-y-3">
-        <p className="font-pixel text-[8px] text-gray-400">YOU CHOSE</p>
+        <p className="font-pixel text-[8px] text-gray-400">YOUR DECISIONS THIS YEAR</p>
         {summary.entries.map((entry, i) => (
-          <div key={i} className="border-l-2 border-pixel-accent pl-3 space-y-1">
+          <div key={i} className="border-l-2 border-pixel-accent pl-3 space-y-1.5">
             <p className="font-body text-sm font-medium">{entry.title}</p>
             <p className="font-body text-sm text-pixel-yellow">&ldquo;{entry.plainLabel}&rdquo;</p>
-            <p className="font-body text-xs text-green-400/90">👍 {entry.pro}</p>
-            <p className="font-body text-xs text-red-300/90">👎 {entry.con}</p>
+            {entry.plainMeaning && (
+              <p className="font-body text-xs text-gray-400 italic">{entry.plainMeaning}</p>
+            )}
+            {entry.pros?.length > 0 && (
+              <ul className="space-y-0.5">
+                {entry.pros.map((p, j) => (
+                  <li key={j} className="font-body text-xs text-green-400/90">
+                    ✓ {p}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {entry.cons?.length > 0 && (
+              <ul className="space-y-0.5">
+                {entry.cons.map((c, j) => (
+                  <li key={j} className="font-body text-xs text-red-300/90">
+                    △ {c}
+                  </li>
+                ))}
+              </ul>
+            )}
             {entry.netEffect && (
               <p className="font-body text-[10px] text-gray-500">📊 {entry.netEffect}</p>
             )}
@@ -33,6 +57,13 @@ export default function YearSummary({ summary }) {
       </p>
 
       <p className="font-body text-sm">{summary.verdict}</p>
+
+      {summary.balanceLesson && (
+        <p className="font-body text-xs text-gray-300 border-t border-gray-700 pt-2">
+          <span className="font-pixel text-[8px] text-pixel-yellow">REMEMBER: </span>
+          {summary.balanceLesson}
+        </p>
+      )}
 
       {summary.consequenceWatch && (
         <p className="font-body text-xs text-pixel-accent italic border-t border-gray-700 pt-2">

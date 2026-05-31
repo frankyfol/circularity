@@ -46,6 +46,36 @@
   .strategy-card.selected {
     @apply border-pixel-green bg-pixel-green/10;
   }
+
+  .choice-option {
+    @apply flex gap-3 items-start text-left w-full p-3 cursor-pointer transition-colors
+           border-2 border-pixel-border bg-pixel-panel hover:border-pixel-accent;
+  }
+
+  .choice-option.selected {
+    @apply border-pixel-green bg-pixel-green/10 shadow-[0_0_0_1px_#3e8948];
+  }
+
+  .choice-option-letter {
+    @apply shrink-0 w-8 h-8 flex items-center justify-center font-pixel text-[10px]
+           text-pixel-yellow border-2 border-pixel-border bg-pixel-bg;
+  }
+
+  .choice-option.selected .choice-option-letter {
+    @apply bg-pixel-green text-pixel-bg border-pixel-green;
+  }
+
+  .choice-option-body {
+    @apply flex-1 min-w-0 flex flex-col gap-1;
+  }
+
+  .choice-option-title {
+    @apply font-pixel text-[9px] text-pixel-yellow leading-snug;
+  }
+
+  .choice-option-meaning {
+    @apply font-body text-xs text-gray-400 leading-relaxed;
+  }
 }
 
 @keyframes float-up {
