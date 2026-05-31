@@ -91,15 +91,17 @@ def init_session() -> None:
 
 def render_backend_banner() -> None:
     store = get_room_store()
-    if store.backend_name() == "memory":
-        st.warning(
-            "**Local multiplayer store** — teacher + students work in multiple tabs on "
-            "*one* machine running `streamlit run`. For **Streamlit Cloud**, add "
-            "`UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in app Secrets "
-            "(free tier at [upstash.com](https://upstash.com))."
+    if store.backend_name() == "redis":
+        st.success(
+            "**Classroom multiplayer is ready** — shared rooms use your Upstash Redis database. "
+            "Teacher and students can join the same room code from different devices."
         )
     else:
-        st.caption("☁️ Shared room store: Upstash Redis")
+        st.warning(
+            "**Local-only multiplayer** — rooms work in multiple tabs on one `streamlit run` "
+            "session only. On Streamlit Cloud, add secrets `UPSTASH_REDIS_REST_URL` and "
+            "`UPSTASH_REDIS_REST_TOKEN`, then **reboot the app**."
+        )
 
 
 def render_pillars(city: dict) -> None:
@@ -112,6 +114,10 @@ def render_pillars(city: dict) -> None:
 
 def render_sidebar(city: dict | None, room: dict | None = None) -> None:
     st.sidebar.header("Status")
+    backend = get_room_store().backend_name()
+    st.sidebar.caption(
+        "☁️ Redis connected" if backend == "redis" else "💻 Local memory store"
+    )
     if room:
         st.sidebar.metric("Room", room["code"])
         st.sidebar.caption(f"Phase: **{room['phase']}** · Year **{room.get('currentRound', 0)}**/6")
