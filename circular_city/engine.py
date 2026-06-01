@@ -324,15 +324,21 @@ def apply_event_action(
     }
 
 
-def record_quiz_answer(city: dict, correct: bool) -> dict:
+def record_quiz_answer(city: dict, correct: bool, tier: str | None = None) -> int:
+    from circular_city.quiz import get_insight_bonus_for_tier
+
     cfg = game_config()
+    insight_bonus = 0
     if correct:
-        city["insightPoints"] += cfg["insightBonusPerCorrect"]
+        insight_bonus = get_insight_bonus_for_tier(
+            tier or (city.get("sessionConfig") or {}).get("quizTier")
+        )
+        city["insightPoints"] += insight_bonus
         city["quizStreak"] += 1
     else:
         city["quizStreak"] = 0
     city["insightPoints"] = min(city["insightPoints"], cfg["maxInsightBonus"])
-    return city
+    return insight_bonus
 
 
 def resolve_event_justify(
@@ -354,9 +360,18 @@ def resolve_event_justify(
             shuffle_context.get("round"),
         )
         correct_index = shuffle_justify_options(justify, seed)["correctIndex"]
+    from circular_city.quiz import get_explanation_for_answer
+
     correct = answer_index == correct_index
-    record_quiz_answer(city, correct)
-    return {"correct": correct, "conceptTag": justify.get("conceptTag")}
+    tier = event.get("activeQuizTier") or (city.get("sessionConfig") or {}).get("quizTier")
+    insight_bonus = record_quiz_answer(city, correct, tier)
+    explanation = get_explanation_for_answer(justify, answer_index)
+    return {
+        "correct": correct,
+        "conceptTag": justify.get("conceptTag"),
+        "explanation": explanation,
+        "insightBonus": insight_bonus,
+    }
 
 
 def process_delayed_effects(city: dict) -> None:
@@ -443,8 +458,15 @@ def generate_report_card(city: dict) -> dict:
     }
 
 
-def prepare_round_for_city(city: dict, round_num: int, teacher_world_event: dict | None = None) -> list[dict]:
-    return ev.build_round_event_queue(city, round_num, teacher_world_event)
+def prepare_round_for_city(
+    city: dict,
+    round_num: int,
+    session_config: dict | None = None,
+) -> list[dict]:
+    from circular_city.session_plan import create_solo_session_config, prepare_round_for_session
+
+    cfg = session_config or city.get("sessionConfig") or create_solo_session_config()
+    return prepare_round_for_session(city, round_num, cfg)
 
 
 def get_current_event(city: dict) -> dict | None:

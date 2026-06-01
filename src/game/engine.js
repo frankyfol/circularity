@@ -5,12 +5,16 @@ import {
   checkTransitionRules,
   applyWorldEventConditionals,
   worldEventMarketModifiers,
-  buildRoundEventQueue,
   getCurrentEvent,
   pickWorldEvent,
   foundingEvent,
 } from './eventEngine.js';
 import { shuffleJustifyOptions, shuffleSeedForEvent } from './shuffleActions.js';
+import { getInsightBonusForTier, getExplanationForAnswer } from './quiz.js';
+import {
+  prepareRoundForSession,
+  createSoloSessionConfig,
+} from './sessionPlan.js';
 import { getArchetypeProfile, getTierCostModifier } from './archetype.js';
 import {
   initWasteFlowState,
@@ -429,8 +433,10 @@ export function resolveEventJustify(city, event, answerIndex, shuffleContext = n
     correctIndex = shuffleJustifyOptions(justify, seed).correctIndex;
   }
   const correct = answerIndex === correctIndex;
-  recordQuizAnswer(city, correct);
-  return { correct, conceptTag: justify.conceptTag };
+  const tier = event?.activeQuizTier || city.sessionConfig?.quizTier;
+  const insightBonus = recordQuizAnswer(city, correct, tier);
+  const explanation = getExplanationForAnswer(justify, answerIndex);
+  return { correct, conceptTag: justify.conceptTag, explanation, insightBonus };
 }
 
 export function advanceToNextEvent(city) {
@@ -442,15 +448,17 @@ export function advanceToNextEvent(city) {
   return getCurrentEvent(city);
 }
 
-export function recordQuizAnswer(city, correct) {
+export function recordQuizAnswer(city, correct, tier) {
+  let insightBonus = 0;
   if (correct) {
-    city.insightPoints += gameConfig.insightBonusPerCorrect;
+    insightBonus = getInsightBonusForTier(tier || city.sessionConfig?.quizTier);
+    city.insightPoints += insightBonus;
     city.quizStreak += 1;
   } else {
     city.quizStreak = 0;
   }
   city.insightPoints = Math.min(city.insightPoints, gameConfig.maxInsightBonus);
-  return city;
+  return insightBonus;
 }
 
 export function calculateBalanceScore(city) {
@@ -595,8 +603,9 @@ export function pickRandomWorldEvent(excludeIds = []) {
   return pickWorldEvent(excludeIds);
 }
 
-export function prepareRoundForCity(city, round, teacherWorldEvent) {
-  return buildRoundEventQueue(city, round, teacherWorldEvent);
+export function prepareRoundForCity(city, round, sessionConfig = null) {
+  const cfg = sessionConfig ?? city.sessionConfig ?? createSoloSessionConfig();
+  return prepareRoundForSession(city, round, cfg);
 }
 
 export function applyWorldEventFlatAndConditionals(city, worldEvent, round) {
@@ -610,5 +619,4 @@ export {
   foundingEvent,
   worldEventMarketModifiers,
   getCurrentEvent,
-  buildRoundEventQueue,
 };

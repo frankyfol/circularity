@@ -1,0 +1,4055 @@
+{
+  "_comment": "Quiz bank for Circular City. Keyed by event id. Each event has three difficulty tiers (easy/standard/hard); each tier has question, options, correctIndex (0-based), and optionExplanations (one per option: why the correct one is right, why each distractor is wrong). Edit here and re-run build_events to regenerate events.json. Teacher selects the live tier via config.quiz.difficulty.",
+  "quizzes": {
+    "r1_founding": {
+      "easy": {
+        "question": "Which approach treats rubbish as a resource instead of just throwing it away?",
+        "options": [
+          "Recycling and reducing waste",
+          "Burying everything in a tip",
+          "Throwing it in a river",
+          "Ignoring it"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: recycling and reducing keep materials in use — a circular city.",
+          "Wrong: burying discards materials — that's linear.",
+          "Wrong: river dumping pollutes and wastes materials.",
+          "Wrong: ignoring waste solves nothing."
+        ]
+      },
+      "standard": {
+        "question": "A council adopts a 'collect-and-bury' approach as its founding waste strategy. Which statement BEST explains why this is the least aligned with sustainable urban development?",
+        "options": [
+          "It treats discarded material as a resource, closing the materials loop",
+          "It sustains a linear throughput of resources and externalises long-term costs onto future land, air and water",
+          "It is the most expensive option and immediately strains the municipal budget",
+          "It maximises citizen participation in waste reduction"
+        ],
+        "correctIndex": 1,
+        "optionExplanations": [
+          "Wrong: closing the loop describes a circular metabolism; burying waste discards materials and is linear.",
+          "Correct: linear disposal keeps resource throughput high and shifts costs (leachate, methane, lost land) to the future and surrounding areas.",
+          "Wrong: disposal is the cheapest option up front; its costs are long-term and externalised, not an immediate budget hit.",
+          "Wrong: burial requires no behaviour change — participation is associated with reduce/recycle strategies, not disposal."
+        ]
+      },
+      "hard": {
+        "question": "A planner argues disposal-led management is 'most rational' for a fast-growing low-income city with cheap land. What is the strongest sustainability counter-argument?",
+        "options": [
+          "Even with cheap land, disposal externalises rising leachate, methane and health costs that compound as the city grows",
+          "Disposal is more expensive than recycling from the very first day",
+          "Cheap land is never available in low-income cities",
+          "Disposal prevents any economic growth at all"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the costs are deferred and externalised, growing with the city — the core sustainability objection.",
+          "Wrong: disposal is cheapest up front; the issue is long-term cost.",
+          "Wrong: an overgeneralisation; such land often does exist.",
+          "Wrong: overstated — disposal does not preclude growth."
+        ]
+      }
+    },
+    "r1_packaging_boom": {
+      "easy": {
+        "question": "Why is using less packaging better than recycling it?",
+        "options": [
+          "Less waste is created in the first place",
+          "It makes more rubbish",
+          "It is completely free",
+          "Recycling is banned"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: prevented waste never needs handling.",
+          "Wrong: reducing means less waste, not more.",
+          "Wrong: it has some cost, but avoids waste.",
+          "Wrong: recycling isn't banned."
+        ]
+      },
+      "standard": {
+        "question": "Reduction sits above recycling in the waste hierarchy. Which reasoning BEST justifies that ranking?",
+        "options": [
+          "Recycling is technically impossible for most packaging",
+          "Preventing waste avoids the energy, emissions and cost of later collecting, sorting and reprocessing it",
+          "Reduction generates more recyclable material to sell",
+          "Recycling inevitably contaminates groundwater"
+        ],
+        "correctIndex": 1,
+        "optionExplanations": [
+          "Wrong: most packaging is recyclable; technical impossibility is not the basis of the hierarchy.",
+          "Correct: waste never created needs no downstream handling, so prevention avoids all those costs and impacts.",
+          "Wrong: reduction lowers the amount of material entering the stream — the opposite of generating more.",
+          "Wrong: leachate is a landfill issue, not an inherent feature of recycling."
+        ]
+      },
+      "hard": {
+        "question": "Critics call a packaging tax 'slow and ineffective'. Which response best defends it on sustainability grounds?",
+        "options": [
+          "By internalising disposal costs it shifts producer and consumer behaviour toward less packaging, even if benefits lag",
+          "It immediately eliminates all packaging waste",
+          "It guarantees higher recycling revenue this year",
+          "It has no effect on behaviour"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: pricing externalities changes behaviour over time — the lag is expected, not a refutation.",
+          "Wrong: overstated; change is gradual.",
+          "Wrong: it targets reduction, not short-term revenue.",
+          "Wrong: that contradicts the rationale for the tax."
+        ]
+      }
+    },
+    "r1_fast_fashion": {
+      "easy": {
+        "question": "What do cheap goods 'made to be thrown away' do to a city's rubbish?",
+        "options": [
+          "Increase it",
+          "Decrease it",
+          "Have no effect",
+          "Recycle it automatically"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: constant replacement piles up waste.",
+          "Wrong: they add waste, not reduce it.",
+          "Wrong: they clearly add to the bins.",
+          "Wrong: throwaway goods aren't auto-recycled."
+        ]
+      },
+      "standard": {
+        "question": "Why does a 'right to repair' law tackle the waste problem more fundamentally than simply expanding collection?",
+        "options": [
+          "It extends product lifespans, reducing the volume of goods entering the waste stream",
+          "It increases manufacturing output to meet demand",
+          "It removes the need for any recycling system",
+          "It lowers collection costs without changing consumption"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: durable, repairable goods are replaced less often, cutting waste at its structural source.",
+          "Wrong: it slows replacement demand, so it tends to reduce, not increase, output.",
+          "Wrong: it reduces but does not eliminate end-of-life waste; recycling is still needed.",
+          "Wrong: that describes a collection efficiency, not addressing the root driver (built-in obsolescence)."
+        ]
+      },
+      "hard": {
+        "question": "Why might 'right to repair' regulation cut waste more durably than subsidising repair cafés?",
+        "options": [
+          "It changes product design upstream, addressing the structural cause rather than only the symptom",
+          "Repair cafés increase manufacturing output",
+          "Regulation removes the need for any recycling",
+          "Subsidies always outperform regulation"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: mandating repairable design tackles obsolescence at source, a more durable fix.",
+          "Wrong: cafés extend product life, not raise output.",
+          "Wrong: recycling is still needed.",
+          "Wrong: unsupported absolute claim."
+        ]
+      }
+    },
+    "r1_food_delivery": {
+      "easy": {
+        "question": "Why is takeaway packaging often hard to recycle?",
+        "options": [
+          "It is dirty with food",
+          "It is made of gold",
+          "It is always spotless",
+          "It disappears by itself"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: food contamination makes much of it non-recyclable.",
+          "Wrong: it's cheap plastic, not gold.",
+          "Wrong: it's usually soiled.",
+          "Wrong: plastic does not vanish."
+        ]
+      },
+      "standard": {
+        "question": "The delivery surge raised plastic waste sharply. Why is this difficult to solve through recycling alone?",
+        "options": [
+          "Food-contaminated single-use plastics are often non-recyclable, keeping capture rates low",
+          "Most delivery packaging is biodegradable",
+          "Recycling mixed plastics is always profitable",
+          "Delivery packaging is predominantly glass"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: contamination by food makes much of this plastic uneconomic or impossible to recycle, so it leaks to disposal.",
+          "Wrong: the packaging is largely non-biodegradable plastic.",
+          "Wrong: mixed-plastic recycling is frequently loss-making and price-volatile.",
+          "Wrong: it is overwhelmingly plastic, not glass."
+        ]
+      },
+      "hard": {
+        "question": "A city adds recycling points for takeaway waste but capture stays low. What is the most likely explanation?",
+        "options": [
+          "Food contamination makes much single-use plastic unrecyclable regardless of bin provision",
+          "Residents recycle too enthusiastically",
+          "Plastic is biodegradable, so it isn't collected",
+          "Recycling points reduce the waste generated"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: contamination, not bin availability, is the binding constraint here.",
+          "Wrong: nonsensical as a cause of low capture.",
+          "Wrong: the plastic is non-biodegradable.",
+          "Wrong: conflates collection points with source reduction."
+        ]
+      }
+    },
+    "r1_new_suburb": {
+      "easy": {
+        "question": "Why set up recycling in a new neighbourhood from the start?",
+        "options": [
+          "Habits are hard to change later",
+          "New areas make no waste",
+          "Fixing later is always cheaper",
+          "It removes the need for bins"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: early habits and infrastructure stick.",
+          "Wrong: occupied homes make waste at once.",
+          "Wrong: retrofitting is usually pricier.",
+          "Wrong: collection is still needed."
+        ]
+      },
+      "standard": {
+        "question": "Why is building waste infrastructure into a new district from the outset more sustainable than retrofitting later?",
+        "options": [
+          "It locks in collection-and-disposal patterns and infrastructure that are costly to reverse once established",
+          "New districts generate no waste in their first years",
+          "Retrofitting is always cheaper than building new",
+          "It removes the need for any collection service"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: path dependency means early infrastructure and habits shape behaviour for decades; changing them later is expensive.",
+          "Wrong: occupied homes generate waste immediately.",
+          "Wrong: retrofitting established systems is generally more expensive and disruptive.",
+          "Wrong: collection is still required regardless of design."
+        ]
+      },
+      "hard": {
+        "question": "Designing circular systems into a new district is defended on 'path dependency'. What does that mean?",
+        "options": [
+          "Early infrastructure and habits become self-reinforcing, making later change costly",
+          "New districts are legally exempt from waste rules",
+          "Waste systems have no influence on behaviour",
+          "Costs always fall over time regardless of design"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: initial choices lock in trajectories that are expensive to reverse.",
+          "Wrong: no such exemption exists.",
+          "Wrong: infrastructure shapes behaviour.",
+          "Wrong: retrofitting is typically costlier."
+        ]
+      }
+    },
+    "r1_collection_gap": {
+      "easy": {
+        "question": "Why is rubbish left uncollected in the streets dangerous?",
+        "options": [
+          "It spreads disease and pests",
+          "It only looks untidy",
+          "It keeps people healthy",
+          "It has no effect"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: piles breed pests and pollute water.",
+          "Wrong: it's a health hazard, not just messy.",
+          "Wrong: it harms, not helps, health.",
+          "Wrong: it has serious effects."
+        ]
+      },
+      "standard": {
+        "question": "Uncollected waste in dense low-income districts is primarily a sustainability concern because it...",
+        "options": [
+          "creates disease vectors and contaminates water, undermining the social and environmental pillars of SUD",
+          "directly lowers national GDP figures",
+          "is purely an aesthetic nuisance",
+          "raises recycling rates through informal picking"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: accumulating waste breeds pests and pollutes water, harming health (social) and ecosystems (environmental).",
+          "Wrong: any GDP effect is indirect; the core concern is health and environmental harm.",
+          "Wrong: it is a serious health hazard, not merely unsightly.",
+          "Wrong: informal picking may occur, but it does not offset the public-health emergency and is not the primary concern."
+        ]
+      },
+      "hard": {
+        "question": "In low-income cities, which mechanism most directly turns uncollected waste into a public-health crisis?",
+        "options": [
+          "Disease vectors breeding in waste while leachate contaminates water supplies",
+          "The aesthetic decline of neighbourhoods",
+          "Reduced property-tax revenue",
+          "Increased informal recycling activity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: vectors and water contamination are the direct disease pathways.",
+          "Wrong: appearance is secondary to health.",
+          "Wrong: a fiscal effect, not the health mechanism.",
+          "Wrong: a side-effect, not the cause of the crisis."
+        ]
+      }
+    },
+    "r1_recycling_pilot": {
+      "easy": {
+        "question": "Recycling bins only work well if...",
+        "options": [
+          "people actually sort their waste",
+          "the bins are a nice colour",
+          "the city is rich",
+          "a landfill is nearby"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: sorting by residents is essential.",
+          "Wrong: colour barely matters.",
+          "Wrong: money alone can't force sorting.",
+          "Wrong: landfill distance is irrelevant."
+        ]
+      },
+      "standard": {
+        "question": "Heavily-funded source-separation schemes can still fail. Which factor is the decisive variable?",
+        "options": [
+          "Citizen participation and low contamination, since mixed/contaminated streams cannot be economically reprocessed",
+          "The colour scheme of the bins",
+          "The size of the municipal budget on its own",
+          "Proximity of homes to the nearest landfill"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: recycling economics depend on clean, well-sorted material; without participation, contamination collapses the system.",
+          "Wrong: bin design is marginal compared with sorting behaviour.",
+          "Wrong: money buys infrastructure but cannot force correct sorting — participation is the binding constraint.",
+          "Wrong: distance to landfill does not determine recycling success."
+        ]
+      },
+      "hard": {
+        "question": "Two cities invest equally in source separation; one recycles far more. The decisive difference is most likely...",
+        "options": [
+          "participation and contamination levels, which determine how much material is truly recoverable",
+          "the brand of collection vehicles",
+          "proximity to the nearest incinerator",
+          "the size of the city's debt"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: behaviour and material quality drive recovery once investment is equal.",
+          "Wrong: vehicle brand is immaterial.",
+          "Wrong: incinerator distance is irrelevant.",
+          "Wrong: debt does not determine recycling capture."
+        ]
+      }
+    },
+    "r1_industrial_zone": {
+      "easy": {
+        "question": "Besides homes, what else creates a city's waste?",
+        "options": [
+          "Factories and businesses",
+          "Only households",
+          "Nothing else",
+          "Rivers"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: industry and commerce produce lots of waste.",
+          "Wrong: homes aren't the only source.",
+          "Wrong: many sources exist.",
+          "Wrong: rivers aren't a waste source."
+        ]
+      },
+      "standard": {
+        "question": "Planning a city's waste system only around household rubbish is inadequate because...",
+        "options": [
+          "industrial and commercial activity generate large, varied and sometimes hazardous streams the system must handle",
+          "households are the sole source of hazardous waste",
+          "industry produces no waste of its own",
+          "commercial waste is automatically recycled"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: urban waste includes substantial industrial/commercial flows with different handling needs.",
+          "Wrong: industry, not households, is the main source of many hazardous wastes.",
+          "Wrong: industrial processes are significant waste generators.",
+          "Wrong: commercial waste is not recycled by default; it must be managed."
+        ]
+      },
+      "hard": {
+        "question": "Why can attracting industry boost the economy yet worsen the sustainability scorecard at once?",
+        "options": [
+          "It adds revenue but also generates varied and hazardous waste the system must absorb",
+          "Industry produces no waste, so there is no trade-off",
+          "Economic growth always improves environmental indicators",
+          "Hazardous waste is automatically recycled"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: economic and environmental indicators can move in opposite directions — a real trade-off.",
+          "Wrong: industry is a major waste source.",
+          "Wrong: growth and environment can conflict.",
+          "Wrong: hazardous waste needs deliberate handling."
+        ]
+      }
+    },
+    "r1_river_dumping": {
+      "easy": {
+        "question": "Why does throwing rubbish in a river harm faraway places?",
+        "options": [
+          "It flows downstream and pollutes",
+          "It stays in one spot",
+          "Rivers clean all waste",
+          "It only affects fish prices"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: water carries pollution far away.",
+          "Wrong: it spreads, not stays.",
+          "Wrong: rivers carry, not clean, waste.",
+          "Wrong: harm is far broader than prices."
+        ]
+      },
+      "standard": {
+        "question": "'Wrap-and-throw' river dumping shows how local mismanagement becomes a regional problem because...",
+        "options": [
+          "leachate and waste travel downstream, contaminating water sources and coasts far from the source",
+          "rivers neutralise all contaminants they carry",
+          "the impact is confined to the exact dumping point",
+          "it only affects local fish-market prices"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: flowing water transports pollutants, spreading contamination across the catchment and to the sea.",
+          "Wrong: rivers transport, not neutralise, most contaminants.",
+          "Wrong: the whole point is that effects spread well beyond the dumping site.",
+          "Wrong: the harm is ecological and public-health, far broader than fish prices."
+        ]
+      },
+      "hard": {
+        "question": "'Wrap and throw' is best understood as a symptom of which underlying failure?",
+        "options": [
+          "Absent sanitation and collection, leaving residents no managed alternative",
+          "Excessive recycling enthusiasm",
+          "Over-investment in landfills",
+          "A surplus of clean water"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it is a coping response to missing infrastructure.",
+          "Wrong: unrelated to recycling.",
+          "Wrong: the problem is too little infrastructure, not too much.",
+          "Wrong: water scarcity/quality is the consequence, not the cause."
+        ]
+      }
+    },
+    "r1_school_campaign": {
+      "easy": {
+        "question": "Why teach children about recycling?",
+        "options": [
+          "It builds good habits for the future",
+          "Bins sort waste by themselves",
+          "It replaces all bins",
+          "Habits don't matter"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: participation depends on attitudes.",
+          "Wrong: bins don't sort themselves.",
+          "Wrong: education adds to, not replaces, infrastructure.",
+          "Wrong: habits strongly affect recycling."
+        ]
+      },
+      "standard": {
+        "question": "Waste education yields little in the current year. On what grounds is the investment still defended?",
+        "options": [
+          "Participation is the binding constraint on whether reduce/recycle systems actually work",
+          "Bins sort waste automatically regardless of behaviour",
+          "Education removes the need for any infrastructure",
+          "Public attitudes have no measurable effect on recycling outcomes"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: even good infrastructure fails without behaviour change, so building participation is a long-term enabler.",
+          "Wrong: sorting depends on people, not the bins themselves.",
+          "Wrong: education complements but cannot replace collection and processing infrastructure.",
+          "Wrong: participation rates strongly determine real recycling performance."
+        ]
+      },
+      "hard": {
+        "question": "Education spending yields no metric gain this year. On what basis is it still rational?",
+        "options": [
+          "It builds future participation, the binding constraint on whether recovery systems succeed",
+          "It substitutes entirely for collection infrastructure",
+          "It produces immediate measurable recycling gains",
+          "Attitudes are irrelevant to system performance"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it is a long-term investment in the factor that limits recovery.",
+          "Wrong: it complements, not replaces, infrastructure.",
+          "Wrong: that contradicts the premise of a lag.",
+          "Wrong: attitudes strongly shape outcomes."
+        ]
+      }
+    },
+    "r1_ewaste_influx": {
+      "easy": {
+        "question": "Why is old electronics ('e-waste') special?",
+        "options": [
+          "It has valuable metals and toxic parts",
+          "It is food waste",
+          "It is harmless and rots away",
+          "It has no value"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it holds recoverable metals and toxics.",
+          "Wrong: it isn't food waste.",
+          "Wrong: it's toxic and non-biodegradable.",
+          "Wrong: its metals have real value."
+        ]
+      },
+      "standard": {
+        "question": "Why should e-waste be treated as a resource stream rather than ordinary rubbish?",
+        "options": [
+          "It contains recoverable critical materials and hazardous substances that must be contained",
+          "It is biodegradable and harmless if buried",
+          "It cannot be recycled by any known method",
+          "It has no economic value"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: e-waste holds valuable critical/rare-earth materials and toxics, so recovery captures value and prevents contamination.",
+          "Wrong: it is non-biodegradable and leaches heavy metals.",
+          "Wrong: established 'urban mining' processes recover its materials.",
+          "Wrong: the recoverable metals give it real economic value."
+        ]
+      },
+      "hard": {
+        "question": "Why is e-waste described as simultaneously a hazard and an opportunity?",
+        "options": [
+          "It contains toxic substances needing containment and critical materials worth recovering",
+          "It is biodegradable yet valuable",
+          "It is harmless but worthless",
+          "It is both impossible to recycle and toxic"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the dual nature — risk and resource — defines how it should be handled.",
+          "Wrong: it is not biodegradable.",
+          "Wrong: it is hazardous and valuable, not harmless/worthless.",
+          "Wrong: it is recyclable via urban mining."
+        ]
+      }
+    },
+    "r2_landfill_full": {
+      "easy": {
+        "question": "Why can't a city just keep building new tips?",
+        "options": [
+          "Land runs out and tips pollute",
+          "Land is unlimited",
+          "Tips are free forever",
+          "Tips recycle the waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: land is finite and tips cause pollution.",
+          "Wrong: urban land is scarce.",
+          "Wrong: tips have ongoing costs.",
+          "Wrong: tips store, not recycle."
+        ]
+      },
+      "standard": {
+        "question": "Why is responding to a full landfill by simply opening another one regarded as an unsustainable 'trap' rather than a solution?",
+        "options": [
+          "Land is finite and every new site reproduces lasting leachate, methane and land-opportunity costs",
+          "Landfills can be operated indefinitely at no environmental cost",
+          "Suitable land near cities is effectively unlimited",
+          "Landfills recycle the waste they receive"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it postpones the problem while consuming scarce land and locking in long-term pollution liabilities.",
+          "Wrong: landfills carry ongoing leachate, gas and monitoring costs.",
+          "Wrong: peri-urban land is scarce and contested, which is the core constraint.",
+          "Wrong: landfills store waste; they do not recycle it."
+        ]
+      },
+      "hard": {
+        "question": "Why is 'build another landfill' described as deferring rather than solving the problem?",
+        "options": [
+          "It consumes finite land and creates long-lived liabilities without reducing waste generation",
+          "Landfills permanently neutralise the waste they receive",
+          "Land near cities is effectively abundant",
+          "It eliminates the need for collection"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it postpones the issue while adding liabilities and using scarce land.",
+          "Wrong: landfills store, not neutralise.",
+          "Wrong: peri-urban land is scarce.",
+          "Wrong: collection is still required."
+        ]
+      }
+    },
+    "r2_open_dump_pressure": {
+      "easy": {
+        "question": "What makes a proper landfill safer than an open dump?",
+        "options": [
+          "Lining and controls that stop pollution leaking",
+          "Only its name",
+          "It is bigger",
+          "It takes more waste daily"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: engineering contains the pollution.",
+          "Wrong: it's not just a name.",
+          "Wrong: size isn't the point.",
+          "Wrong: throughput isn't the point."
+        ]
+      },
+      "standard": {
+        "question": "What fundamentally distinguishes an engineered landfill from an open dump?",
+        "options": [
+          "Containment engineering — lining, leachate treatment and gas control that limit contamination",
+          "Only the official name authorities give the site",
+          "Open dumps always cover a larger area",
+          "Engineered landfills simply accept more waste per day"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the defining difference is the engineered barriers and treatment that contain pollution.",
+          "Wrong: it is an engineering distinction, not a naming one.",
+          "Wrong: size is not the distinguishing feature.",
+          "Wrong: throughput is not what makes a site 'engineered'."
+        ]
+      },
+      "hard": {
+        "question": "Evaluating the cheapest disposal route, what is the central hidden cost of an open dump?",
+        "options": [
+          "Externalised health and environmental damage borne mainly by nearby poor communities",
+          "Higher upfront capital than engineered sites",
+          "Lower daily capacity than a sealed tip",
+          "Excessive recycling output"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the 'cheapness' relies on costs being shifted onto the vulnerable.",
+          "Wrong: open dumps are cheaper up front, not dearer.",
+          "Wrong: capacity is not the hidden cost.",
+          "Wrong: dumps do not boost recycling."
+        ]
+      }
+    },
+    "r2_semakau_offshore": {
+      "easy": {
+        "question": "Why line the bottom of a landfill?",
+        "options": [
+          "To stop toxic liquid reaching water",
+          "To make it look neat",
+          "To speed up rotting",
+          "No real reason"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: lining keeps leachate out of water.",
+          "Wrong: looks aren't the function.",
+          "Wrong: it contains liquid, not speeds decay.",
+          "Wrong: it has a clear purpose."
+        ]
+      },
+      "standard": {
+        "question": "Why is impermeable lining MOST critical when a landfill sits above or near an aquifer?",
+        "options": [
+          "Leachate can percolate into groundwater that communities rely on for drinking water",
+          "Lining mainly makes the site look tidier",
+          "Lining speeds up decomposition of the waste",
+          "The presence of an aquifer is irrelevant to landfill design"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: without a barrier, toxic leachate reaches the aquifer, directly threatening water supplies.",
+          "Wrong: appearance is not the function of lining.",
+          "Wrong: lining contains liquids; it does not accelerate decomposition.",
+          "Wrong: an underlying aquifer is precisely what makes containment essential."
+        ]
+      },
+      "hard": {
+        "question": "Why is full lining and leachate treatment most justified above an aquifer, despite the cost?",
+        "options": [
+          "Contaminating a drinking-water aquifer is largely irreversible and high-consequence",
+          "Lining mainly improves the site's appearance",
+          "Aquifers accelerate waste decomposition",
+          "Cost is the only relevant factor"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: irreversibility and high stakes justify the expense.",
+          "Wrong: appearance is not the rationale.",
+          "Wrong: aquifers do not speed decay.",
+          "Wrong: consequence, not just cost, drives the decision."
+        ]
+      }
+    },
+    "r2_hinterland_protest": {
+      "easy": {
+        "question": "Why isn't sending waste to a faraway town a real fix?",
+        "options": [
+          "The waste and harm still exist, just elsewhere",
+          "It destroys the waste",
+          "It is always cheapest",
+          "Towns want the waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it relocates the burden, not removes it.",
+          "Wrong: relocation isn't destruction.",
+          "Wrong: long hauls add cost.",
+          "Wrong: communities increasingly refuse it."
+        ]
+      },
+      "standard": {
+        "question": "Why is trucking waste to a distant rural 'hinterland' criticised as a false solution?",
+        "options": [
+          "It displaces the environmental burden onto another community without reducing total waste",
+          "It permanently destroys the waste",
+          "It is always the cheapest option available",
+          "It eliminates transport emissions"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the waste and its impacts still exist — they are merely relocated onto people with less power.",
+          "Wrong: relocation is not destruction; the waste persists.",
+          "Wrong: long hauls add fuel and compensation costs.",
+          "Wrong: longer transport increases, not eliminates, emissions."
+        ]
+      },
+      "hard": {
+        "question": "The 'waste hinterland' concept is best used to challenge which assumption?",
+        "options": [
+          "That waste exported out of sight has genuinely been dealt with",
+          "That recycling is unprofitable",
+          "That cities have no rural links",
+          "That transport is emission-free"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it exposes 'out of sight, out of mind' as a false resolution.",
+          "Wrong: not its central point.",
+          "Wrong: it assumes such links exist.",
+          "Wrong: a secondary issue, not the core assumption."
+        ]
+      }
+    },
+    "r2_leachate_wells": {
+      "easy": {
+        "question": "What is 'leachate'?",
+        "options": [
+          "Toxic liquid that drips from rotting rubbish",
+          "Clean drinking water",
+          "A type of gas",
+          "Recycled water"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it's contaminated liquid from waste.",
+          "Wrong: it's polluted, not clean.",
+          "Wrong: that's the gas (methane).",
+          "Wrong: it isn't treated water."
+        ]
+      },
+      "standard": {
+        "question": "Which definition of 'leachate' is correct, and why is it hazardous?",
+        "options": [
+          "Liquid that percolates through waste, carrying dissolved contaminants and heavy metals into soil and water",
+          "Recycled water produced by a treatment plant",
+          "A gaseous form of methane released by landfills",
+          "Clean rainwater runoff from a capped site"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: rainwater passing through waste dissolves toxins, which then migrate into soil and groundwater.",
+          "Wrong: leachate is contaminated, not treated, water.",
+          "Wrong: leachate is a liquid; methane is the gaseous emission.",
+          "Wrong: it is contaminated, not clean, runoff."
+        ]
+      },
+      "hard": {
+        "question": "Why is leachate a particularly insidious pollutant?",
+        "options": [
+          "It silently migrates through soil into groundwater, with health effects appearing only later",
+          "It is immediately visible and easily contained",
+          "It evaporates harmlessly",
+          "It only affects surface aesthetics"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: delayed, hidden contamination makes it hard to detect and address in time.",
+          "Wrong: it is often invisible and mobile.",
+          "Wrong: it persists in soil and water.",
+          "Wrong: it is a serious health hazard."
+        ]
+      }
+    },
+    "r2_methane_vent": {
+      "easy": {
+        "question": "Why is the gas from rotting rubbish a problem?",
+        "options": [
+          "It warms the planet and can catch fire",
+          "It cools the air",
+          "It is harmless",
+          "Rubbish makes no gas"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: methane is flammable and warms the climate.",
+          "Wrong: it warms, not cools.",
+          "Wrong: it's hazardous.",
+          "Wrong: rotting waste makes lots of gas."
+        ]
+      },
+      "standard": {
+        "question": "Why is uncaptured landfill methane a particular climate priority compared with the CO2 from the same waste?",
+        "options": [
+          "Methane has a far higher short-term global-warming potential than CO2",
+          "Methane cools the atmosphere",
+          "Landfills emit no methane",
+          "Methane becomes harmless immediately on release"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: per tonne, methane traps far more heat over the short term, so capturing it yields outsized climate benefit.",
+          "Wrong: methane is a potent warming gas, not a coolant.",
+          "Wrong: anaerobic decay in landfills is a major methane source.",
+          "Wrong: it remains a powerful greenhouse gas once emitted."
+        ]
+      },
+      "hard": {
+        "question": "Capturing landfill methane is often prioritised over flaring. Why?",
+        "options": [
+          "Capture both prevents potent emissions and recovers usable energy",
+          "Flaring produces more energy than capture",
+          "Methane has no climate effect",
+          "Capture increases explosion risk"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: capture delivers a climate and an energy benefit at once.",
+          "Wrong: flaring wastes the energy.",
+          "Wrong: methane is a potent GHG.",
+          "Wrong: capture reduces, not raises, risk."
+        ]
+      }
+    },
+    "r2_transport_cost": {
+      "easy": {
+        "question": "Why does driving rubbish far away matter?",
+        "options": [
+          "It burns more fuel and pollutes more",
+          "Distance doesn't matter",
+          "It boosts recycling",
+          "Trucks have no exhaust"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: more fuel means more emissions and cost.",
+          "Wrong: distance adds real cost.",
+          "Wrong: it doesn't help recycling.",
+          "Wrong: trucks emit exhaust."
+        ]
+      },
+      "standard": {
+        "question": "Why does the distance waste is hauled matter for sustainability, not just for the budget?",
+        "options": [
+          "Longer hauls burn more fuel, adding emissions to the waste system's ecological footprint",
+          "Hauling distance has no environmental consequence",
+          "Longer transport raises recycling rates",
+          "Collection vehicles produce no emissions"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: transport fuel use is part of the system's footprint, so distance has a real environmental cost.",
+          "Wrong: fuel combustion makes distance environmentally significant.",
+          "Wrong: distance does not improve recycling.",
+          "Wrong: diesel collection fleets are a notable emissions source."
+        ]
+      },
+      "hard": {
+        "question": "Why does long-distance hauling weaken the case for centralised disposal?",
+        "options": [
+          "Transport fuel adds emissions and cost that scale with distance, enlarging the footprint",
+          "Distance has no bearing on emissions",
+          "Centralisation always lowers the footprint",
+          "Hauling improves recycling quality"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: haul distance is a real environmental and financial cost of centralisation.",
+          "Wrong: fuel use scales with distance.",
+          "Wrong: centralisation can raise transport impacts.",
+          "Wrong: hauling does not improve recycling."
+        ]
+      }
+    },
+    "r2_land_conflict": {
+      "easy": {
+        "question": "What can an old, sealed tip become?",
+        "options": [
+          "A park or playing field",
+          "Never anything",
+          "Only dense housing",
+          "A new dump"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: capped sites become green amenity.",
+          "Wrong: reuse is common.",
+          "Wrong: housing on a tip is risky.",
+          "Wrong: reuse retires the dump."
+        ]
+      },
+      "standard": {
+        "question": "How can decommissioned landfill land be returned to safe public use?",
+        "options": [
+          "A properly sealed and capped site, once stabilised, can host parks or playing fields",
+          "Such land can never be reused for any purpose",
+          "It is only ever safe for dense housing",
+          "It must immediately be reopened as a new dump"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: with capping and gas/leachate management, former landfills are commonly converted to green amenity.",
+          "Wrong: managed reuse is well established, so 'never' is false.",
+          "Wrong: housing directly on a former tip raises contamination risk; open amenity is safer.",
+          "Wrong: reuse aims to retire the site, not perpetuate dumping."
+        ]
+      },
+      "hard": {
+        "question": "What condition makes converting a former landfill into parkland safe?",
+        "options": [
+          "Proper capping plus ongoing gas and leachate management once the site has stabilised",
+          "Immediate construction before stabilisation",
+          "Removing all monitoring systems",
+          "Building housing directly on the waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: stabilisation and continued management are prerequisites for safe reuse.",
+          "Wrong: building before stabilisation is unsafe.",
+          "Wrong: monitoring must continue.",
+          "Wrong: housing on waste raises contamination risk."
+        ]
+      }
+    },
+    "r2_illegal_dumping": {
+      "easy": {
+        "question": "Why might charging for disposal cause illegal dumping?",
+        "options": [
+          "People dodge fees if there's no easy legal option",
+          "Fees always cut waste",
+          "Dumping helps recycling",
+          "Fines cost nothing"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: charges backfire without easy alternatives.",
+          "Wrong: fees can shift behaviour to dumping.",
+          "Wrong: fly-tipping isn't recycling.",
+          "Wrong: enforcement has costs."
+        ]
+      },
+      "standard": {
+        "question": "Disposal charges sometimes increase illegal dumping. What does this reveal about policy design?",
+        "options": [
+          "Price signals backfire unless paired with an affordable, convenient legal alternative",
+          "Higher fees always reduce total waste generated",
+          "Illegal dumping improves overall recycling",
+          "Enforcement is costless to administer"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: charging without an easy lawful route pushes behaviour toward evasion — incentives must be designed holistically.",
+          "Wrong: fees can shift behaviour to dumping rather than reducing waste.",
+          "Wrong: fly-tipped waste is unsorted and harmful, not a recycling gain.",
+          "Wrong: monitoring and prosecution carry real costs."
+        ]
+      },
+      "hard": {
+        "question": "Rising disposal fees increase fly-tipping. What design principle does this reveal?",
+        "options": [
+          "Incentives must be paired with accessible legal alternatives or they distort behaviour",
+          "Higher prices always reduce the targeted behaviour",
+          "Enforcement alone is sufficient and costless",
+          "Fees have no behavioural effect"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: pricing without an easy lawful route diverts behaviour to evasion.",
+          "Wrong: prices can shift behaviour the wrong way.",
+          "Wrong: enforcement is costly and partial.",
+          "Wrong: fees clearly change behaviour."
+        ]
+      }
+    },
+    "r2_landfill_mining": {
+      "easy": {
+        "question": "What is 'urban mining'?",
+        "options": [
+          "Recovering materials from old waste",
+          "Digging new mines in cities",
+          "Building tips underground",
+          "Burning waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it reclaims materials from waste.",
+          "Wrong: it's not virgin mining.",
+          "Wrong: it's recovery, not disposal.",
+          "Wrong: it isn't burning."
+        ]
+      },
+      "standard": {
+        "question": "What is 'urban mining', and why is it considered circular?",
+        "options": [
+          "Recovering materials (and land) from waste or old landfills, returning resources to productive use",
+          "Opening new mineral mines within city limits",
+          "Building landfills underground to save surface space",
+          "A specialised high-temperature form of incineration"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it reclaims resources already in the waste stock, feeding them back into the economy.",
+          "Wrong: it mines waste, not virgin geology.",
+          "Wrong: it is about recovery, not subterranean disposal.",
+          "Wrong: it is materials recovery, not combustion."
+        ]
+      },
+      "hard": {
+        "question": "Why is landfill mining considered circular despite its cost and disruption?",
+        "options": [
+          "It returns buried materials and land to productive use rather than abandoning them",
+          "It opens new virgin mineral mines",
+          "It buries waste more deeply",
+          "It is a form of incineration"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: reclaiming stocked resources embodies circular thinking.",
+          "Wrong: it mines waste, not geology.",
+          "Wrong: it recovers, not re-buries.",
+          "Wrong: it is recovery, not combustion."
+        ]
+      }
+    },
+    "r3_incinerator_proposal": {
+      "easy": {
+        "question": "What is a downside of burning rubbish for energy?",
+        "options": [
+          "It pollutes the air",
+          "It has no downsides",
+          "It is always the cheapest",
+          "It needs no waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: combustion releases air pollution.",
+          "Wrong: it has real downsides.",
+          "Wrong: it's capital-intensive.",
+          "Wrong: it needs waste to burn."
+        ]
+      },
+      "standard": {
+        "question": "Evaluating incineration, which statement BEST captures its central sustainability trade-off?",
+        "options": [
+          "It sharply cuts waste volume and recovers energy, but emits air pollutants and provokes community opposition",
+          "It is a cost-free, impact-free method of disposal",
+          "It is always cheaper than recycling",
+          "It removes the need for any waste collection"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the gains (volume reduction, energy) are real but come with emissions, ash and NIMBY/governance costs.",
+          "Wrong: it has high capital costs and genuine emissions.",
+          "Wrong: cost depends on context; it is capital-intensive and not always cheapest.",
+          "Wrong: waste must still be collected and delivered to the plant."
+        ]
+      },
+      "hard": {
+        "question": "To what extent does incineration align with sustainable development?",
+        "options": [
+          "Partially — it recovers energy and land but imposes emissions, ash and equity costs",
+          "Fully — it is the most sustainable option available",
+          "Not at all — it offers no benefits",
+          "It is identical to recycling in its impacts"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: a balanced 'partial' judgement captures both the gains and the costs.",
+          "Wrong: it sits low on the hierarchy, not top.",
+          "Wrong: it does provide energy and volume reduction.",
+          "Wrong: recycling avoids combustion emissions."
+        ]
+      }
+    },
+    "r3_nimby_protest": {
+      "easy": {
+        "question": "Why does public trust matter for building waste facilities?",
+        "options": [
+          "People must accept them for projects to go ahead",
+          "It doesn't matter",
+          "Trust lowers recycling",
+          "Protests don't count"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: consent is needed to site and run them.",
+          "Wrong: trust is a real constraint.",
+          "Wrong: trust raises participation.",
+          "Wrong: opposition shapes outcomes."
+        ]
+      },
+      "standard": {
+        "question": "Why does public trust materially affect what waste infrastructure a city can actually build?",
+        "options": [
+          "Siting, planning consent and ongoing participation all depend on community acceptance",
+          "Trust becomes irrelevant once a project is funded",
+          "High public trust reduces recycling participation",
+          "Protest movements carry no legal or political weight"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: without consent, projects are blocked, delayed or under-used, so trust is a real constraint on options.",
+          "Wrong: funding does not override planning objections and operational cooperation.",
+          "Wrong: trust tends to raise, not lower, participation.",
+          "Wrong: organised opposition routinely shapes planning outcomes."
+        ]
+      },
+      "hard": {
+        "question": "NIMBY opposition is best interpreted as evidence that...",
+        "options": [
+          "public consent is a genuine constraint on what infrastructure is feasible",
+          "protest has no effect on planning",
+          "trust is irrelevant once a project is funded",
+          "communities oppose every project regardless"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: feasibility depends on social acceptance, not just finance.",
+          "Wrong: opposition shapes outcomes.",
+          "Wrong: trust still governs consent and operation.",
+          "Wrong: an overgeneralisation."
+        ]
+      }
+    },
+    "r3_w2e_partnership": {
+      "easy": {
+        "question": "A risk of letting a private firm run the incinerator?",
+        "options": [
+          "They may cut corners on pollution control",
+          "It becomes pollution-free",
+          "It costs the city nothing",
+          "It makes zero waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: profit motives can weaken standards.",
+          "Wrong: emissions remain.",
+          "Wrong: oversight still costs.",
+          "Wrong: ash and emissions remain."
+        ]
+      },
+      "standard": {
+        "question": "What is the principal governance risk of privatising a waste-to-energy plant?",
+        "options": [
+          "A profit motive can weaken adherence to emissions and health standards unless tightly regulated",
+          "Private operation guarantees zero emissions",
+          "It removes all costs from the city",
+          "It automatically delivers zero waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: cost-minimising operators may cut corners on pollution control without strong oversight.",
+          "Wrong: ownership does not eliminate the inherent emissions of combustion.",
+          "Wrong: the city still bears contract and oversight costs.",
+          "Wrong: incineration is not zero waste; ash and emissions remain."
+        ]
+      },
+      "hard": {
+        "question": "Which safeguard most directly addresses the risk of privatised incineration?",
+        "options": [
+          "Strong, independently enforced emissions and health regulation",
+          "Allowing the operator to self-report freely",
+          "Removing public oversight to cut costs",
+          "Guaranteeing the operator maximum profit"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: independent regulation counters the profit-driven incentive to cut corners.",
+          "Wrong: self-reporting invites the very risk.",
+          "Wrong: oversight is the safeguard, not its removal.",
+          "Wrong: that worsens the incentive problem."
+        ]
+      }
+    },
+    "r3_dioxin_study": {
+      "easy": {
+        "question": "Why fit filters ('scrubbers') on an incinerator?",
+        "options": [
+          "To cut harmful pollution",
+          "To make more ash",
+          "To increase smoke",
+          "No reason"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: scrubbers reduce toxic emissions.",
+          "Wrong: they don't add ash.",
+          "Wrong: they cut, not add, pollution.",
+          "Wrong: they protect health."
+        ]
+      },
+      "standard": {
+        "question": "Calling incineration 'waste of energy' rather than 'waste to energy' is a warning that...",
+        "options": [
+          "uncontrolled emissions and health costs can outweigh the energy actually recovered",
+          "incinerators never generate any usable energy",
+          "energy recovery is purely a marketing invention",
+          "burning always wastes 100% of the available energy"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: if pollution control is poor, the social and health costs can exceed the value of the energy.",
+          "Wrong: they do generate usable energy — the issue is net cost-benefit.",
+          "Wrong: energy recovery is real, not invented.",
+          "Wrong: substantial energy is recovered; the phrase is about net impact."
+        ]
+      },
+      "hard": {
+        "question": "The 'waste of energy' critique implies incineration should be judged by...",
+        "options": [
+          "net impact — energy recovered minus health and environmental costs",
+          "energy output alone",
+          "capital cost alone",
+          "the number of homes powered only"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: a net cost-benefit framing is the point of the critique.",
+          "Wrong: output alone ignores the costs.",
+          "Wrong: cost alone ignores the benefits.",
+          "Wrong: a single headline metric is insufficient."
+        ]
+      }
+    },
+    "r3_ash_disposal": {
+      "easy": {
+        "question": "Why doesn't burning make waste 'disappear'?",
+        "options": [
+          "It leaves ash and gases to deal with",
+          "It vanishes completely",
+          "Ash is always safe",
+          "No leftovers at all"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: combustion leaves residues and emissions.",
+          "Wrong: there's always a residue.",
+          "Wrong: fly ash can be toxic.",
+          "Wrong: by-products are unavoidable."
+        ]
+      },
+      "standard": {
+        "question": "Why is it inaccurate to claim incineration makes waste 'disappear'?",
+        "options": [
+          "It converts waste into ash and flue gases that still require careful management",
+          "It fully converts waste into clean energy with no residue",
+          "The ash it produces is always inert and harmless",
+          "It leaves no by-products whatsoever"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: combustion transforms waste into residues (often toxic ash) plus emissions, not nothing.",
+          "Wrong: there is always a residual stream.",
+          "Wrong: fly ash in particular can be hazardous.",
+          "Wrong: ash and gases are unavoidable by-products."
+        ]
+      },
+      "hard": {
+        "question": "Why does incineration not remove the need for landfill?",
+        "options": [
+          "It produces toxic ash and residues that still require safe disposal",
+          "It fully converts waste into energy",
+          "Its ash is always reusable in construction",
+          "It leaves no residue at all"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: residual (often hazardous) ash still needs containment.",
+          "Wrong: there is always a residue.",
+          "Wrong: ash reuse needs testing and is not guaranteed.",
+          "Wrong: residue is unavoidable."
+        ]
+      }
+    },
+    "r3_energy_deal": {
+      "easy": {
+        "question": "How does selling the electricity help?",
+        "options": [
+          "It earns money to offset costs",
+          "It removes pollution",
+          "It changes nothing",
+          "It makes more ash"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: revenue improves the cost balance.",
+          "Wrong: it doesn't end emissions.",
+          "Wrong: it affects economics.",
+          "Wrong: energy sales don't raise ash."
+        ]
+      },
+      "standard": {
+        "question": "How does energy recovery change the overall assessment of incineration?",
+        "options": [
+          "Revenue and displaced fossil energy partially offset its costs and emissions",
+          "It removes all pollution from the process",
+          "It is irrelevant to the plant's economics",
+          "It increases the volume of ash produced"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: selling power and avoiding fossil generation improve the cost-benefit balance, though not the local pollution.",
+          "Wrong: recovering energy does not eliminate stack emissions.",
+          "Wrong: energy sales are central to incineration economics.",
+          "Wrong: energy recovery does not raise ash volumes."
+        ]
+      },
+      "hard": {
+        "question": "How should energy revenue change the evaluation of an incinerator?",
+        "options": [
+          "It improves the cost-benefit balance but does not offset local pollution",
+          "It makes the plant pollution-free",
+          "It is irrelevant to the evaluation",
+          "It increases the toxic ash produced"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: revenue helps the economics but not the air-quality ledger.",
+          "Wrong: emissions persist.",
+          "Wrong: revenue is central to evaluation.",
+          "Wrong: energy sales do not raise ash."
+        ]
+      }
+    },
+    "r3_emissions_cap": {
+      "easy": {
+        "question": "Why limit incinerator emissions by law?",
+        "options": [
+          "The gases harm health",
+          "To raise electricity prices",
+          "They are harmless",
+          "To cut recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: the pollutants are harmful.",
+          "Wrong: it's about health, not pricing.",
+          "Wrong: they're the concern.",
+          "Wrong: caps target air, not recycling."
+        ]
+      },
+      "standard": {
+        "question": "Why do regulators cap incinerator emissions despite the energy benefit?",
+        "options": [
+          "Combustion releases dioxins, particulates and acid gases that harm human health",
+          "Emission limits exist mainly to push up electricity prices",
+          "Incinerator emissions are biologically harmless",
+          "Caps are intended to suppress recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the pollutants are genuinely harmful, so limits protect public health.",
+          "Wrong: the purpose is health protection, not pricing.",
+          "Wrong: the emissions are precisely the health concern.",
+          "Wrong: caps target air quality, not recycling."
+        ]
+      },
+      "hard": {
+        "question": "A city meets emissions caps by buying credits rather than upgrading. What is the limitation?",
+        "options": [
+          "Credits satisfy the rule on paper but do not cut the city's own harmful emissions",
+          "Credits physically clean the plant's stack",
+          "Upgrading is always cheaper than credits",
+          "Credits directly improve local air quality"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: paper compliance leaves local pollution unchanged.",
+          "Wrong: credits do not alter the stack.",
+          "Wrong: relative cost varies; not always cheaper.",
+          "Wrong: credits do not clean local air."
+        ]
+      }
+    },
+    "r3_aging_plant": {
+      "easy": {
+        "question": "Why might a city move away from burning over time?",
+        "options": [
+          "Recycling/reducing rank higher and avoid emissions",
+          "Burning is banned everywhere",
+          "It makes too much energy",
+          "Burning is free"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: the hierarchy favours recovery over burning.",
+          "Wrong: incineration is legal.",
+          "Wrong: energy is a benefit.",
+          "Wrong: it isn't free."
+        ]
+      },
+      "standard": {
+        "question": "Why might a city plan to move beyond incineration over time, even with a functioning plant?",
+        "options": [
+          "Reduction and recycling sit higher on the hierarchy and avoid combustion emissions altogether",
+          "Incineration is legally banned everywhere",
+          "Incinerators generate too much energy to be useful",
+          "Burning waste is entirely free of cost"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the hierarchy favours preventing and recovering materials over burning them.",
+          "Wrong: incineration remains legal and widely used.",
+          "Wrong: energy output is a benefit, not a reason to abandon it.",
+          "Wrong: incineration is capital- and emission-intensive, not free."
+        ]
+      },
+      "hard": {
+        "question": "Why might retiring a working incinerator be defensible despite lost capacity?",
+        "options": [
+          "Shifting to higher-hierarchy options avoids ongoing emissions and aligns with long-term goals",
+          "Incineration is universally illegal",
+          "Energy output is a disadvantage",
+          "Burning incurs no costs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: long-term hierarchy gains can outweigh short-term capacity loss.",
+          "Wrong: it remains legal.",
+          "Wrong: energy is a benefit.",
+          "Wrong: burning is costly and polluting."
+        ]
+      }
+    },
+    "r3_district_heating": {
+      "easy": {
+        "question": "Why pipe the incinerator's heat to homes?",
+        "options": [
+          "It uses waste heat instead of wasting it",
+          "It makes more ash",
+          "It burns more rubbish",
+          "Wasting heat is greener"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: using the heat closes a loop.",
+          "Wrong: it doesn't change ash.",
+          "Wrong: it uses existing heat.",
+          "Wrong: wasting energy is worse."
+        ]
+      },
+      "standard": {
+        "question": "Why is recovering an incinerator's waste heat considered 'more circular' than venting it?",
+        "options": [
+          "It turns an unwanted output into a useful resource, displacing demand for other heating fuels",
+          "It produces more ash that can be reused",
+          "It increases the total amount of waste burned",
+          "Venting the heat is the greener choice"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: using the heat closes a loop and reduces fossil-fuel heating, the essence of circular thinking.",
+          "Wrong: heat recovery does not change ash output.",
+          "Wrong: it makes better use of existing combustion, not more of it.",
+          "Wrong: wasting recoverable energy is the less green option."
+        ]
+      },
+      "hard": {
+        "question": "District heating from an incinerator best exemplifies which principle?",
+        "options": [
+          "Cascading use of an output (heat) to displace other resource demand",
+          "Maximising the volume of waste burned",
+          "Eliminating ash production",
+          "The superiority of venting waste heat"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: cascading the heat is a circular use of an existing output.",
+          "Wrong: it uses existing heat, not more burning.",
+          "Wrong: it does not change ash.",
+          "Wrong: venting wastes recoverable energy."
+        ]
+      }
+    },
+    "r3_carbon_market": {
+      "easy": {
+        "question": "Why does waste matter for the climate?",
+        "options": [
+          "Rotting and burning waste release warming gases",
+          "Waste makes no gases",
+          "It's only a local smell",
+          "Credits are fake"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: methane and CO2 from waste warm the planet.",
+          "Wrong: it's a real emitter.",
+          "Wrong: the gases are global.",
+          "Wrong: credits are a real tool."
+        ]
+      },
+      "standard": {
+        "question": "Why does the waste sector feature in climate policy at all?",
+        "options": [
+          "Dumping, decomposition and burning emit methane and CO2 that contribute to warming",
+          "Waste management produces no greenhouse gases",
+          "Its emissions are purely a local air-quality matter",
+          "Carbon credits for waste are fictional"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: landfill methane and combustion CO2 make waste a meaningful climate contributor.",
+          "Wrong: the sector is a significant emitter.",
+          "Wrong: methane and CO2 are global, not just local, pollutants.",
+          "Wrong: verified waste-sector credits are a real instrument."
+        ]
+      },
+      "hard": {
+        "question": "Why are methane-capture carbon credits both an environmental and an economic instrument?",
+        "options": [
+          "They monetise avoided emissions, aligning financial incentives with climate goals",
+          "They are purely symbolic with no real effect",
+          "They increase methane release",
+          "They replace the need for any capture"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: pricing avoided emissions makes climate action financially rational.",
+          "Wrong: verified credits have real effect.",
+          "Wrong: they reward capture, not release.",
+          "Wrong: they fund capture, not replace it."
+        ]
+      }
+    },
+    "r4_ecological_deficit": {
+      "easy": {
+        "question": "What does it mean if a city uses more nature than the land can replace?",
+        "options": [
+          "It is in 'ecological deficit'",
+          "It has a money shortage",
+          "It recycles too much",
+          "Its tip is full"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: demand exceeds nature's renewal.",
+          "Wrong: it's ecological, not financial.",
+          "Wrong: that's a surplus, not deficit.",
+          "Wrong: full landfill is just one symptom."
+        ]
+      },
+      "standard": {
+        "question": "A city is described as being in 'ecological deficit'. Which interpretation is correct?",
+        "options": [
+          "Its demand on nature exceeds the biocapacity available to renew resources and absorb its wastes",
+          "It is simply running a financial budget shortfall",
+          "It recycles more material than it consumes",
+          "Its only landfill has reached capacity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: ecological deficit means footprint exceeds local biocapacity, so the city draws down natural capital.",
+          "Wrong: the term is ecological, not fiscal.",
+          "Wrong: that would be a surplus of circularity, not a deficit.",
+          "Wrong: landfill capacity is one symptom, not the definition of ecological deficit."
+        ]
+      },
+      "hard": {
+        "question": "A city in ecological deficit is best described as...",
+        "options": [
+          "consuming natural capital faster than ecosystems regenerate it, sustained by imports and emissions",
+          "temporarily over budget in financial terms",
+          "exporting more than it imports",
+          "recycling beyond its own needs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: deficit means drawing down natural capital, propped up by imports and emissions.",
+          "Wrong: it is ecological, not fiscal.",
+          "Wrong: that describes a trade surplus, not ecological deficit.",
+          "Wrong: that would be a circular surplus."
+        ]
+      }
+    },
+    "r4_forest_encroach": {
+      "easy": {
+        "question": "Why is clearing forest for the city a climate problem?",
+        "options": [
+          "It releases stored carbon",
+          "Forests make rubbish",
+          "It only affects animals",
+          "Trees hold no carbon"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: cleared forest releases carbon.",
+          "Wrong: forests aren't a waste source.",
+          "Wrong: it hits climate and people too.",
+          "Wrong: trees store lots of carbon."
+        ]
+      },
+      "standard": {
+        "question": "Why is urban encroachment into forest framed as a footprint issue, not merely habitat loss?",
+        "options": [
+          "Cities draw land and resources from their hinterland, and clearing forest releases stored carbon",
+          "Forests are themselves a major source of municipal waste",
+          "It affects only wildlife, with no human or climate consequence",
+          "Deforestation has no carbon implications"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it links the city's resource demand to distant land conversion and carbon release.",
+          "Wrong: forests are carbon sinks, not waste sources.",
+          "Wrong: it carries climate and resource consequences for people too.",
+          "Wrong: clearing forest releases substantial stored carbon."
+        ]
+      },
+      "hard": {
+        "question": "Why is peri-urban deforestation a footprint issue, not only local habitat loss?",
+        "options": [
+          "It reflects the city drawing land and resources from its hinterland while releasing stored carbon",
+          "Forests are a source of municipal waste",
+          "It affects only non-human species",
+          "Deforestation is carbon-neutral"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it connects urban demand to distant land conversion and emissions.",
+          "Wrong: forests are sinks, not waste sources.",
+          "Wrong: it has human and climate consequences.",
+          "Wrong: it releases significant carbon."
+        ]
+      }
+    },
+    "r4_sand_mining": {
+      "easy": {
+        "question": "Why use recycled building materials?",
+        "options": [
+          "They cut damaging extraction of sand and stone",
+          "They are heavier",
+          "Mining is harmless",
+          "They use more land"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: reuse avoids destructive quarrying.",
+          "Wrong: weight isn't the point.",
+          "Wrong: extraction harms ecosystems.",
+          "Wrong: recycling avoids land disturbance."
+        ]
+      },
+      "standard": {
+        "question": "Why are recycled construction aggregates preferable to freshly extracted sand and stone?",
+        "options": [
+          "They cut demand for virgin extraction and the ecosystem damage it causes",
+          "They are heavier and therefore automatically stronger",
+          "Extracting virgin materials is environmentally harmless",
+          "Recycling aggregates consumes more land than quarrying"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: reusing material reduces destructive quarrying of rivers, coasts and karsts.",
+          "Wrong: weight is not the rationale; resource conservation is.",
+          "Wrong: extraction degrades fragile ecosystems — that is the problem.",
+          "Wrong: recycling avoids, rather than expands, land disturbance."
+        ]
+      },
+      "hard": {
+        "question": "Mandating recycled aggregates is justified primarily because it...",
+        "options": [
+          "reduces demand for ecologically damaging virgin extraction",
+          "produces stronger concrete by weight",
+          "makes extraction harmless",
+          "increases land disturbance"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: cutting virgin demand reduces the ecosystem damage of quarrying.",
+          "Wrong: weight is not the rationale.",
+          "Wrong: extraction remains damaging.",
+          "Wrong: recycling reduces disturbance."
+        ]
+      }
+    },
+    "r4_water_stress": {
+      "easy": {
+        "question": "Why reuse treated water?",
+        "options": [
+          "It saves fresh water and cuts waste",
+          "Water can't be reused",
+          "It harms the city",
+          "Wells refill instantly"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: reuse closes the water loop.",
+          "Wrong: treated water is reusable.",
+          "Wrong: it helps the city.",
+          "Wrong: over-pumped wells refill slowly."
+        ]
+      },
+      "standard": {
+        "question": "Why is reusing treated wastewater described as a circular response to water stress?",
+        "options": [
+          "Reusing an output as an input reduces fresh abstraction and waste at the same time",
+          "Water cannot be reused once it has been used",
+          "It increases the city's ecological footprint",
+          "Aquifers recharge instantly, so reuse is unnecessary"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: closing the water loop cuts both withdrawal from aquifers and discharge of waste.",
+          "Wrong: treated water can be safely reused.",
+          "Wrong: reuse lowers, not raises, the footprint.",
+          "Wrong: over-pumped aquifers recharge slowly, which is why reuse matters."
+        ]
+      },
+      "hard": {
+        "question": "Treating water reuse as 'circular' rests on which logic?",
+        "options": [
+          "An output is recovered as an input, cutting both abstraction and discharge",
+          "Water is infinitely abundant",
+          "Reuse raises the ecological footprint",
+          "Aquifers recharge instantly"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: closing the loop reduces both withdrawal and waste.",
+          "Wrong: scarcity is the premise.",
+          "Wrong: reuse lowers the footprint.",
+          "Wrong: over-pumped aquifers recharge slowly."
+        ]
+      }
+    },
+    "r4_food_imports": {
+      "easy": {
+        "question": "Why compost food scraps locally?",
+        "options": [
+          "It returns nutrients to the soil",
+          "Food has no nutrients",
+          "Soil never needs nutrients",
+          "Imports return nutrients"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: composting closes the nutrient loop.",
+          "Wrong: food carries nutrients.",
+          "Wrong: soils deplete without them.",
+          "Wrong: imports remove nutrients."
+        ]
+      },
+      "standard": {
+        "question": "Why does a linear food system break natural nutrient cycles?",
+        "options": [
+          "Nutrients arrive in imported food then leave as waste, instead of returning to the soil",
+          "Imported food contains no nutrients",
+          "Soil nutrients are infinite and need no replenishment",
+          "Food imports automatically return nutrients to farmland"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: nutrients flow one way — into the city and out as waste — depleting distant soils.",
+          "Wrong: the food obviously carries nutrients; the issue is where they end up.",
+          "Wrong: soils are depleted if nutrients are not returned.",
+          "Wrong: imports remove nutrients from source regions; they do not return them."
+        ]
+      },
+      "hard": {
+        "question": "How does a globalised food supply break the nutrient cycle?",
+        "options": [
+          "Nutrients enter as imported food and leave as waste, depleting distant soils without return",
+          "Imported food lacks nutrients",
+          "Soils need no replenishment",
+          "Imports return nutrients to source farms"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: one-way nutrient flow depletes the source and burdens the city as waste.",
+          "Wrong: food carries nutrients.",
+          "Wrong: soils deplete without return.",
+          "Wrong: imports remove, not return, nutrients."
+        ]
+      }
+    },
+    "r4_new_capital": {
+      "easy": {
+        "question": "Why is building a brand-new city risky for nature?",
+        "options": [
+          "It clears land and demands new resources",
+          "New cities are always green",
+          "It cuts the footprint",
+          "It needs no resources"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: greenfield building destroys habitat and locks in demand.",
+          "Wrong: newness isn't green.",
+          "Wrong: it adds to the footprint.",
+          "Wrong: every city needs resources."
+        ]
+      },
+      "standard": {
+        "question": "Why can constructing an entirely new city be environmentally risky?",
+        "options": [
+          "It clears intact habitat and locks in decades of new resource demand and emissions",
+          "New cities are inherently sustainable by design",
+          "Building anew automatically reduces a region's footprint",
+          "A new city has no resource hinterland"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: greenfield construction destroys ecosystems and commits the region to long-term consumption.",
+          "Wrong: newness does not guarantee sustainability.",
+          "Wrong: new construction adds to, not reduces, the footprint.",
+          "Wrong: every city depends on a resource hinterland."
+        ]
+      },
+      "hard": {
+        "question": "Why are greenfield 'new cities' risky even when marketed as modern?",
+        "options": [
+          "They convert intact ecosystems and commit decades of new resource demand and emissions",
+          "Newness guarantees sustainability",
+          "They reduce regional footprints",
+          "They operate without a hinterland"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: construction destroys habitat and locks in long-term consumption.",
+          "Wrong: newness is not sustainability.",
+          "Wrong: they add to footprints.",
+          "Wrong: all cities have a hinterland."
+        ]
+      }
+    },
+    "r4_packaging_tax_push": {
+      "easy": {
+        "question": "How does taxing packaging cut waste?",
+        "options": [
+          "It gives a reason to use less",
+          "It bans recycling",
+          "It makes pollution free",
+          "It raises waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: pricing waste discourages it.",
+          "Wrong: it promotes recycling.",
+          "Wrong: it prices pollution.",
+          "Wrong: it aims to cut waste."
+        ]
+      },
+      "standard": {
+        "question": "On what economic principle does a Polluter-Pays packaging tax reduce waste?",
+        "options": [
+          "Internalising disposal costs into prices creates an incentive to reduce and redesign",
+          "It legally bans recycling",
+          "It makes polluting free of charge",
+          "It guarantees that waste generation rises"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: making producers/consumers bear the cost shifts behaviour toward less wasteful options.",
+          "Wrong: it promotes, not bans, recycling.",
+          "Wrong: it prices pollution rather than making it free.",
+          "Wrong: the intent and effect is to cut waste."
+        ]
+      },
+      "hard": {
+        "question": "The Polluter-Pays principle works by...",
+        "options": [
+          "internalising external disposal costs into prices to redirect behaviour",
+          "banning recycling outright",
+          "subsidising pollution",
+          "mandating higher waste output"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: making polluters bear costs changes incentives.",
+          "Wrong: it promotes recycling.",
+          "Wrong: it prices, not subsidises, pollution.",
+          "Wrong: it aims to cut output."
+        ]
+      }
+    },
+    "r4_carbon_emissions": {
+      "easy": {
+        "question": "Does the waste system produce greenhouse gases?",
+        "options": [
+          "Yes — trucks, dumps and burning all emit",
+          "No, none at all",
+          "Only factories do",
+          "Only indoors"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: the whole system emits.",
+          "Wrong: it's a real emitter.",
+          "Wrong: many sources emit, including waste.",
+          "Wrong: emissions are outdoors/global."
+        ]
+      },
+      "standard": {
+        "question": "Why should emissions accounting explicitly include the waste sector?",
+        "options": [
+          "Collection, dumping and burning together emit significant methane and CO2",
+          "Only manufacturing industries emit greenhouse gases",
+          "Waste handling is an emission-free activity",
+          "Waste emissions affect only indoor air"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the sector's transport, decomposition and combustion are real, sizeable emission sources.",
+          "Wrong: many sectors emit, including waste.",
+          "Wrong: collection and disposal are emission-intensive.",
+          "Wrong: the emissions are atmospheric, not confined indoors."
+        ]
+      },
+      "hard": {
+        "question": "Why is excluding the waste sector from carbon accounting a significant omission?",
+        "options": [
+          "Collection, decomposition and combustion are material methane and CO2 sources",
+          "Only heavy industry emits greenhouse gases",
+          "Waste handling is carbon-neutral",
+          "Its emissions are confined indoors"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the sector is a real, sizeable emitter that accounting must capture.",
+          "Wrong: many sectors emit.",
+          "Wrong: it is emission-intensive.",
+          "Wrong: emissions are atmospheric/global."
+        ]
+      }
+    },
+    "r4_invasive_species": {
+      "easy": {
+        "question": "How does city sprawl help invasive species?",
+        "options": [
+          "Disturbed edges let them outcompete natives",
+          "It blocks them",
+          "It has no effect",
+          "Natives prefer roads"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: disturbed margins favour invaders.",
+          "Wrong: sprawl aids, not blocks, them.",
+          "Wrong: it disrupts ecosystems.",
+          "Wrong: invaders, not natives, thrive there."
+        ]
+      },
+      "standard": {
+        "question": "How does urban sprawl facilitate the spread of invasive species?",
+        "options": [
+          "Disturbed edge habitats give aggressive non-natives an advantage over native species",
+          "Sprawl physically blocks all species movement",
+          "Urban expansion has no measurable ecological effect",
+          "Native species always prefer roadside habitats"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: fragmented, disturbed margins favour opportunistic invaders over specialised natives.",
+          "Wrong: sprawl creates corridors and disturbance, not barriers.",
+          "Wrong: expansion measurably disrupts ecosystems.",
+          "Wrong: it is invasives, not natives, that thrive in disturbed verges."
+        ]
+      },
+      "hard": {
+        "question": "The link between sprawl and invasive species is best explained by...",
+        "options": [
+          "habitat disturbance at urban edges favouring opportunistic non-natives",
+          "sprawl forming barriers to species movement",
+          "an absence of any ecological effect",
+          "native preference for disturbed land"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: disturbed margins advantage invaders over specialists.",
+          "Wrong: sprawl creates corridors, not barriers.",
+          "Wrong: it disrupts ecosystems.",
+          "Wrong: invaders, not natives, exploit verges."
+        ]
+      }
+    },
+    "r4_repair_economy": {
+      "easy": {
+        "question": "Where does 'reuse' sit in the waste hierarchy?",
+        "options": [
+          "Near the top, above recycling",
+          "At the very bottom",
+          "It's not on it",
+          "Above reducing"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: reuse ranks above recycling.",
+          "Wrong: landfill is the bottom.",
+          "Wrong: reuse is a key tier.",
+          "Wrong: reduce is the top, not reuse."
+        ]
+      },
+      "standard": {
+        "question": "Where does reuse sit in the waste hierarchy, and why?",
+        "options": [
+          "Above recycling and below reduce, because it keeps products in use without the energy of reprocessing",
+          "At the very bottom, below landfill",
+          "It is not part of the waste hierarchy at all",
+          "Above reduction, as the single most preferred option"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: reuse avoids reprocessing energy, so it ranks above recycling but below preventing waste entirely.",
+          "Wrong: landfill is the least preferred; reuse is near the top.",
+          "Wrong: reuse is an explicit tier of the hierarchy.",
+          "Wrong: reduction, not reuse, is the most preferred option."
+        ]
+      },
+      "hard": {
+        "question": "Reuse outranks recycling in the hierarchy because it...",
+        "options": [
+          "retains product value without the energy and material losses of reprocessing",
+          "is merely cheaper than landfill",
+          "sits below disposal",
+          "is the single most preferred option overall"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: avoiding reprocessing keeps more value and energy, placing reuse above recycling.",
+          "Wrong: cost is not the ranking basis.",
+          "Wrong: reuse is near the top, not below disposal.",
+          "Wrong: reduction is the most preferred, not reuse."
+        ]
+      }
+    },
+    "r5_zabbaleen": {
+      "easy": {
+        "question": "Why work with informal waste-pickers instead of removing them?",
+        "options": [
+          "They already recycle cheaply; helping them is safer and greener",
+          "They add waste",
+          "Removing them boosts recycling",
+          "They're easy to replace"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: they're existing recyclers worth supporting.",
+          "Wrong: they remove waste.",
+          "Wrong: removal cuts recycling.",
+          "Wrong: they're hard to replace."
+        ]
+      },
+      "standard": {
+        "question": "Evaluating informal recyclers, why is integration generally preferable to eviction?",
+        "options": [
+          "They already provide low-cost recovery; formalising improves safety, equity and recycling rates",
+          "They add waste to the system and therefore must be removed",
+          "Eviction reliably increases a city's recycling rate",
+          "They are easily and cheaply replaced by machinery"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: they are existing, effective recovery infrastructure; integrating them improves outcomes on every pillar.",
+          "Wrong: they remove waste from the stream, not add to it.",
+          "Wrong: eviction destroys recovery capacity, lowering recycling.",
+          "Wrong: their dispersed manual sorting is hard and costly to replace."
+        ]
+      },
+      "hard": {
+        "question": "The strongest sustainability case for integrating informal recyclers is that it...",
+        "options": [
+          "raises recovery while improving safety and equity, advancing all three SUD pillars",
+          "tidies the city's appearance only",
+          "reduces recycling to cut costs",
+          "replaces them with cheaper machines"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it delivers environmental, social and economic gains together.",
+          "Wrong: appearance is a weak, partial justification.",
+          "Wrong: integration raises recovery.",
+          "Wrong: their dispersed labour is hard to mechanise."
+        ]
+      }
+    },
+    "r5_slum_no_collection": {
+      "easy": {
+        "question": "Why give waste collection to poor areas too?",
+        "options": [
+          "A liveable city serves all residents",
+          "Only rich areas matter",
+          "It has no link to sustainability",
+          "SDG 11 is about energy"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: inclusion is central to sustainable cities.",
+          "Wrong: all residents count.",
+          "Wrong: inclusion is core to SUD.",
+          "Wrong: SDG 11 is about cities."
+        ]
+      },
+      "standard": {
+        "question": "How does extending waste services to informal settlements relate to SDG 11 (Sustainable Cities)?",
+        "options": [
+          "Inclusive basic services for all residents are central to liveable, sustainable cities",
+          "SDG 11 concerns only energy supply",
+          "Only high-income districts count toward sustainability",
+          "Service provision has no link to sustainability goals"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: leaving districts unserved undermines the inclusivity and liveability that SDG 11 targets.",
+          "Wrong: SDG 11 is about cities and communities, not solely energy.",
+          "Wrong: sustainability requires inclusion of all residents, not just the wealthy.",
+          "Wrong: equitable services are explicitly part of sustainable urban development."
+        ]
+      },
+      "hard": {
+        "question": "Excluding informal settlements from waste services conflicts with SDG 11 because...",
+        "options": [
+          "sustainable cities require inclusive basic services for all residents",
+          "SDG 11 concerns only energy supply",
+          "only formal districts are counted",
+          "services are unrelated to sustainability"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: inclusivity and liveability for all are central to SDG 11.",
+          "Wrong: SDG 11 is about cities, not energy.",
+          "Wrong: all residents count.",
+          "Wrong: services are core to SUD."
+        ]
+      }
+    },
+    "r5_disease_outbreak": {
+      "easy": {
+        "question": "Why is uncollected waste a health problem?",
+        "options": [
+          "It breeds pests and spreads disease",
+          "It only smells",
+          "Waste and disease are unrelated",
+          "It improves health"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it drives vector- and water-borne disease.",
+          "Wrong: odour is the least of it.",
+          "Wrong: there's a clear link.",
+          "Wrong: it harms health."
+        ]
+      },
+      "standard": {
+        "question": "Why is poorly managed waste classified as a public-health issue, not only an environmental one?",
+        "options": [
+          "It breeds disease vectors and contaminates water, causing illnesses such as cholera and dengue",
+          "It merely produces an unpleasant smell",
+          "Disease and waste are essentially unrelated",
+          "Exposure to waste improves community immunity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: accumulating waste directly drives vector-borne and water-borne disease in the population.",
+          "Wrong: odour is trivial beside the actual disease burden.",
+          "Wrong: there is a well-established causal link.",
+          "Wrong: exposure raises illness, not immunity."
+        ]
+      },
+      "hard": {
+        "question": "Why is the health burden of poor waste management framed as an equity issue?",
+        "options": [
+          "It falls disproportionately on the poorest, least-served communities",
+          "It affects all residents identically",
+          "It is purely environmental, not social",
+          "Exposure improves community immunity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: uneven exposure makes it a matter of fairness.",
+          "Wrong: the burden is unequal.",
+          "Wrong: it is a social/health issue too.",
+          "Wrong: exposure raises illness."
+        ]
+      }
+    },
+    "r5_scavenger_tragedy": {
+      "easy": {
+        "question": "Why are open dumps a justice issue?",
+        "options": [
+          "The poor suffer the worst harm",
+          "Harm is equal for all",
+          "Only nature suffers",
+          "Dumps are safe"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: the vulnerable bear the worst impacts.",
+          "Wrong: the burden is uneven.",
+          "Wrong: people suffer too.",
+          "Wrong: dumps are hazardous."
+        ]
+      },
+      "standard": {
+        "question": "Why are open dumps considered a social-justice problem as well as an environmental one?",
+        "options": [
+          "The urban poor bear concentrated health and safety harms from sites the wider city depends on",
+          "Their harms fall equally on every resident",
+          "Only the environment, not people, is affected",
+          "Dumps are demonstrably safe places to live and work"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the costs are borne disproportionately by the most vulnerable, raising questions of equity.",
+          "Wrong: the burden is highly uneven, concentrated on the poor.",
+          "Wrong: the human toll (e.g. reduced life expectancy) is central.",
+          "Wrong: dumps are hazardous, with documented health impacts."
+        ]
+      },
+      "hard": {
+        "question": "A dump collapse killing waste-pickers illustrates which sustainability tension?",
+        "options": [
+          "The city's disposal convenience is subsidised by the safety of its most vulnerable",
+          "Environmental harm with no social dimension",
+          "A purely economic inefficiency",
+          "The absence of any trade-off"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it exposes how the poor bear the hidden costs of cheap disposal.",
+          "Wrong: it is profoundly social.",
+          "Wrong: it is a human tragedy, not mere inefficiency.",
+          "Wrong: there is a stark trade-off."
+        ]
+      }
+    },
+    "r5_child_labour": {
+      "easy": {
+        "question": "Why is children picking waste a long-term problem?",
+        "options": [
+          "They miss school, staying poor",
+          "It boosts schooling",
+          "It has no social cost",
+          "It pays well"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: lost schooling traps families in poverty.",
+          "Wrong: it removes kids from school.",
+          "Wrong: the cost is large.",
+          "Wrong: it's precarious, low-paid work."
+        ]
+      },
+      "standard": {
+        "question": "How does children's involvement in waste-picking affect long-term development?",
+        "options": [
+          "It displaces schooling, helping to perpetuate poverty across generations",
+          "It improves educational attainment",
+          "It carries no measurable social cost",
+          "It is reliably well-paid, secure work"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: lost education traps families in a cycle of poverty, a long-term development harm.",
+          "Wrong: it removes children from school, harming attainment.",
+          "Wrong: the intergenerational cost is significant.",
+          "Wrong: scavenging is precarious and poorly paid."
+        ]
+      },
+      "hard": {
+        "question": "Child waste-picking is a long-term development concern primarily because it...",
+        "options": [
+          "substitutes for schooling, entrenching intergenerational poverty",
+          "temporarily boosts family savings only",
+          "improves educational outcomes",
+          "is secure, well-paid employment"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: lost education perpetuates poverty across generations.",
+          "Wrong: short-term income ignores the long-term harm.",
+          "Wrong: it removes children from school.",
+          "Wrong: it is precarious and poorly paid."
+        ]
+      }
+    },
+    "r5_coop_formation": {
+      "easy": {
+        "question": "Why link recycler co-ops to local industry?",
+        "options": [
+          "Recovered materials become inputs for making things",
+          "It wastes materials",
+          "Industry can't use them",
+          "It raises landfill"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: that closes the loop — circular economy.",
+          "Wrong: the point is to use them.",
+          "Wrong: small industry uses them.",
+          "Wrong: it diverts from landfill."
+        ]
+      },
+      "standard": {
+        "question": "Why does linking recycler cooperatives to local industry strengthen circularity?",
+        "options": [
+          "Recovered materials become manufacturing inputs, forming closed local value chains",
+          "It wastes the recovered materials",
+          "Local industry is unable to use recovered materials",
+          "It increases the volume sent to landfill"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: feeding recovered materials back into production is the essence of a circular economy.",
+          "Wrong: the point is to use, not waste, the materials.",
+          "Wrong: many small industries rely on recovered inputs.",
+          "Wrong: it diverts material from landfill, not toward it."
+        ]
+      },
+      "hard": {
+        "question": "Linking recycler cooperatives to manufacturing strengthens circularity by...",
+        "options": [
+          "embedding recovered materials as inputs in local value chains",
+          "increasing landfill diversion only briefly",
+          "wasting recovered materials",
+          "raising disposal volumes"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it closes the loop into local production.",
+          "Wrong: the benefit is structural, not brief.",
+          "Wrong: the point is to use them.",
+          "Wrong: it reduces disposal."
+        ]
+      }
+    },
+    "r5_green_exchange": {
+      "easy": {
+        "question": "Why does rewarding recycling with tokens work?",
+        "options": [
+          "People take part when it benefits them",
+          "It punishes recyclers",
+          "It needs no participation",
+          "It has no rewards"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: rewards drive participation.",
+          "Wrong: it rewards, not punishes.",
+          "Wrong: participation is the point.",
+          "Wrong: it's reward-based."
+        ]
+      },
+      "standard": {
+        "question": "Why is Curitiba's 'recyclables-for-tokens' scheme so effective, especially in low-income areas?",
+        "options": [
+          "It rewards participation with valued benefits, aligning incentives so people choose to take part",
+          "It penalises households that recycle",
+          "It functions without any citizen participation",
+          "It is compulsory and offers no rewards"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: tangible rewards make recycling worthwhile for residents, driving high participation where it is needed most.",
+          "Wrong: it rewards, not penalises, recycling.",
+          "Wrong: participation is exactly what it mobilises.",
+          "Wrong: it is incentive-based, not a reward-free mandate."
+        ]
+      },
+      "hard": {
+        "question": "Why are incentive schemes like Curitiba's especially effective in low-income areas?",
+        "options": [
+          "They align personal benefit with recycling, overcoming participation barriers where need is high",
+          "They penalise non-participation harshly",
+          "They require no behaviour change",
+          "They function without any rewards"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: tangible rewards mobilise participation precisely where it is hardest.",
+          "Wrong: they reward, not punish.",
+          "Wrong: they drive behaviour change.",
+          "Wrong: rewards are the mechanism."
+        ]
+      }
+    },
+    "r5_gender_health": {
+      "easy": {
+        "question": "Why care who handles waste, not just how much?",
+        "options": [
+          "Worker health and fairness matter",
+          "Only total tonnage matters",
+          "Workers face no risk",
+          "Safety lowers recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: the social pillar covers worker wellbeing.",
+          "Wrong: tonnage ignores people.",
+          "Wrong: hand-sorting is risky.",
+          "Wrong: safety supports recovery."
+        ]
+      },
+      "standard": {
+        "question": "Why does the social pillar of sustainability concern WHO handles waste, not only how much?",
+        "options": [
+          "Worker health, safety and equity are integral to sustainable development",
+          "Only the total tonnage of waste matters",
+          "Waste workers face no real health risks",
+          "Improving worker safety lowers recycling rates"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: sustainability includes the wellbeing and fair treatment of the people doing the work.",
+          "Wrong: tonnage ignores the human dimension the social pillar addresses.",
+          "Wrong: hand-sorting hazardous waste carries serious risks.",
+          "Wrong: safer conditions support, not undermine, recovery."
+        ]
+      },
+      "hard": {
+        "question": "Focusing on who handles waste reflects which dimension of sustainability?",
+        "options": [
+          "The social pillar — worker health, safety and equity",
+          "The purely economic pillar",
+          "The purely environmental pillar",
+          "None; only tonnage matters"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: worker wellbeing is the social dimension of SUD.",
+          "Wrong: it is social, not only economic.",
+          "Wrong: it is social, not only environmental.",
+          "Wrong: the human dimension matters."
+        ]
+      }
+    },
+    "r5_eviction_pressure": {
+      "easy": {
+        "question": "Why can removing waste-pickers cost more?",
+        "options": [
+          "The city must now collect what they recovered",
+          "It boosts efficiency",
+          "Pickers add waste",
+          "No budget effect"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: their free recovery must be replaced.",
+          "Wrong: it cuts recovery.",
+          "Wrong: they divert waste.",
+          "Wrong: costs shift to the city."
+        ]
+      },
+      "standard": {
+        "question": "Why might evicting waste-pickers paradoxically raise a city's total waste costs?",
+        "options": [
+          "The city loses free recovery labour and must collect and dispose of more itself",
+          "Eviction increases recovery efficiency",
+          "Pickers add to, rather than reduce, the waste stream",
+          "Removing pickers has no budgetary effect"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the recovery they provided must now be paid for through formal collection and disposal.",
+          "Wrong: removing recovery capacity lowers efficiency.",
+          "Wrong: pickers divert waste from disposal.",
+          "Wrong: it shifts costs onto the municipal budget."
+        ]
+      },
+      "hard": {
+        "question": "Why can evicting waste-pickers raise net municipal costs?",
+        "options": [
+          "The city absorbs the recovery and disposal they previously provided for free",
+          "Eviction raises recovery efficiency",
+          "Pickers add to the waste stream",
+          "There is no fiscal consequence"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: lost free labour must be replaced by paid services.",
+          "Wrong: it lowers recovery.",
+          "Wrong: they divert waste.",
+          "Wrong: costs shift onto the city."
+        ]
+      }
+    },
+    "r5_community_composting": {
+      "easy": {
+        "question": "Why compost food/garden waste instead of burying it?",
+        "options": [
+          "It cuts methane and makes useful compost",
+          "It can't be composted",
+          "Burying is better",
+          "It won't rot"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: composting avoids methane and returns nutrients.",
+          "Wrong: organics compost well.",
+          "Wrong: burying makes methane.",
+          "Wrong: organics rot readily."
+        ]
+      },
+      "standard": {
+        "question": "Why is diverting organic waste from landfill to composting beneficial on two fronts?",
+        "options": [
+          "It cuts landfill methane while returning nutrients to the soil as compost",
+          "Organic waste cannot be composted",
+          "Landfilling organics is better for the climate",
+          "Organic waste does not decompose"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it both avoids potent methane emissions and closes the nutrient loop.",
+          "Wrong: organics are the ideal compost feedstock.",
+          "Wrong: landfilling organics generates methane, worsening the climate impact.",
+          "Wrong: organics decompose readily — anaerobically in landfill, aerobically in compost."
+        ]
+      },
+      "hard": {
+        "question": "Composting organics delivers a 'double dividend'. What is it?",
+        "options": [
+          "Avoided landfill methane plus nutrient return to soils",
+          "Lower recycling rates but cheaper disposal",
+          "More methane but better compost",
+          "Neither a climate nor a soil benefit"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it cuts emissions and closes the nutrient loop simultaneously.",
+          "Wrong: it does not lower recycling.",
+          "Wrong: it reduces methane.",
+          "Wrong: it benefits both climate and soil."
+        ]
+      }
+    },
+    "r6_polluter_pays": {
+      "easy": {
+        "question": "Why tax dumping more than recycling?",
+        "options": [
+          "To push waste toward better options",
+          "To make the most money",
+          "Dumping is cleanest",
+          "Recycling is worst"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: pricing the worst option steers behaviour up the hierarchy.",
+          "Wrong: the aim is behaviour, not revenue.",
+          "Wrong: dumping is the worst option.",
+          "Wrong: recycling is favoured."
+        ]
+      },
+      "standard": {
+        "question": "Denmark taxes landfill far more heavily than incineration or recycling. What is the policy logic?",
+        "options": [
+          "Differential pricing steers waste up the hierarchy toward less harmful options",
+          "It exists simply to maximise total tax revenue",
+          "Landfill is the cleanest option and should be encouraged",
+          "Recycling is the most harmful option and so is penalised"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: charging most for the worst option nudges behaviour toward higher tiers of the hierarchy.",
+          "Wrong: the aim is behavioural redirection, not revenue.",
+          "Wrong: landfill is the least preferred, not the cleanest.",
+          "Wrong: recycling is favoured, not penalised, under such schemes."
+        ]
+      },
+      "hard": {
+        "question": "Differential waste taxation (high on landfill, low on recycling) is designed to...",
+        "options": [
+          "price externalities so behaviour moves up the waste hierarchy",
+          "maximise municipal revenue regardless of behaviour",
+          "reward landfill as the cleanest option",
+          "penalise recycling as the most harmful"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: pricing the worst options steers behaviour toward better ones.",
+          "Wrong: the aim is behavioural, not revenue.",
+          "Wrong: landfill is least preferred.",
+          "Wrong: recycling is favoured."
+        ]
+      }
+    },
+    "r6_zero_waste_pledge": {
+      "easy": {
+        "question": "What makes a 'zero waste' goal real?",
+        "options": [
+          "Real systems and rules to back it",
+          "A slogan alone",
+          "Banning all shopping",
+          "More landfills"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: enforceable systems make it credible.",
+          "Wrong: a slogan isn't enough.",
+          "Wrong: it targets throughput, not shopping.",
+          "Wrong: more landfill is the opposite."
+        ]
+      },
+      "standard": {
+        "question": "What makes a 'Zero Waste City' target credible rather than mere branding?",
+        "options": [
+          "Integrated reduce/reuse/recycle systems backed by binding policy and citizen participation",
+          "A memorable slogan and logo",
+          "A complete ban on all consumption",
+          "Building additional landfill capacity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: credibility rests on enforceable systems and behaviour, not aspiration alone.",
+          "Wrong: branding without delivery is exactly the failure mode.",
+          "Wrong: zero waste targets throughput, not consumption bans.",
+          "Wrong: more landfill is the opposite of a zero-waste trajectory."
+        ]
+      },
+      "hard": {
+        "question": "What distinguishes a credible zero-waste commitment from greenwashing?",
+        "options": [
+          "Binding policy, integrated systems and measurable participation behind the target",
+          "A compelling slogan and brand",
+          "A pledge to ban consumption",
+          "Expanded landfill capacity"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: enforceable substance, not messaging, makes it credible.",
+          "Wrong: branding is the greenwashing risk.",
+          "Wrong: it targets throughput, not consumption bans.",
+          "Wrong: more landfill contradicts the goal."
+        ]
+      }
+    },
+    "r6_circular_industry": {
+      "easy": {
+        "question": "What is 'industrial symbiosis'?",
+        "options": [
+          "One firm's waste is another's raw material",
+          "Firms competing for resources",
+          "Burning all waste",
+          "Exporting waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: outputs become inputs between firms.",
+          "Wrong: that's linear competition.",
+          "Wrong: burning is recovery, not symbiosis.",
+          "Wrong: exporting is displacement."
+        ]
+      },
+      "standard": {
+        "question": "What does 'industrial symbiosis' mean within a circular economy?",
+        "options": [
+          "One firm's waste or by-product becomes another firm's raw material",
+          "Firms competing to extract the most virgin resources",
+          "Burning all industrial waste for energy",
+          "Exporting industrial waste to other countries"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it closes loops between firms, turning outputs into inputs.",
+          "Wrong: that is linear competition for virgin material.",
+          "Wrong: combustion is recovery, not symbiosis.",
+          "Wrong: exporting waste is displacement, not symbiosis."
+        ]
+      },
+      "hard": {
+        "question": "Industrial symbiosis advances circularity because it...",
+        "options": [
+          "turns one firm's by-products into another's feedstock, closing technical loops",
+          "intensifies competition for virgin inputs",
+          "relies on incinerating industrial waste",
+          "depends on exporting waste abroad"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it cycles materials between firms rather than discarding them.",
+          "Wrong: that is linear competition.",
+          "Wrong: combustion is not symbiosis.",
+          "Wrong: export is displacement."
+        ]
+      }
+    },
+    "r6_deposit_law": {
+      "easy": {
+        "question": "Why do bottle deposits boost returns?",
+        "options": [
+          "People return them to get money back",
+          "Deposits are fines",
+          "Bottles are banned",
+          "People ignore them"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: a refund is a direct incentive.",
+          "Wrong: it's refundable, not a fine.",
+          "Wrong: sales continue.",
+          "Wrong: most people respond to the refund."
+        ]
+      },
+      "standard": {
+        "question": "Why do container-deposit schemes achieve high return rates?",
+        "options": [
+          "A refundable deposit gives a direct financial incentive to return the container",
+          "Deposits are punitive fines for buying drinks",
+          "They ban the sale of containers outright",
+          "Consumers ignore deposits entirely"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: people return items to reclaim their money, so capture rates rise.",
+          "Wrong: it is a refundable deposit, not a fine.",
+          "Wrong: sales continue; only a deposit is added.",
+          "Wrong: the monetary incentive ensures most people do respond."
+        ]
+      },
+      "hard": {
+        "question": "Deposit-return schemes achieve high recovery because they...",
+        "options": [
+          "attach a refundable financial incentive to returning containers",
+          "impose punitive fines on purchases",
+          "prohibit container sales",
+          "assume altruism without any incentive"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the refund directly motivates return.",
+          "Wrong: it is refundable, not a fine.",
+          "Wrong: sales continue.",
+          "Wrong: it relies on incentive, not altruism."
+        ]
+      }
+    },
+    "r6_landfill_ban": {
+      "easy": {
+        "question": "Why ban dumping recyclables only when alternatives exist?",
+        "options": [
+          "Waste needs somewhere better to go first",
+          "Landfill is best for them",
+          "Bans raise waste",
+          "Bans never work"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: without recovery in place, a ban creates a gap.",
+          "Wrong: the ban moves waste off landfill.",
+          "Wrong: a ban targets destination.",
+          "Wrong: with alternatives, bans work."
+        ]
+      },
+      "standard": {
+        "question": "Why is banning the landfilling of recyclable/combustible waste only effective once alternatives exist?",
+        "options": [
+          "A ban forces waste up the hierarchy, but only works if recovery capacity can absorb the diverted material",
+          "Landfill is the ideal destination for such waste",
+          "Bans always increase the total waste generated",
+          "Bans are universally ineffective"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: without recycling/recovery in place, a ban creates a disposal gap rather than progress.",
+          "Wrong: the ban exists precisely to move waste off landfill.",
+          "Wrong: a ban targets destination, not generation.",
+          "Wrong: paired with alternatives, bans are effective."
+        ]
+      },
+      "hard": {
+        "question": "A landfill ban on recyclables is only effective if...",
+        "options": [
+          "sufficient recovery and treatment capacity exists to absorb diverted waste",
+          "landfill remains the preferred destination",
+          "no alternatives are developed",
+          "it is applied before any recycling exists"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: without capacity to absorb diverted waste, a ban creates a disposal gap.",
+          "Wrong: the ban moves waste off landfill.",
+          "Wrong: alternatives are essential.",
+          "Wrong: premature bans fail."
+        ]
+      }
+    },
+    "r6_green_jobs": {
+      "easy": {
+        "question": "Why does a circular economy need trained workers?",
+        "options": [
+          "Repair and recycling are people-heavy jobs",
+          "It needs no people",
+          "Jobs don't matter",
+          "It cuts all jobs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: circular work is labour-intensive.",
+          "Wrong: it needs people.",
+          "Wrong: labour is central.",
+          "Wrong: it adds jobs."
+        ]
+      },
+      "standard": {
+        "question": "Why does a circular economy require investment in the workforce?",
+        "options": [
+          "Repair, recovery and remanufacturing are labour-intensive activities that need new skills",
+          "Circular systems operate entirely without people",
+          "Employment is irrelevant to circularity",
+          "A circular economy necessarily reduces total employment"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: circular activities create skilled jobs, so workforce development underpins the transition.",
+          "Wrong: these activities are people-intensive.",
+          "Wrong: labour is central to circular operations.",
+          "Wrong: circular sectors tend to add, not cut, jobs."
+        ]
+      },
+      "hard": {
+        "question": "Why is workforce development integral to a circular transition?",
+        "options": [
+          "Repair, recovery and remanufacturing are labour- and skill-intensive activities",
+          "Circular systems are fully automated",
+          "Employment is irrelevant to circularity",
+          "Circularity reduces total employment"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: circular sectors need skilled people, so training underpins the shift.",
+          "Wrong: they are people-intensive.",
+          "Wrong: labour is central.",
+          "Wrong: circularity tends to add jobs."
+        ]
+      }
+    },
+    "r6_producer_responsibility": {
+      "easy": {
+        "question": "What does making producers pay for disposal encourage?",
+        "options": [
+          "Designing recyclable, longer-lasting products",
+          "Consumers paying only",
+          "Banning all goods",
+          "No design change"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: paying for end-of-life drives better design.",
+          "Wrong: it shifts cost to producers.",
+          "Wrong: it reshapes design, not bans goods.",
+          "Wrong: it changes design incentives."
+        ]
+      },
+      "standard": {
+        "question": "What behavioural change does Extended Producer Responsibility (EPR) aim to drive?",
+        "options": [
+          "Making producers fund end-of-life handling incentivises durable, recyclable product design",
+          "Shifting all disposal costs onto consumers only",
+          "Banning the production of goods entirely",
+          "It has no effect on how products are designed"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: when makers pay for disposal, they have a reason to design for recyclability and longevity.",
+          "Wrong: EPR places responsibility on producers, not solely consumers.",
+          "Wrong: it reshapes design and cost, not production itself.",
+          "Wrong: internalising end-of-life cost is specifically intended to change design."
+        ]
+      },
+      "hard": {
+        "question": "EPR shifts incentives by...",
+        "options": [
+          "making producers bear end-of-life costs, rewarding recyclable, durable design",
+          "transferring all costs to consumers",
+          "prohibiting manufacturing",
+          "leaving product design unchanged"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: internalising disposal cost drives better design.",
+          "Wrong: it places cost on producers.",
+          "Wrong: it reshapes design, not bans production.",
+          "Wrong: it specifically changes design incentives."
+        ]
+      }
+    },
+    "r6_citizen_referendum": {
+      "easy": {
+        "question": "Why does public trust shape waste policy?",
+        "options": [
+          "People must accept and join schemes",
+          "Policy ignores people",
+          "Trust lowers recycling",
+          "Votes don't matter"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: compliance and participation need trust.",
+          "Wrong: ignoring opinion breeds resistance.",
+          "Wrong: trust supports participation.",
+          "Wrong: consent affects what's possible."
+        ]
+      },
+      "standard": {
+        "question": "Why does the level of public trust shape which waste policies are politically feasible?",
+        "options": [
+          "Citizens must consent to and cooperate with schemes for them to function",
+          "Effective policy can simply ignore public opinion",
+          "Higher trust reduces recycling participation",
+          "Public votes have no bearing on implementation"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: waste policy relies on compliance and participation, which depend on trust.",
+          "Wrong: ignoring opinion invites resistance and non-compliance.",
+          "Wrong: trust supports participation.",
+          "Wrong: democratic consent strongly affects what can be enacted."
+        ]
+      },
+      "hard": {
+        "question": "Public trust determines policy feasibility because...",
+        "options": [
+          "waste schemes depend on voluntary compliance and participation",
+          "effective policy disregards public opinion",
+          "trust suppresses recycling",
+          "referendums cannot affect implementation"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: schemes only work if citizens consent and take part.",
+          "Wrong: ignoring opinion breeds non-compliance.",
+          "Wrong: trust supports recycling.",
+          "Wrong: consent strongly shapes what is enacted."
+        ]
+      }
+    },
+    "r6_smart_waste": {
+      "easy": {
+        "question": "Why does 'pay for what you throw' cut waste?",
+        "options": [
+          "People waste less to pay less",
+          "It's free",
+          "It bans bins",
+          "It raises waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: volume charging rewards reduction.",
+          "Wrong: it's a charge, not free.",
+          "Wrong: it prices waste, not bans bins.",
+          "Wrong: it reduces waste."
+        ]
+      },
+      "standard": {
+        "question": "Why does 'pay-as-you-throw' cut household waste, and what design risk must be managed?",
+        "options": [
+          "Charging by volume incentivises reduction and sorting, but it must stay fair to poorer households",
+          "It is free, so it changes nothing",
+          "It works by banning the use of bins",
+          "It increases the amount households throw away"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: volume-based charging rewards waste reduction, but equity must be designed in to avoid unfair burdens.",
+          "Wrong: it is a pricing mechanism, not free.",
+          "Wrong: it prices waste; it does not ban bins.",
+          "Wrong: it reduces, not increases, household waste."
+        ]
+      },
+      "hard": {
+        "question": "Pay-as-you-throw cuts waste but carries which design risk?",
+        "options": [
+          "It can be regressive, burdening poorer households unless equity is built in",
+          "It is free and therefore inert",
+          "It necessitates banning bins",
+          "It structurally increases waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: fairness must be designed in to avoid disproportionate burdens.",
+          "Wrong: it is a charge, not free.",
+          "Wrong: it prices waste, not bans bins.",
+          "Wrong: it reduces waste."
+        ]
+      }
+    },
+    "r6_legacy_review": {
+      "easy": {
+        "question": "What makes a city 'circular' not 'linear'?",
+        "options": [
+          "It reuses outputs instead of discarding them",
+          "Bigger population",
+          "Bigger budget",
+          "More landfills"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: closing loops defines circularity.",
+          "Wrong: size isn't it.",
+          "Wrong: budget alone isn't it.",
+          "Wrong: more landfill is linear."
+        ]
+      },
+      "standard": {
+        "question": "What ultimately distinguishes a circular 'model' city from a linear one?",
+        "options": [
+          "It reduces inputs and cycles outputs back into the system rather than discarding waste",
+          "It simply has a larger population",
+          "It has a bigger municipal budget alone",
+          "It operates a greater number of landfills"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: the defining feature is closing resource loops, not size or spending.",
+          "Wrong: population does not determine metabolism type.",
+          "Wrong: budget alone does not make a city circular.",
+          "Wrong: more landfills indicate a linear, not circular, system."
+        ]
+      },
+      "hard": {
+        "question": "The ultimate marker of a circular city is...",
+        "options": [
+          "minimising inputs and cycling outputs back into the system",
+          "a large population or budget",
+          "the number of landfills operated",
+          "high per-capita consumption"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: closing resource loops defines circularity.",
+          "Wrong: scale is not the marker.",
+          "Wrong: more landfill signals linearity.",
+          "Wrong: high consumption is linear."
+        ]
+      }
+    },
+    "market-crash": {
+      "easy": {
+        "question": "What does a recycling price crash show?",
+        "options": [
+          "Relying on selling recyclables is risky",
+          "Recycling always profits",
+          "Prices never change",
+          "Markets don't matter"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: prices swing, so income is unreliable.",
+          "Wrong: it can lose money.",
+          "Wrong: prices are volatile.",
+          "Wrong: markets decide viability."
+        ]
+      },
+      "standard": {
+        "question": "A recyclables price crash hurts recycling-dependent cities most. What broader lesson does this teach about circular systems?",
+        "options": [
+          "Over-reliance on volatile commodity markets is a financial risk; resilient systems also reduce at source",
+          "Recycling is always profitable regardless of market conditions",
+          "Global commodity prices never change",
+          "Markets have no effect on municipal recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: revenue-dependent recycling is exposed to price swings, so resilience needs reduction and diversification too.",
+          "Wrong: recycling economics are market-dependent and can turn loss-making.",
+          "Wrong: commodity prices are highly volatile.",
+          "Wrong: market prices directly determine recycling viability."
+        ]
+      },
+      "hard": {
+        "question": "A recyclables crash exposes which structural vulnerability of recycling-led cities?",
+        "options": [
+          "Dependence on volatile commodity markets for the viability of recovery",
+          "An inability to collect waste at all",
+          "Excessive landfill capacity",
+          "Over-reliance on incineration"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: revenue dependence on swinging prices is the exposed weakness.",
+          "Wrong: collection is unaffected.",
+          "Wrong: not the issue here.",
+          "Wrong: the city is recycling-led, not incineration-led."
+        ]
+      }
+    },
+    "carbon-tax": {
+      "easy": {
+        "question": "What does taxing dumping do?",
+        "options": [
+          "Makes cleaner options more worthwhile",
+          "Nothing",
+          "Makes dumping cheaper",
+          "Rewards polluters"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it shifts economics toward cleaner options.",
+          "Wrong: it changes behaviour.",
+          "Wrong: it makes dumping dearer.",
+          "Wrong: it penalises polluters."
+        ]
+      },
+      "standard": {
+        "question": "A national landfill/incineration tax changes which cities prosper. What principle does this illustrate?",
+        "options": [
+          "Pricing pollution shifts the economics in favour of cities that already moved up the hierarchy",
+          "Taxes on disposal have no behavioural effect",
+          "Dumping becomes cheaper under such a tax",
+          "The tax rewards the most polluting cities"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: by raising the cost of disposal, the tax advantages cities that reduced and recycled early.",
+          "Wrong: the tax is specifically designed to change behaviour.",
+          "Wrong: it makes dumping more expensive, not cheaper.",
+          "Wrong: it penalises, not rewards, heavy polluters."
+        ]
+      },
+      "hard": {
+        "question": "A landfill/incineration tax reallocates advantage toward cities that...",
+        "options": [
+          "had already invested in waste reduction and recycling",
+          "rely most heavily on dumping",
+          "avoided all prior investment",
+          "operate the largest incinerators"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: early movers up the hierarchy are insulated from the tax.",
+          "Wrong: dumpers are penalised.",
+          "Wrong: laggards are exposed.",
+          "Wrong: incineration is also taxed."
+        ]
+      }
+    },
+    "consumption-surge": {
+      "easy": {
+        "question": "Why do some cities cope with a waste spike better?",
+        "options": [
+          "They have spare capacity and reduce waste",
+          "Surges can't be prepared for",
+          "Spare capacity is useless",
+          "More waste is good"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: headroom and reduction give resilience.",
+          "Wrong: you can prepare.",
+          "Wrong: buffering is useful.",
+          "Wrong: more waste strains systems."
+        ]
+      },
+      "standard": {
+        "question": "A sudden waste surge overwhelms some cities but not others. What does this reveal about system design?",
+        "options": [
+          "Capacity headroom and source reduction provide resilience to demand shocks",
+          "Surges are impossible to prepare for",
+          "Spare capacity is always wasteful and pointless",
+          "Generating more waste is beneficial to a city"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: slack capacity and lower throughput let a system absorb shocks without collapsing.",
+          "Wrong: reduction and capacity planning are exactly how you prepare.",
+          "Wrong: buffering capacity is a deliberate resilience strategy.",
+          "Wrong: more waste strains, not benefits, the system."
+        ]
+      },
+      "hard": {
+        "question": "A demand shock reveals that system resilience depends most on...",
+        "options": [
+          "spare capacity and source reduction built in beforehand",
+          "reacting only after the surge arrives",
+          "minimising all spare capacity",
+          "maximising waste generation"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: pre-built slack and lower throughput absorb shocks.",
+          "Wrong: reaction alone is too late.",
+          "Wrong: buffering is the resilience.",
+          "Wrong: more waste worsens shocks."
+        ]
+      }
+    },
+    "landfill-fire": {
+      "easy": {
+        "question": "Why are dump fires so bad?",
+        "options": [
+          "Rubbish gas burns and makes toxic smoke",
+          "Fires clean the air",
+          "Dumps can't burn",
+          "Same risk everywhere"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: methane fuels toxic fires.",
+          "Wrong: they pollute the air.",
+          "Wrong: dumps do catch fire.",
+          "Wrong: engineered sites are safer."
+        ]
+      },
+      "standard": {
+        "question": "Why is a landfill fire so catastrophic, and why are engineered sites less vulnerable?",
+        "options": [
+          "Anaerobic decay produces flammable methane; gas control at engineered sites reduces the risk",
+          "Landfill fires actually purify the surrounding air",
+          "Landfills are physically incapable of catching fire",
+          "Engineered and open sites face identical fire risk"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: methane build-up fuels long, toxic fires; engineered gas management lowers that hazard.",
+          "Wrong: the fires release toxic smoke, not clean air.",
+          "Wrong: methane makes landfill fires a real, recurring danger.",
+          "Wrong: containment and gas control make engineered sites safer."
+        ]
+      },
+      "hard": {
+        "question": "Why do engineered landfills withstand fire risk better than open dumps?",
+        "options": [
+          "Gas management and compaction reduce methane build-up and ignition",
+          "They contain no organic waste",
+          "They are too small to burn",
+          "Open dumps have superior gas control"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: controlling methane is what lowers fire risk.",
+          "Wrong: they do receive organics.",
+          "Wrong: size is not the factor.",
+          "Wrong: open dumps lack gas control."
+        ]
+      }
+    },
+    "heatwave": {
+      "easy": {
+        "question": "Who suffers most in a heatwave?",
+        "options": [
+          "Cities with damaged environments",
+          "High-footprint cities are safe",
+          "No link to environment",
+          "Polluted cities benefit"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: degraded places buffer stress poorly.",
+          "Wrong: high footprint means more exposure.",
+          "Wrong: there's a clear link.",
+          "Wrong: heat worsens things."
+        ]
+      },
+      "standard": {
+        "question": "Why do high-footprint, environmentally degraded cities suffer most in a heatwave and drought?",
+        "options": [
+          "Overused, degraded environments have less capacity to buffer climate stress",
+          "A high ecological footprint protects a city against heat",
+          "Footprint and climate resilience are unrelated",
+          "Heatwaves are beneficial to polluted cities"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: depleted ecosystems and water supplies leave such cities exposed when stress arrives.",
+          "Wrong: a high footprint signals depletion, not protection.",
+          "Wrong: degradation directly undermines resilience.",
+          "Wrong: heat and drought worsen conditions everywhere, especially where degraded."
+        ]
+      },
+      "hard": {
+        "question": "High-footprint cities are most exposed to heat-drought stress because...",
+        "options": [
+          "depleted local ecosystems and water reserves offer little buffering capacity",
+          "a large footprint shields them from impacts",
+          "footprint is unrelated to resilience",
+          "degradation improves adaptation"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: prior depletion removes the natural buffers that ease stress.",
+          "Wrong: footprint signals depletion, not protection.",
+          "Wrong: degradation undermines resilience.",
+          "Wrong: degradation worsens, not aids, adaptation."
+        ]
+      }
+    },
+    "monsoon-flood": {
+      "easy": {
+        "question": "How does good waste collection cut floods?",
+        "options": [
+          "It keeps drains clear",
+          "Waste soaks up floods",
+          "No link",
+          "Drains need rubbish"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: clear drains prevent flooding.",
+          "Wrong: waste blocks drainage.",
+          "Wrong: clogging links them.",
+          "Wrong: drains work clear."
+        ]
+      },
+      "standard": {
+        "question": "Why does effective solid-waste management reduce a city's flood risk?",
+        "options": [
+          "Uncollected waste clogs drains, so reliable collection keeps waterways clear",
+          "Waste absorbs floodwater harmlessly",
+          "Flooding is entirely unrelated to waste",
+          "Drains require waste in them to function"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: blocked drains cause urban flooding, so collection is a flood-prevention measure.",
+          "Wrong: waste obstructs rather than absorbs drainage.",
+          "Wrong: drain-blocking links waste directly to floods.",
+          "Wrong: drains work best when clear of waste."
+        ]
+      },
+      "hard": {
+        "question": "Solid-waste management is a flood-mitigation measure because...",
+        "options": [
+          "uncollected waste blocks drainage, so collection preserves hydraulic capacity",
+          "waste absorbs floodwater",
+          "drainage is independent of waste",
+          "drains require debris to function"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: clear drains carry stormwater; blocked ones flood.",
+          "Wrong: waste obstructs drainage.",
+          "Wrong: blockage links them directly.",
+          "Wrong: drains work best clear."
+        ]
+      }
+    },
+    "zero-waste-grant": {
+      "easy": {
+        "question": "Why do green cities attract funding?",
+        "options": [
+          "Funders back proven, credible plans",
+          "It's random",
+          "Polluters preferred",
+          "Grants discourage recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: credible plans attract investment.",
+          "Wrong: it follows results.",
+          "Wrong: progress is favoured.",
+          "Wrong: grants accelerate circularity."
+        ]
+      },
+      "standard": {
+        "question": "Why do circular cities tend to attract green finance such as this grant?",
+        "options": [
+          "Funders back credible, measurable circular plans that are likely to deliver results",
+          "Green funding is allocated at random",
+          "Linear, polluting cities are the preferred recipients",
+          "Grants are designed to discourage recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: demonstrated circular capability lowers risk for funders, attracting investment.",
+          "Wrong: funding follows credible plans, not chance.",
+          "Wrong: funders favour progress, not pollution.",
+          "Wrong: such grants exist to accelerate, not deter, circularity."
+        ]
+      },
+      "hard": {
+        "question": "Green finance favours circular cities because credible plans...",
+        "options": [
+          "lower investment risk by demonstrating delivery capacity",
+          "are selected arbitrarily",
+          "signal high pollution",
+          "discourage recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: demonstrated capability de-risks investment.",
+          "Wrong: selection follows evidence.",
+          "Wrong: circular plans signal low pollution.",
+          "Wrong: they promote recycling."
+        ]
+      }
+    },
+    "import-ban": {
+      "easy": {
+        "question": "What weakness does a ban on exporting waste reveal?",
+        "options": [
+          "Exporting just moves the problem",
+          "Export destroys waste",
+          "Export is cheapest",
+          "Others want the waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: export relocates, not solves, waste.",
+          "Wrong: it doesn't destroy it.",
+          "Wrong: it's fragile.",
+          "Wrong: countries refuse imports."
+        ]
+      },
+      "standard": {
+        "question": "A ban on exporting waste exposes which strategic weakness?",
+        "options": [
+          "Relying on exporting waste merely displaces the problem and leaves no domestic capacity",
+          "Exporting waste destroys it permanently",
+          "Exporting is always the cheapest long-term option",
+          "Other countries are eager to receive ever more waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: export dependence collapses when borders close, revealing a lack of home-grown capacity.",
+          "Wrong: export relocates waste; it does not destroy it.",
+          "Wrong: export is fragile and exposed to policy shifts.",
+          "Wrong: receiving countries are increasingly refusing imports."
+        ]
+      },
+      "hard": {
+        "question": "An export ban is most damaging to cities that...",
+        "options": [
+          "substituted waste export for domestic recovery capacity",
+          "invested heavily in local recycling",
+          "minimised waste generation",
+          "never exported waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: export-dependent cities have no home capacity to fall back on.",
+          "Wrong: local recyclers are insulated.",
+          "Wrong: low generators cope better.",
+          "Wrong: non-exporters are unaffected."
+        ]
+      }
+    },
+    "energy-spike": {
+      "easy": {
+        "question": "Who gains from high energy prices?",
+        "options": [
+          "Cities with waste-to-energy plants",
+          "No one",
+          "Prices don't matter",
+          "Energy is free"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: they sell more valuable power.",
+          "Wrong: incinerator cities gain.",
+          "Wrong: prices affect returns.",
+          "Wrong: energy is sold."
+        ]
+      },
+      "standard": {
+        "question": "An energy price spike rewards incinerator cities. What does this reveal about waste-to-energy?",
+        "options": [
+          "Its value depends on volatile energy markets — a benefit in spikes but an exposure to swings",
+          "Energy prices never affect incineration economics",
+          "Incinerators are indifferent to the price of electricity",
+          "Energy from waste is always provided free of charge"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: revenue from energy makes incineration's economics market-dependent, cutting both ways.",
+          "Wrong: energy sales are central to incineration economics.",
+          "Wrong: electricity prices directly affect the plant's returns.",
+          "Wrong: the energy is sold, not given away."
+        ]
+      },
+      "hard": {
+        "question": "An energy-price spike demonstrates that waste-to-energy economics are...",
+        "options": [
+          "contingent on volatile energy markets, cutting both ways",
+          "fixed and predictable",
+          "independent of electricity prices",
+          "based on free energy"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: returns rise and fall with energy prices.",
+          "Wrong: they are volatile.",
+          "Wrong: prices directly affect them.",
+          "Wrong: energy is sold, not free."
+        ]
+      }
+    },
+    "health-study": {
+      "easy": {
+        "question": "Why monitor incinerator emissions?",
+        "options": [
+          "To catch and limit harmful pollution",
+          "Monitoring causes pollution",
+          "Emissions are safe",
+          "To cut recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: monitoring controls health risks.",
+          "Wrong: it measures, not causes, pollution.",
+          "Wrong: emissions are the concern.",
+          "Wrong: it targets air, not recycling."
+        ]
+      },
+      "standard": {
+        "question": "A health study damages incinerator-reliant cities. Why does emissions monitoring matter for governance?",
+        "options": [
+          "It detects and limits harmful pollutants, protecting health and sustaining public trust",
+          "Monitoring itself is what causes the pollution",
+          "Incinerator emissions are biologically harmless",
+          "Monitoring is intended to reduce recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: transparent monitoring controls real health risks and preserves the consent infrastructure depends on.",
+          "Wrong: monitoring measures pollution; it does not create it.",
+          "Wrong: the emissions are the health concern.",
+          "Wrong: monitoring targets air quality, not recycling."
+        ]
+      },
+      "hard": {
+        "question": "Adverse health findings most damage cities that...",
+        "options": [
+          "rely on incineration without strong emissions control or public trust",
+          "prioritised recycling and reduction",
+          "maintained transparent monitoring",
+          "minimised combustion"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: unmonitored, low-trust incinerator cities are most exposed.",
+          "Wrong: recyclers face less exposure.",
+          "Wrong: transparency cushions the blow.",
+          "Wrong: less burning means less exposure."
+        ]
+      }
+    },
+    "eco-award": {
+      "easy": {
+        "question": "Why do clean cities earn recognition?",
+        "options": [
+          "Proven results build reputation",
+          "It's random",
+          "Most spending wins",
+          "Ignoring waste helps"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: results attract investment and talent.",
+          "Wrong: it's earned, not random.",
+          "Wrong: results, not spend, count.",
+          "Wrong: neglect harms reputation."
+        ]
+      },
+      "standard": {
+        "question": "Why does a credible circular track record earn international recognition and investment?",
+        "options": [
+          "Demonstrated, measurable sustainability builds a reputation that attracts capital and talent",
+          "Recognition is awarded purely at random",
+          "Spending the most money guarantees the award",
+          "Ignoring waste improves a city's standing"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: proven results signal competence, drawing investment and skilled people.",
+          "Wrong: recognition reflects performance, not chance.",
+          "Wrong: outcomes, not spending, earn recognition.",
+          "Wrong: neglecting waste harms reputation."
+        ]
+      },
+      "hard": {
+        "question": "International recognition rewards cities whose sustainability is...",
+        "options": [
+          "demonstrated and measurable, not merely declared",
+          "the most heavily marketed",
+          "the highest-spending",
+          "indifferent to waste"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: evidence of results, not claims, earns recognition.",
+          "Wrong: marketing is not delivery.",
+          "Wrong: spend is not outcome.",
+          "Wrong: neglect harms standing."
+        ]
+      }
+    },
+    "recession": {
+      "easy": {
+        "question": "Why are waste budgets cut in a recession?",
+        "options": [
+          "Waste is a big, easy-to-cut cost",
+          "Services are free",
+          "Budgets ignore waste",
+          "Recycling is free"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: it's a large, visible budget line.",
+          "Wrong: services cost money.",
+          "Wrong: waste is a big item.",
+          "Wrong: recycling has costs."
+        ]
+      },
+      "standard": {
+        "question": "Recessions hit waste budgets hard. Why is the waste sector so exposed to cuts?",
+        "options": [
+          "Waste management is a large share of municipal spending, making it a prime target",
+          "Waste services are free to provide",
+          "Municipal budgets never include waste management",
+          "Recycling and collection have no operating costs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: because it is a big line item (often 20–50% in poorer cities), it is an obvious place to cut.",
+          "Wrong: services are costly to run.",
+          "Wrong: waste is a major budget component.",
+          "Wrong: collection and recycling have substantial running costs."
+        ]
+      },
+      "hard": {
+        "question": "Waste services are vulnerable in downturns because...",
+        "options": [
+          "they form a large, discretionary-looking share of municipal budgets",
+          "they cost nothing to run",
+          "budgets exclude them",
+          "recycling is free"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: as a big, visible cost they are an easy target.",
+          "Wrong: they are costly.",
+          "Wrong: they are a major budget item.",
+          "Wrong: recycling has costs."
+        ]
+      }
+    },
+    "population-boom": {
+      "easy": {
+        "question": "Why does a population boom strain waste systems?",
+        "options": [
+          "More people make more waste",
+          "Growth cuts waste",
+          "No effect",
+          "Cities shrink"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: more residents mean more waste.",
+          "Wrong: growth raises waste.",
+          "Wrong: it strains systems.",
+          "Wrong: growth expands demand."
+        ]
+      },
+      "standard": {
+        "question": "A population boom strains some cities far more than others. Why?",
+        "options": [
+          "More residents raise waste generation, so systems lacking capacity or reduction struggle",
+          "Population growth reduces total waste",
+          "Migration has no effect on the waste stream",
+          "Cities shrink as their population grows"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: rising numbers mean more waste, exposing systems without spare capacity or source reduction.",
+          "Wrong: more people generate more, not less, waste.",
+          "Wrong: migration is a key driver of the waste stream.",
+          "Wrong: growth expands demand on services."
+        ]
+      },
+      "hard": {
+        "question": "Rapid in-migration strains waste systems most where...",
+        "options": [
+          "capacity and source reduction were not scaled ahead of growth",
+          "recycling systems already exist",
+          "waste generation falls",
+          "the city is shrinking"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: unscaled systems buckle under added load.",
+          "Wrong: existing systems cope better.",
+          "Wrong: growth raises waste.",
+          "Wrong: migration expands, not shrinks, demand."
+        ]
+      }
+    },
+    "ai-sorting": {
+      "easy": {
+        "question": "Who benefits most from better sorting tech?",
+        "options": [
+          "Cities that already recycle",
+          "No one",
+          "Only landfills",
+          "No improvement possible"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: tech amplifies existing systems.",
+          "Wrong: recyclers gain.",
+          "Wrong: it aids recovery, not landfill.",
+          "Wrong: it can raise capture."
+        ]
+      },
+      "standard": {
+        "question": "New sorting technology benefits recycling cities most. What principle does this illustrate?",
+        "options": [
+          "Technology amplifies existing systems, boosting capture where collection already works",
+          "Technology fully removes the need for citizens to sort",
+          "Sorting technology only benefits landfills",
+          "Recycling efficiency cannot be improved by technology"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: tech multiplies the value of an existing recycling base rather than creating one from nothing.",
+          "Wrong: upstream participation still matters even with better sorting.",
+          "Wrong: it improves material recovery, not landfilling.",
+          "Wrong: technology can raise capture and quality."
+        ]
+      },
+      "hard": {
+        "question": "Sorting technology yields the greatest gains where...",
+        "options": [
+          "an established collection/recycling base exists for it to amplify",
+          "no recycling system exists",
+          "only landfilling is practised",
+          "participation is irrelevant"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: technology multiplies an existing base.",
+          "Wrong: there is little to amplify without a base.",
+          "Wrong: it aids recovery, not landfill.",
+          "Wrong: upstream participation still matters."
+        ]
+      }
+    },
+    "picker-strike": {
+      "easy": {
+        "question": "What does a picker strike reveal?",
+        "options": [
+          "Informal recyclers are essential",
+          "They add waste",
+          "Easily replaced",
+          "Strike boosts recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: cities quietly rely on them.",
+          "Wrong: they remove waste.",
+          "Wrong: hard to replace fast.",
+          "Wrong: their loss cuts recovery."
+        ]
+      },
+      "standard": {
+        "question": "A waste-picker strike cripples some cities. What does this reveal about the informal sector?",
+        "options": [
+          "Informal recyclers are essential, often-invisible infrastructure, not a dispensable add-on",
+          "Informal pickers add waste to the system",
+          "They are trivially easy to replace at short notice",
+          "Their absence increases recycling rates"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: their withdrawal exposes how much recovery the city quietly depended on.",
+          "Wrong: they remove and recover waste.",
+          "Wrong: their dispersed labour is hard to replace quickly.",
+          "Wrong: losing them lowers recovery."
+        ]
+      },
+      "hard": {
+        "question": "A picker strike most cripples cities that...",
+        "options": [
+          "depended on informal recovery while failing to integrate or replace it",
+          "formally integrated their pickers",
+          "had no recycling at all",
+          "mechanised all sorting"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: dependence without integration leaves them exposed.",
+          "Wrong: integrated cities negotiate and cope.",
+          "Wrong: those reliant on pickers are hit.",
+          "Wrong: mechanised cities are less affected."
+        ]
+      }
+    },
+    "ocean-plastic": {
+      "easy": {
+        "question": "How does land waste reach the sea?",
+        "options": [
+          "Through drains and rivers",
+          "The sea makes it",
+          "It can't reach the sea",
+          "It's natural"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: waterways carry it to the ocean.",
+          "Wrong: it comes from land.",
+          "Wrong: rivers are the pathway.",
+          "Wrong: it's human pollution."
+        ]
+      },
+      "standard": {
+        "question": "A scandal traces ocean plastic back to your city. How does land-based waste reach the sea?",
+        "options": [
+          "Mismanaged waste is carried by drains and rivers into the ocean",
+          "The ocean generates the plastic on its own",
+          "Land-based waste cannot physically reach the sea",
+          "Marine plastic is a natural phenomenon"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: poorly managed waste travels via waterways to the coast and ocean.",
+          "Wrong: the plastic originates on land.",
+          "Wrong: rivers and drains provide the pathway.",
+          "Wrong: marine plastic is human-derived pollution."
+        ]
+      },
+      "hard": {
+        "question": "Marine plastic traced to a city demonstrates that...",
+        "options": [
+          "terrestrial mismanagement leaks via waterways into the ocean",
+          "oceans generate plastic independently",
+          "land waste cannot migrate",
+          "marine plastic is natural"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: poorly managed land waste travels to the sea.",
+          "Wrong: plastic originates on land.",
+          "Wrong: waterways provide the pathway.",
+          "Wrong: it is human pollution."
+        ]
+      }
+    },
+    "methane-risk": {
+      "easy": {
+        "question": "Why manage landfill gas?",
+        "options": [
+          "It warms the planet and can explode",
+          "It's harmless",
+          "No gas forms",
+          "It cleans the air"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: methane is climate-active and explosive.",
+          "Wrong: it's hazardous.",
+          "Wrong: decay makes gas.",
+          "Wrong: it harms air."
+        ]
+      },
+      "standard": {
+        "question": "Why must landfill gas be actively managed?",
+        "options": [
+          "Methane accumulates, drives warming, and can ignite or explode if left uncontrolled",
+          "Landfill gas is harmless and inert",
+          "Landfills generate no gas of any kind",
+          "The gas improves local air quality"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: unmanaged methane is both a potent greenhouse gas and an explosion/fire hazard.",
+          "Wrong: it is flammable and climate-active.",
+          "Wrong: anaerobic decay produces large volumes of gas.",
+          "Wrong: it degrades, not improves, air quality."
+        ]
+      },
+      "hard": {
+        "question": "Active landfill-gas management is essential because methane is...",
+        "options": [
+          "a potent greenhouse gas and an explosion hazard if uncontrolled",
+          "inert and harmless",
+          "not generated by landfills",
+          "beneficial to air quality"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: it is both climate-active and dangerous.",
+          "Wrong: it is reactive and warming.",
+          "Wrong: decay generates it.",
+          "Wrong: it harms air quality."
+        ]
+      }
+    },
+    "green-tourism": {
+      "easy": {
+        "question": "Why does a clean city attract tourists?",
+        "options": [
+          "A nice environment is an economic asset",
+          "Pollution attracts them",
+          "No link",
+          "Cleanliness kills jobs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: quality environment draws visitors and investment.",
+          "Wrong: pollution deters them.",
+          "Wrong: there's a clear link.",
+          "Wrong: it creates opportunity."
+        ]
+      },
+      "standard": {
+        "question": "A clean reputation boosts tourism. What economic principle does this demonstrate?",
+        "options": [
+          "Environmental quality is an economic asset, attracting visitors, talent and investment",
+          "Pollution is what attracts tourists",
+          "The economy is wholly independent of environmental quality",
+          "Cleanliness reliably destroys jobs"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: a liveable environment generates economic value, linking sustainability and prosperity.",
+          "Wrong: pollution deters visitors.",
+          "Wrong: environment and economy are interdependent.",
+          "Wrong: a clean reputation creates, not destroys, economic opportunity."
+        ]
+      },
+      "hard": {
+        "question": "Tourism gains from environmental quality illustrate that...",
+        "options": [
+          "sustainability and economic prosperity can be mutually reinforcing",
+          "pollution is an economic asset",
+          "environment and economy are unrelated",
+          "cleanliness destroys livelihoods"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: a quality environment generates economic value.",
+          "Wrong: pollution deters visitors.",
+          "Wrong: they are interdependent.",
+          "Wrong: it creates opportunity."
+        ]
+      }
+    },
+    "recycle-targets": {
+      "easy": {
+        "question": "Who copes with tougher recycling targets?",
+        "options": [
+          "Cities that already built systems",
+          "It's random",
+          "Linear cities easily",
+          "Targets cut recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: prior investment pays off.",
+          "Wrong: capability decides.",
+          "Wrong: linear cities lag.",
+          "Wrong: targets raise recycling."
+        ]
+      },
+      "standard": {
+        "question": "Stricter national recycling targets reward prepared cities. Why?",
+        "options": [
+          "Cities with existing systems meet rising targets cheaply, while unprepared ones face penalties",
+          "Targets are met purely by chance",
+          "Linear cities always comply most easily",
+          "Higher targets reduce recycling"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: prior investment pays off when standards rise, while laggards must scramble or pay fines.",
+          "Wrong: compliance reflects capability, not luck.",
+          "Wrong: linear cities are least prepared to comply.",
+          "Wrong: targets are designed to raise recycling."
+        ]
+      },
+      "hard": {
+        "question": "Rising statutory recycling targets reward cities that...",
+        "options": [
+          "invested early, meeting higher bars cheaply while laggards pay penalties",
+          "never built recycling systems",
+          "rely on landfill",
+          "treat targets as optional"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: prior investment pays off as standards rise.",
+          "Wrong: non-investors struggle.",
+          "Wrong: landfill-reliant cities are penalised.",
+          "Wrong: targets are statutory, not optional."
+        ]
+      }
+    },
+    "climate-summit": {
+      "easy": {
+        "question": "Why does real climate action help a city's image?",
+        "options": [
+          "Credible action builds trust and investment",
+          "Words alone suffice",
+          "Action is punished",
+          "Image is worthless"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Right: real action earns credibility and support.",
+          "Wrong: empty pledges get exposed.",
+          "Wrong: action attracts support.",
+          "Wrong: reputation has real value."
+        ]
+      },
+      "standard": {
+        "question": "Why does credible climate action yield reputational dividends at a global summit?",
+        "options": [
+          "Demonstrated commitments build trust, influence and investment, whereas empty pledges get exposed",
+          "Announcements alone, without delivery, are sufficient",
+          "Climate action is always politically punished",
+          "Reputation has no practical value to a city"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: scrutiny rewards real action with credibility and opportunity, and penalises hollow claims.",
+          "Wrong: scrutiny exposes pledges that lack delivery.",
+          "Wrong: credible action attracts support, not punishment.",
+          "Wrong: reputation translates into tangible investment and influence."
+        ]
+      },
+      "hard": {
+        "question": "Scrutiny at a climate summit rewards cities whose pledges are...",
+        "options": [
+          "backed by demonstrable delivery, while hollow pledges are penalised",
+          "purely rhetorical",
+          "politically risky to honour",
+          "irrelevant to investment"
+        ],
+        "correctIndex": 0,
+        "optionExplanations": [
+          "Correct: credible delivery earns dividends; empty words are exposed.",
+          "Wrong: rhetoric without delivery is penalised.",
+          "Wrong: honouring pledges builds credibility.",
+          "Wrong: reputation drives investment."
+        ]
+      }
+    }
+  }
+}

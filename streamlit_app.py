@@ -28,7 +28,6 @@ from circular_city.engine import (
     prepare_round_for_city,
     process_delayed_effects,
     resolve_event_justify,
-    schedule_world_events,
 )
 from circular_city.events import world_event_market_modifiers
 from circular_city.multiplayer import (
@@ -42,7 +41,15 @@ from circular_city.multiplayer import (
     start_game,
     sync_player_round,
     update_player_city,
+    update_session_config,
 )
+from circular_city.session_plan import (
+    build_suggested_curated_plan,
+    create_solo_session_config,
+    list_round_event_catalog,
+    list_world_event_catalog,
+)
+from circular_city.quiz import get_insight_bonus_for_tier
 from circular_city.room_store import get_room_store
 from circular_city.defer_action import actions_with_defer_option
 from circular_city.waste_flow import finalize_round_waste_flow
@@ -91,6 +98,8 @@ def init_session() -> None:
         "report_card": None,
         "room_sync_key": None,
         "room_version": 0,
+        "session_config": None,
+        "solo_quiz_tier": "standard",
     }
     for key, val in defaults.items():
         if key not in st.session_state:
@@ -158,9 +167,10 @@ def _persist_city() -> None:
 def _begin_round_local() -> None:
     city = st.session_state.city
     rnd = st.session_state.current_round
-    events_map = st.session_state.round_world_events
-    world = events_map.get(rnd) or events_map.get(str(rnd))
-    prepare_round_for_city(city, rnd, world)
+    cfg = st.session_state.session_config
+    if cfg:
+        city["sessionConfig"] = cfg
+    prepare_round_for_city(city, rnd, cfg)
     city["growthAppliedThisRound"] = False
     city["roundResolutions"] = []
     st.session_state.step = "growth"
@@ -245,15 +255,91 @@ def _page_solo_setup() -> None:
     from circular_city.archetype import get_archetype_profile
 
     st.caption(get_archetype_profile(archetype).get("tagline", ""))
+    quiz_tier = st.radio(
+        "Insight quiz difficulty",
+        ["easy", "standard", "hard"],
+        index=1,
+        format_func=lambda t: f"{t.title()} (+{get_insight_bonus_for_tier(t)} insight per correct)",
+        key="solo_quiz_tier",
+        horizontal=True,
+    )
+    st.caption("Solo mode randomises city events each year; the founding charter in Year 1 is the same for everyone.")
     if st.button("Start solo game", type="primary", key="solo_start"):
         st.session_state.mode = "solo"
-        st.session_state.city = create_city("local", name, archetype)
-        st.session_state.round_world_events = schedule_world_events()
+        city = create_city("local", name, archetype)
+        st.session_state.session_config = create_solo_session_config(quiz_tier)
+        city["sessionConfig"] = st.session_state.session_config
+        st.session_state.city = city
         st.session_state.current_round = 1
         st.session_state.game_started = True
         st.session_state.market_modifiers = {}
         _begin_round_local()
         st.rerun()
+
+
+def _render_teacher_session_setup(room: dict) -> None:
+    cfg = copy.deepcopy(room.get("sessionConfig") or {})
+    cfg.setdefault("rounds", build_suggested_curated_plan())
+    cfg["mode"] = "curated"
+
+    with st.expander("Configure session (events & quiz tier)", expanded=True):
+        st.caption(
+            "Year 1 always begins with the **founding charter** for every student. "
+            "Choose three city events per year and one world event for years 2–6."
+        )
+        tier = st.selectbox(
+            "Quiz tier released to class",
+            ["easy", "standard", "hard"],
+            index=["easy", "standard", "hard"].index(cfg.get("quizTier", "standard")),
+            format_func=lambda t: f"{t.title()} (+{get_insight_bonus_for_tier(t)} insight)",
+            key=f"host_quiz_tier_{room['code']}",
+        )
+        cfg["quizTier"] = tier
+
+        if st.button("Suggest balanced event plan", key=f"suggest_{room['code']}"):
+            cfg["rounds"] = build_suggested_curated_plan()
+
+        for round_num in range(1, 7):
+            key = str(round_num)
+            plan = cfg.setdefault("rounds", {}).setdefault(key, {"roundEventIds": [], "worldEventId": None})
+            st.markdown(f"**Year {round_num}**")
+            if round_num == 1:
+                st.caption("🏛️ Founding charter is fixed.")
+            catalog = list_round_event_catalog(round_num)
+            selected = st.multiselect(
+                f"City events (pick 3)",
+                [e["id"] for e in catalog],
+                default=plan.get("roundEventIds") or [],
+                format_func=lambda eid: next((e["title"] for e in catalog if e["id"] == eid), eid),
+                max_selections=3,
+                key=f"events_{room['code']}_{round_num}",
+            )
+            plan["roundEventIds"] = selected
+            if round_num >= 2:
+                worlds = list_world_event_catalog()
+                world_ids = [w["id"] for w in worlds]
+                idx = 0
+                if plan.get("worldEventId") in world_ids:
+                    idx = world_ids.index(plan["worldEventId"])
+                wid = st.selectbox(
+                    "World event",
+                    world_ids,
+                    index=idx,
+                    format_func=lambda eid: next((w["name"] for w in worlds if w["id"] == eid), eid),
+                    key=f"world_{room['code']}_{round_num}",
+                )
+                plan["worldEventId"] = wid
+
+        if st.button("Save session plan", type="secondary", key=f"save_plan_{room['code']}"):
+            updated, err = update_session_config(
+                room["code"], st.session_state.player_id, cfg
+            )
+            if err:
+                st.error(err)
+            else:
+                st.success("Session plan saved.")
+                st.session_state.room_snapshot = updated
+                st.rerun()
 
 
 def _page_host_setup() -> None:
@@ -292,6 +378,7 @@ def _page_host_dashboard() -> None:
 
     if room["phase"] == "lobby":
         st.subheader("Lobby")
+        _render_teacher_session_setup(room)
         if not leaderboard:
             st.info("Waiting for students to join…")
         else:
@@ -537,7 +624,10 @@ def _page_decide(city: dict, event: dict, rnd: int) -> None:
 def _page_quiz(city: dict, event: dict) -> None:
     seed = shuffle_seed_for_event(event, city.get("id"), st.session_state.current_round)
     justify = shuffle_justify_options(event["justify"], seed)
+    tier = event.get("activeQuizTier") or (city.get("sessionConfig") or {}).get("quizTier", "standard")
+    bonus = get_insight_bonus_for_tier(tier)
     st.markdown(f"#### 💡 {justify['question']}")
+    st.caption(f"Quiz tier: **{tier}** · +{bonus} insight if correct")
     for i, opt in enumerate(justify["options"]):
         if st.button(f"{chr(65 + i)}. {opt}", key=f"q_{event['id']}_{i}", use_container_width=True):
             _resolve_decision(
@@ -572,6 +662,8 @@ def _resolve_decision(city: dict, event: dict, action: dict, justify_index: int,
     )
     record_round_resolution(city, event, action, result.get("effects") or {}, score_before)
     result["justifyCorrect"] = justify_result.get("correct")
+    result["insightBonus"] = justify_result.get("insightBonus")
+    result["justifyExplanation"] = justify_result.get("explanation")
     city["decisionsCount"] = city.get("decisionsCount", 0) + 1
     advance_to_next_event(city)
     calculate_final_score(city)
@@ -590,7 +682,10 @@ def _page_result(city: dict, rnd: int, multiplayer: bool) -> None:
     result = st.session_state.last_result or {}
     st.success("✓ Decision resolved")
     if result.get("justifyCorrect"):
-        st.markdown(f"**Insight +{game_config()['insightBonusPerCorrect']}**")
+        bonus = result.get("insightBonus") or game_config()["insightBonusPerCorrect"]
+        st.markdown(f"**Insight +{bonus}**")
+    if result.get("justifyExplanation"):
+        st.caption(result["justifyExplanation"])
     if result.get("resultExplain"):
         st.markdown(result["resultExplain"])
     if city.get("roundComplete"):

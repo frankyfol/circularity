@@ -10,21 +10,26 @@ from circular_city.engine import (
     create_city,
     prepare_round_for_city,
     rank_cities,
-    schedule_world_events,
 )
+from circular_city.session_plan import validate_session_plan
 from circular_city.events import pick_world_event
 from circular_city.room_store import empty_room, generate_room_code, get_room_store
 
 
 def _world_event_for_round(room: dict, round_num: int) -> dict | None:
+    """Display helper for teacher dashboard (curated plan or legacy random)."""
     if round_num < 2:
         return None
     key = str(round_num)
+    cfg = room.get("sessionConfig") or {}
+    if cfg.get("mode") == "curated":
+        from circular_city.session_plan import get_event_by_id_from_catalog
+
+        wid = cfg.get("rounds", {}).get(key, {}).get("worldEventId")
+        if wid:
+            return get_event_by_id_from_catalog(wid)
     events = room.setdefault("roundWorldEvents", {})
-    if key not in events:
-        used = [e["id"] for e in events.values()]
-        events[key] = pick_world_event(used)
-    return events[key]
+    return events.get(key)
 
 
 def get_leaderboard(room: dict) -> list[dict]:
@@ -102,13 +107,18 @@ def start_game(code: str, host_id: str) -> tuple[dict | None, str | None]:
     if len(room.get("cities", {})) == 0:
         return None, "Wait for at least one student to join"
 
+    cfg = room.setdefault("sessionConfig", {})
+    errors = validate_session_plan(cfg)
+    if errors:
+        return None, "; ".join(errors)
+
     room["phase"] = "playing"
     room["currentRound"] = 1
     room["marketModifiers"] = {}
-    scheduled = schedule_world_events()
-    room["roundWorldEvents"] = {str(r): scheduled[r] for r in scheduled}
+    room["roundWorldEvents"] = _world_events_snapshot(room)
 
     for city in room["cities"].values():
+        city["sessionConfig"] = copy.deepcopy(cfg)
         _reset_city_for_round(city, room, 1)
 
     store.save(room)
@@ -144,6 +154,46 @@ def advance_round(code: str, host_id: str) -> tuple[dict | None, str | None]:
     return room, None
 
 
+def update_session_config(code: str, host_id: str, session_config: dict) -> tuple[dict | None, str | None]:
+    store = get_room_store()
+    room = store.get(code)
+    if not room:
+        return None, "Room not found"
+    if room["hostId"] != host_id:
+        return None, "Only the teacher can configure the session"
+    if room["phase"] != "lobby":
+        return None, "Session can only be edited before the game starts"
+
+    errors = validate_session_plan(session_config)
+    if errors:
+        return None, "; ".join(errors)
+
+    room["sessionConfig"] = copy.deepcopy(session_config)
+    store.save(room)
+    return room, None
+
+
+def _world_events_snapshot(room: dict) -> dict:
+    from circular_city.session_plan import get_event_by_id_from_catalog
+
+    cfg = room.get("sessionConfig") or {}
+    out: dict = {}
+    if cfg.get("mode") == "curated":
+        for r in range(2, 7):
+            wid = cfg.get("rounds", {}).get(str(r), {}).get("worldEventId")
+            if wid:
+                evnt = get_event_by_id_from_catalog(wid)
+                if evnt:
+                    out[str(r)] = evnt
+        return out
+    used: list[str] = []
+    for r in range(2, 7):
+        evnt = pick_world_event(used)
+        out[str(r)] = evnt
+        used.append(evnt["id"])
+    return out
+
+
 def reroll_world_event(code: str, host_id: str, round_num: int) -> tuple[dict | None, str | None]:
     store = get_room_store()
     room = store.get(code)
@@ -154,16 +204,35 @@ def reroll_world_event(code: str, host_id: str, round_num: int) -> tuple[dict | 
     if round_num < 2:
         return None, "World events apply from year 2 onward"
 
-    events = room.setdefault("roundWorldEvents", {})
-    used = [e["id"] for k, e in events.items() if str(k) != str(round_num)]
-    events[str(round_num)] = pick_world_event(used)
+    cfg = room.setdefault("sessionConfig", {})
+    if cfg.get("mode") == "curated":
+        from circular_city.session_plan import list_world_event_catalog
+
+        worlds = list_world_event_catalog()
+        used = [
+            cfg["rounds"][k]["worldEventId"]
+            for k in cfg.get("rounds", {})
+            if k != str(round_num) and cfg["rounds"][k].get("worldEventId")
+        ]
+        available = [w for w in worlds if w["id"] not in used]
+        pool = available if available else worlds
+        if pool:
+            import random
+
+            pick = random.choice(pool)
+            cfg.setdefault("rounds", {}).setdefault(str(round_num), {})["worldEventId"] = pick["id"]
+            room["roundWorldEvents"] = _world_events_snapshot(room)
+    else:
+        events = room.setdefault("roundWorldEvents", {})
+        used = [e["id"] for k, e in events.items() if str(k) != str(round_num)]
+        events[str(round_num)] = pick_world_event(used)
     store.save(room)
     return room, None
 
 
 def _reset_city_for_round(city: dict, room: dict, round_num: int) -> None:
-    world = _world_event_for_round(room, round_num)
-    prepare_round_for_city(city, round_num, world)
+    cfg = room.get("sessionConfig") or city.get("sessionConfig")
+    prepare_round_for_city(city, round_num, cfg)
     city["growthAppliedThisRound"] = False
     city["roundComplete"] = False
     city["roundResolutions"] = []

@@ -7,6 +7,7 @@ import { gameConfig, getEventActionCost, getArchetypeProfile } from '../game/eng
 import { generateYearSummary, getDisplayLabel, getEventNarration } from '../game/yearSummary';
 import { actionsWithDeferOption } from '../game/deferAction';
 import { shuffleActions, shuffleJustifyOptions, shuffleSeedForEvent } from '../game/shuffleActions';
+import { getInsightBonusForTier } from '../game/quiz';
 
 export default function RoundScreen({
   city,
@@ -312,7 +313,15 @@ export default function RoundScreen({
 
           {phase === 'quiz' && shuffledJustify && (
             <div className="dialogue-box space-y-3">
-              <p className="font-pixel text-[9px] text-pixel-yellow">💡 JUSTIFY YOUR CHOICE</p>
+              <p className="font-pixel text-[9px] text-pixel-yellow">
+                💡 JUSTIFY YOUR CHOICE
+                {currentEvent.activeQuizTier ? (
+                  <span className="text-gray-400 ml-2">
+                    ({currentEvent.activeQuizTier} · +
+                    {getInsightBonusForTier(currentEvent.activeQuizTier)} insight)
+                  </span>
+                ) : null}
+              </p>
               <p className="font-body text-sm">{shuffledJustify.question}</p>
               {shuffledJustify.options.map((opt, i) => (
                 <button
@@ -330,8 +339,16 @@ export default function RoundScreen({
           {phase === 'resolution' && lastResult && (
             <div className="dialogue-box">
               <p className="font-pixel text-[9px] text-pixel-green mb-2">
-                ✓ {lastResult.justifyCorrect ? 'INSIGHT +4' : 'RESOLVED'}
+                ✓{' '}
+                {lastResult.justifyCorrect
+                  ? `INSIGHT +${lastResult.insightBonus ?? gameConfig.insightBonusPerCorrect}`
+                  : 'RESOLVED'}
               </p>
+              {lastResult.justifyExplanation && (
+                <p className="font-body text-xs text-gray-400 mb-2 italic">
+                  {lastResult.justifyExplanation}
+                </p>
+              )}
               {lastResult.resultExplain && (
                 <p className="font-body text-sm mb-2">{lastResult.resultExplain}</p>
               )}

@@ -1,6 +1,15 @@
 import Leaderboard from './Leaderboard';
+import HostSessionSetup from './HostSessionSetup';
 
-export default function HostScreen({ room, leaderboard, onStart, onAdvance, onTriggerEvent }) {
+export default function HostScreen({
+  room,
+  leaderboard,
+  onStart,
+  onAdvance,
+  onTriggerEvent,
+  onSaveSessionConfig,
+  onFetchSessionCatalog,
+}) {
   const round = room?.currentRound ?? 0;
   const scheduledWorld = room?.roundWorldEvents?.[round];
 
@@ -26,6 +35,14 @@ export default function HostScreen({ room, leaderboard, onStart, onAdvance, onTr
           <p className="font-pixel text-xl">{round} / 6</p>
         </div>
       </div>
+
+      {room?.phase === 'lobby' && onSaveSessionConfig && (
+        <HostSessionSetup
+          sessionConfig={room.sessionConfig}
+          onSave={onSaveSessionConfig}
+          onFetchCatalog={onFetchSessionCatalog}
+        />
+      )}
 
       <div className="flex flex-wrap gap-3 justify-center">
         {room?.phase === 'lobby' && (
