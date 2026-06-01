@@ -24,6 +24,8 @@ def _normalize_code(code: str) -> str:
 
 
 def empty_room(host_id: str, code: str | None = None) -> dict[str, Any]:
+    from circular_city.session_plan import create_teacher_session_config
+
     code = code or generate_room_code()
     return {
         "code": code,
@@ -32,6 +34,7 @@ def empty_room(host_id: str, code: str | None = None) -> dict[str, Any]:
         "currentRound": 0,
         "roundWorldEvents": {},
         "marketModifiers": {},
+        "sessionConfig": create_teacher_session_config(),
         "cities": {},
         "createdAt": time.time(),
         "version": 0,

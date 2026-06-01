@@ -2,6 +2,14 @@
   "rounds": 6,
   "decisionTimerSeconds": 90,
   "insightBonusPerCorrect": 4,
+  "quiz": {
+    "defaultTier": "standard",
+    "insightByTier": {
+      "easy": 2,
+      "standard": 4,
+      "hard": 6
+    }
+  },
   "maxInsightBonus": 60,
   "startingBudget": 48,
   "budgetPerRound": 6,

@@ -17,12 +17,19 @@ import {
   calculateFinalScore,
   rankCities,
   generateReportCard,
-  pickRandomWorldEvent,
   marketModifiersFromEvent,
   worldEventMarketModifiers,
   calculateBalanceScore,
 } from '../src/game/engine.js';
 import { recordRoundResolution } from '../src/game/yearSummary.js';
+import {
+  createTeacherSessionConfig,
+  validateSessionPlan,
+  listRoundEventCatalog,
+  listWorldEventCatalog,
+  buildSuggestedCuratedPlan,
+  getEventByIdFromCatalog,
+} from '../src/game/sessionPlan.js';
 
 function applyEventMarketModifiers(room, event) {
   room.marketModifiers = {
@@ -58,6 +65,7 @@ function createRoom(hostId) {
     currentRound: 0,
     roundWorldEvents: {},
     marketModifiers: {},
+    sessionConfig: createTeacherSessionConfig(),
     cities: new Map(),
     createdAt: Date.now(),
   };
@@ -65,22 +73,36 @@ function createRoom(hostId) {
   return room;
 }
 
+function worldEventsSnapshot(room) {
+  const cfg = room.sessionConfig || {};
+  const out = {};
+  if (cfg.mode === 'curated') {
+    for (let r = 2; r <= 6; r++) {
+      const wid = cfg.rounds?.[String(r)]?.worldEventId;
+      if (wid) {
+        const ev = getEventByIdFromCatalog(wid);
+        if (ev) out[r] = ev;
+      }
+    }
+    return out;
+  }
+  return out;
+}
+
 function getWorldEventForRound(room, round) {
   if (round < 2) return null;
-  if (!room.roundWorldEvents[round]) {
-    room.roundWorldEvents[round] = pickRandomWorldEvent(
-      Object.values(room.roundWorldEvents).map((e) => e.id)
-    );
-  }
-  return room.roundWorldEvents[round];
+  const key = String(round);
+  return room.roundWorldEvents[key] ?? room.roundWorldEvents[round] ?? null;
 }
 
 function startRoundForCity(city, room, round) {
   city.growthAppliedThisRound = false;
   city.roundComplete = false;
   city.roundResolutions = [];
+  const cfg = room.sessionConfig || city.sessionConfig;
+  if (cfg && !city.sessionConfig) city.sessionConfig = { ...cfg };
+  const queue = prepareRoundForCity(city, round, cfg);
   const worldEvent = getWorldEventForRound(room, round);
-  const queue = prepareRoundForCity(city, round, worldEvent);
   return { queue, worldEvent };
 }
 
@@ -123,6 +145,7 @@ function broadcastRoom(room) {
     currentRound: room.currentRound,
     roundWorldEvents: room.roundWorldEvents,
     marketModifiers: room.marketModifiers,
+    sessionConfig: room.sessionConfig,
     playerCount: room.cities.size,
     leaderboard: getLeaderboard(room),
   });
@@ -171,19 +194,51 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('updateSessionConfig', (sessionConfig, cb) => {
+    const room = rooms.get(socket.roomCode);
+    if (!room || room.hostId !== socket.id) {
+      return cb?.({ success: false, error: 'Not authorized' });
+    }
+    if (room.phase !== 'lobby') {
+      return cb?.({ success: false, error: 'Session can only be edited before start' });
+    }
+    const errors = validateSessionPlan(sessionConfig);
+    if (errors.length) {
+      return cb?.({ success: false, error: errors.join('; ') });
+    }
+    room.sessionConfig = sessionConfig;
+    broadcastRoom(room);
+    cb?.({ success: true, sessionConfig: room.sessionConfig });
+  });
+
+  socket.on('getSessionCatalog', (cb) => {
+    const catalog = {};
+    for (let r = 1; r <= 6; r++) {
+      catalog[r] = listRoundEventCatalog(r);
+    }
+    cb?.({
+      success: true,
+      roundEvents: catalog,
+      worldEvents: listWorldEventCatalog(),
+      suggestedPlan: buildSuggestedCuratedPlan(),
+      quizTiers: ['easy', 'standard', 'hard'],
+    });
+  });
+
   socket.on('startGame', (cb) => {
     const room = rooms.get(socket.roomCode);
     if (!room || room.hostId !== socket.id) return cb?.({ success: false });
+    const errors = validateSessionPlan(room.sessionConfig);
+    if (errors.length) {
+      return cb?.({ success: false, error: errors.join('; ') });
+    }
     room.phase = 'playing';
     room.currentRound = 1;
-    room.roundWorldEvents = {};
     room.marketModifiers = {};
-
-    for (let r = 2; r <= 6; r++) {
-      getWorldEventForRound(room, r);
-    }
+    room.roundWorldEvents = worldEventsSnapshot(room);
 
     for (const [cityId, city] of room.cities) {
+      city.sessionConfig = { ...room.sessionConfig };
       const playerSocket = io.sockets.sockets.get(cityId);
       if (playerSocket) emitRoundStartToPlayer(playerSocket, room, city);
     }
@@ -255,6 +310,8 @@ io.on('connection', (socket) => {
       result: {
         ...result,
         justifyCorrect: justifyResult.correct,
+        justifyExplanation: justifyResult.explanation,
+        insightBonus: justifyResult.insightBonus,
       },
       roundComplete: city.roundComplete,
       nextEvent,
@@ -297,14 +354,31 @@ io.on('connection', (socket) => {
     const targetRound = round ?? room.currentRound;
     if (targetRound < 2) return cb?.({ success: false, error: 'World events start round 2' });
 
-    const event = pickRandomWorldEvent(
-      Object.values(room.roundWorldEvents).map((e) => e.id)
-    );
-    room.roundWorldEvents[targetRound] = event;
-    applyEventMarketModifiers(room, event);
-    io.to(room.code).emit('worldEventScheduled', { round: targetRound, event });
+    const cfg = room.sessionConfig || {};
+    if (cfg.mode === 'curated') {
+      const worlds = listWorldEventCatalog();
+      const used = Object.entries(cfg.rounds || {})
+        .filter(([k]) => String(k) !== String(targetRound))
+        .map(([, p]) => p.worldEventId)
+        .filter(Boolean);
+      const pool = worlds.filter((w) => !used.includes(w.id));
+      const pick = (pool.length ? pool : worlds)[Math.floor(Math.random() * (pool.length || worlds.length))];
+      if (pick) {
+        cfg.rounds = cfg.rounds || {};
+        cfg.rounds[String(targetRound)] = {
+          ...cfg.rounds[String(targetRound)],
+          worldEventId: pick.id,
+        };
+        room.roundWorldEvents = worldEventsSnapshot(room);
+        const event = getEventByIdFromCatalog(pick.id);
+        applyEventMarketModifiers(room, event);
+        io.to(room.code).emit('worldEventScheduled', { round: targetRound, event });
+      }
+    } else {
+      return cb?.({ success: false, error: 'Use session setup for curated world events' });
+    }
     broadcastRoom(room);
-    cb?.({ success: true, event, round: targetRound });
+    cb?.({ success: true, round: targetRound });
   });
 
   socket.on('getCity', (cb) => {

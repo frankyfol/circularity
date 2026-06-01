@@ -13,7 +13,7 @@
     "simulate": "node scripts/simulate.js",
     "simulate:events": "node scripts/simulate-events.js",
     "build:events": "node scripts/build-events-from-spec.js",
-    "build:content": "node scripts/build-events-from-spec.js && node scripts/merge-choice-library.js",
+    "build:content": "node scripts/build-events-from-spec.js && node scripts/merge-choice-library.js && node scripts/merge-quizzes.js",
     "streamlit": "streamlit run streamlit_app.py"
   },
   "dependencies": {

@@ -21,6 +21,8 @@ export default function App() {
     createRoom,
     joinRoom,
     startGame,
+    updateSessionConfig,
+    getSessionCatalog,
     submitEventDecision,
     advanceRound,
     triggerWorldEvent,
@@ -63,6 +65,8 @@ export default function App() {
         onStart={startGame}
         onAdvance={advanceRound}
         onTriggerEvent={() => triggerWorldEvent(room?.currentRound)}
+        onSaveSessionConfig={updateSessionConfig}
+        onFetchSessionCatalog={getSessionCatalog}
       />
     );
   }

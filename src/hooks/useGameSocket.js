@@ -86,6 +86,18 @@ export function useGameSocket() {
     });
   }, []);
 
+  const updateSessionConfig = useCallback((sessionConfig) => {
+    return new Promise((resolve) => {
+      socketRef.current.emit('updateSessionConfig', sessionConfig, resolve);
+    });
+  }, []);
+
+  const getSessionCatalog = useCallback(() => {
+    return new Promise((resolve) => {
+      socketRef.current.emit('getSessionCatalog', resolve);
+    });
+  }, []);
+
   const submitEventDecision = useCallback((actionId, justifyAnswer, decisionTime) => {
     return new Promise((resolve) => {
       socketRef.current.emit(
@@ -136,6 +148,8 @@ export function useGameSocket() {
     createRoom,
     joinRoom,
     startGame,
+    updateSessionConfig,
+    getSessionCatalog,
     submitEventDecision,
     advanceRound,
     triggerWorldEvent,
