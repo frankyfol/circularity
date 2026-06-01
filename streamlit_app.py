@@ -298,6 +298,15 @@ def _render_teacher_session_setup(room: dict) -> None:
 
         if st.button("Suggest balanced event plan", key=f"suggest_{room['code']}"):
             cfg["rounds"] = build_suggested_curated_plan()
+            suggested, err = update_session_config(
+                room["code"], st.session_state.player_id, cfg
+            )
+            if err:
+                st.error(err)
+            else:
+                st.session_state.room_snapshot = suggested
+                st.success("Suggested plan saved to the room.")
+                st.rerun()
 
         for round_num in range(1, 7):
             key = str(round_num)

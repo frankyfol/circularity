@@ -81,7 +81,7 @@ function worldEventsSnapshot(room) {
       const wid = cfg.rounds?.[String(r)]?.worldEventId;
       if (wid) {
         const ev = getEventByIdFromCatalog(wid);
-        if (ev) out[r] = ev;
+        if (ev) out[String(r)] = ev;
       }
     }
     return out;
@@ -362,7 +362,11 @@ io.on('connection', (socket) => {
         .map(([, p]) => p.worldEventId)
         .filter(Boolean);
       const pool = worlds.filter((w) => !used.includes(w.id));
-      const pick = (pool.length ? pool : worlds)[Math.floor(Math.random() * (pool.length || worlds.length))];
+      const choices = pool.length ? pool : worlds;
+      if (!choices.length) {
+        return cb?.({ success: false, error: 'No world events available' });
+      }
+      const pick = choices[Math.floor(Math.random() * choices.length)];
       if (pick) {
         cfg.rounds = cfg.rounds || {};
         cfg.rounds[String(targetRound)] = {
