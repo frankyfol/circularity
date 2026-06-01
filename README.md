@@ -74,14 +74,19 @@ npm start
 
 Serves the built client and WebSocket server on port 3001.
 
+## User manuals
+
+- **[Teacher manual](docs/TEACHER_MANUAL.md)** — room setup, session plan, quiz tiers, pacing, troubleshooting  
+- **[Student manual](docs/STUDENT_MANUAL.md)** — joining, playing each year, solo practice, tips  
+
 ## How to Play (Class Session)
 
-1. **Teacher** opens the app → "Teacher Host" → share the 5-letter room code on the projector
+1. **Teacher** creates a room, configures **quiz tier** and **events per year** (or use *Suggest balanced plan*), then shares the 5-letter code
 2. **Students** join with name + city archetype on laptop or phone
-3. Teacher clicks **Start Game** when all 19 have joined
-4. Each round: growth tick → **founding event** (Round 1 only) → 3 flag-weighted random events → justify quizzes → resolution
-5. Rounds 2–6 add a **World Event** as the 4th decision; teacher can re-roll it from the host screen
-6. After Round 6: **Final Reveal** with rankings and printable Report Cards
+3. Teacher clicks **Start Game** when the class is ready (session plan must be saved and valid)
+4. Each year: growth tick → **founding charter** (Year 1 only, fixed for all) → 3 city events → justify quizzes → resolution
+5. Years 2–6 add a **world event** as the 4th decision; teacher may re-roll it only before students reach that event
+6. After Year 6: **Final Reveal** with rankings and report cards
 
 ## Tech Stack
 
@@ -127,7 +132,7 @@ npm run build:content
 npm run simulate:events
 ```
 
-This runs `build-events-from-spec.js` then `merge-choice-library.js` → updates `src/game/events.json`.
+This runs `build-events-from-spec.js`, `merge-choice-library.js`, and `merge-quizzes.js` → updates `src/game/events.json` (including tiered `justifyTiers`).
 
 ## License
 
