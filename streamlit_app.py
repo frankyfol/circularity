@@ -217,12 +217,108 @@ def poll_multiplayer_room() -> dict | None:
 
 @st.fragment(run_every=timedelta(seconds=2))
 def multiplayer_poll_fragment() -> None:
+    """Refresh student UIs when the shared room changes (join, progress, advance)."""
     if st.session_state.mode != "multiplayer" or not st.session_state.room_code:
+        return
+    if st.session_state.is_host:
         return
     prev_v = st.session_state.get("room_version", 0)
     room = poll_multiplayer_room()
-    if room and room.get("version", 0) != prev_v and not st.session_state.is_host:
+    if room and room.get("version", 0) != prev_v:
         st.rerun()
+
+
+@st.fragment(run_every=timedelta(seconds=2))
+def host_live_status_fragment() -> None:
+    """Teacher lobby / in-game metrics — reruns on a timer so joins show without manual refresh."""
+    if not st.session_state.is_host or not st.session_state.room_code:
+        return
+    room = poll_multiplayer_room()
+    if not room:
+        st.error("Room not found")
+        return
+
+    leaderboard = get_leaderboard(room)
+    done, total = count_round_complete(room)
+
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Players", total)
+    c2.metric("Year", f"{room['currentRound']}/6")
+    c3.metric("Finished this year", f"{done}/{total}")
+
+    if room["phase"] == "lobby":
+        st.subheader("Lobby")
+        if not leaderboard:
+            st.info("Waiting for students to join…")
+        else:
+            for p in leaderboard:
+                arch = "High-income" if p["archetype"] == "highIncome" else "Low-income"
+                st.write(f"• **{p['studentName']}** ({arch})")
+        if st.button("Start game", type="primary", disabled=total == 0, key="host_start_game"):
+            room, err = start_game(room["code"], st.session_state.player_id)
+            if err:
+                st.error(err)
+            else:
+                st.success("Game started — Year 1")
+                st.rerun()
+
+    elif room["phase"] == "playing":
+        st.subheader(f"Year {room['currentRound']} in progress")
+        we = room.get("roundWorldEvents", {}).get(str(room["currentRound"]))
+        if we and room["currentRound"] >= 2:
+            st.info(f"World event this year: **{we['name']}**")
+            if st.button("Re-roll world event for this year", key="host_reroll_we"):
+                reroll_world_event(room["code"], st.session_state.player_id, room["currentRound"])
+                st.rerun()
+
+        if leaderboard:
+            st.dataframe(
+                [
+                    {
+                        "Rank": p.get("rank", "—"),
+                        "Name": p["studentName"],
+                        "Score": p["score"],
+                        "Done": "✓" if p.get("roundComplete") else "…",
+                        "Flags": ", ".join((p.get("flags") or [])[:3]),
+                    }
+                    for p in sorted(leaderboard, key=lambda x: x.get("score", 0), reverse=True)
+                ],
+                use_container_width=True,
+                hide_index=True,
+            )
+
+        with st.expander("Flag insight (teacher)"):
+            for p in leaderboard:
+                st.markdown(f"**{p['studentName']}:** {', '.join(p.get('flags') or []) or '—'}")
+
+        if st.button("Advance to next year →", type="primary", key="host_advance_round"):
+            room, err = advance_round(room["code"], st.session_state.player_id)
+            if err:
+                st.error(err)
+            else:
+                st.rerun()
+
+    elif room["phase"] == "reveal":
+        st.success("Game complete")
+        st.dataframe(
+            [
+                {
+                    "Rank": p["rank"],
+                    "Name": p["studentName"],
+                    "Score": p["score"],
+                    "Balance": p["balanceScore"],
+                    "Insight": p["insightPoints"],
+                }
+                for p in get_leaderboard(room)
+            ],
+            use_container_width=True,
+            hide_index=True,
+        )
+        if st.button("Close room", key="host_close_room"):
+            st.session_state.room_code = None
+            st.session_state.is_host = False
+            st.session_state.mode = None
+            st.rerun()
 
 
 def page_home() -> None:
@@ -367,7 +463,6 @@ def _page_host_setup() -> None:
 
 
 def _page_host_dashboard() -> None:
-    multiplayer_poll_fragment()
     room = st.session_state.get("room_snapshot") or load_room(st.session_state.room_code)
     if not room:
         st.error("Room not found")
@@ -375,90 +470,16 @@ def _page_host_dashboard() -> None:
 
     st.markdown(f"## Room `{room['code']}`")
     st.code(room["code"], language=None)
-    st.caption("Students: **Student join** tab → enter this code")
-
-    leaderboard = get_leaderboard(room)
-    done, total = count_round_complete(room)
-
-    c1, c2, c3 = st.columns(3)
-    c1.metric("Players", total)
-    c2.metric("Year", f"{room['currentRound']}/6")
-    c3.metric("Finished this year", f"{done}/{total}")
+    st.caption(
+        "Students: **Student join** tab → enter this code. "
+        "Use a **second browser** (or incognito), not only another tab on this page."
+    )
+    st.caption("Player list refreshes automatically every few seconds.")
 
     if room["phase"] == "lobby":
-        st.subheader("Lobby")
         _render_teacher_session_setup(room)
-        if not leaderboard:
-            st.info("Waiting for students to join…")
-        else:
-            for p in leaderboard:
-                arch = "High-income" if p["archetype"] == "highIncome" else "Low-income"
-                st.write(f"• **{p['studentName']}** ({arch})")
-        if st.button("Start game", type="primary", disabled=total == 0):
-            room, err = start_game(room["code"], st.session_state.player_id)
-            if err:
-                st.error(err)
-            else:
-                st.success("Game started — Year 1")
-                st.rerun()
 
-    elif room["phase"] == "playing":
-        st.subheader(f"Year {room['currentRound']} in progress")
-        we = room.get("roundWorldEvents", {}).get(str(room["currentRound"]))
-        if we and room["currentRound"] >= 2:
-            st.info(f"World event this year: **{we['name']}**")
-            if st.button("Re-roll world event for this year"):
-                reroll_world_event(room["code"], st.session_state.player_id, room["currentRound"])
-                st.rerun()
-
-        if leaderboard:
-            st.dataframe(
-                [
-                    {
-                        "Rank": p.get("rank", "—"),
-                        "Name": p["studentName"],
-                        "Score": p["score"],
-                        "Done": "✓" if p.get("roundComplete") else "…",
-                        "Flags": ", ".join((p.get("flags") or [])[:3]),
-                    }
-                    for p in sorted(leaderboard, key=lambda x: x.get("score", 0), reverse=True)
-                ],
-                use_container_width=True,
-                hide_index=True,
-            )
-
-        with st.expander("Flag insight (teacher)"):
-            for p in leaderboard:
-                st.markdown(f"**{p['studentName']}:** {', '.join(p.get('flags') or []) or '—'}")
-
-        if st.button("Advance to next year →", type="primary"):
-            room, err = advance_round(room["code"], st.session_state.player_id)
-            if err:
-                st.error(err)
-            else:
-                st.rerun()
-
-    elif room["phase"] == "reveal":
-        st.success("Game complete")
-        st.dataframe(
-            [
-                {
-                    "Rank": p["rank"],
-                    "Name": p["studentName"],
-                    "Score": p["score"],
-                    "Balance": p["balanceScore"],
-                    "Insight": p["insightPoints"],
-                }
-                for p in get_leaderboard(room)
-            ],
-            use_container_width=True,
-            hide_index=True,
-        )
-        if st.button("Close room"):
-            st.session_state.room_code = None
-            st.session_state.is_host = False
-            st.session_state.mode = None
-            st.rerun()
+    host_live_status_fragment()
 
 
 def _page_student_join() -> None:
