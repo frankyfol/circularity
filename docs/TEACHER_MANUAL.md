@@ -165,6 +165,7 @@ Curated events are **not** filtered by each student’s earlier flags — you ma
 
 | Problem | What to do |
 |---------|------------|
+| **Teacher screen does not show new students** | Use **two browsers** (e.g. Chrome + incognito), not two tabs of the same Streamlit session. On Streamlit Cloud, confirm Redis is configured. Wait a few seconds — the player list auto-refreshes. |
 | “Year X needs exactly 3 events” | Open session setup, pick 3 events for that year, **Save session plan**. |
 | Students cannot find room | Verify code; on Cloud, check Redis secrets and reboot. |
 | Start game disabled | Need at least one student + valid saved session plan. |
